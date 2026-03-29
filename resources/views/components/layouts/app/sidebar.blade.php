@@ -54,9 +54,9 @@
                                     :active="request()->routeIs('reports*')">Reports</x-layouts.sidebar-link>
                             @endif
 
-                            @if(auth()->user()?->can('audit-logs.view'))
-                                <x-layouts.sidebar-link href="{{ route('audit-logs.index') }}" icon='fas-clock-rotate-left'
-                                    :active="request()->routeIs('audit-logs*')">Audit Logs</x-layouts.sidebar-link>
+                            @if(auth()->user()?->can('activity-logs.view'))
+                                <x-layouts.sidebar-link href="{{ route('activity-logs.index') }}" icon='fas-clock-rotate-left'
+                                    :active="request()->routeIs('activity-logs*')">Activity Logs</x-layouts.sidebar-link>
                             @endif
                         </ul>
                     </nav>

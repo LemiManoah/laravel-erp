@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\AuditLogController;
+use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
@@ -80,7 +80,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('reports/customer-statement/print', [ReportController::class, 'customerStatementPrint'])->name('reports.customer-statement.print');
     Route::get('reports/profit-loss', [ReportController::class, 'profitLoss'])->name('reports.profit-loss');
     Route::get('reports/profit-loss/print', [ReportController::class, 'profitLossPrint'])->name('reports.profit-loss.print');
-    Route::get('audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
+    Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
     Route::resource('roles', RoleController::class)->except(['show']);
     Route::resource('users', UserController::class)->except(['show', 'destroy']);
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
-use App\Models\AuditLog;
+
 use App\Models\Currency;
 use App\Models\Customer;
 use App\Models\Expense;
@@ -15,7 +15,7 @@ use App\Models\Payment;
 use App\Models\PaymentMethod;
 use App\Models\Receipt;
 use App\Models\User;
-use App\Policies\AuditLogPolicy;
+
 use App\Policies\CurrencyPolicy;
 use App\Policies\CustomerPolicy;
 use App\Policies\ExpensePolicy;
@@ -47,7 +47,7 @@ final class AppServiceProvider extends ServiceProvider
         Expense::class => ExpensePolicy::class,
         Order::class => OrderPolicy::class,
         Measurement::class => MeasurementPolicy::class,
-        AuditLog::class => AuditLogPolicy::class,
+
         User::class => UserPolicy::class,
     ];
 

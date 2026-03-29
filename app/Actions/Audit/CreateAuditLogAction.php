@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Actions\Audit;
 
-use App\Models\AuditLog;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Spatie\Activitylog\Models\Activity;
 
 final readonly class CreateAuditLogAction
 {
@@ -16,21 +16,37 @@ final readonly class CreateAuditLogAction
         ?array $oldValues = null,
         ?array $newValues = null,
         ?string $reason = null,
-    ): AuditLog {
+    ): Activity {
         $request = request();
-        $entityType = $entity instanceof Model ? $entity::class : $entity;
-        $entityId = $entity instanceof Model ? $entity->getKey() : null;
+        $properties = [];
+        
+        if ($oldValues) {
+            $properties['old'] = (array) $oldValues;
+        }
+        
+        if ($newValues) {
+            $properties['attributes'] = (array) $newValues;
+        }
 
-        return AuditLog::create([
-            'user_id' => Auth::id(),
-            'action_type' => $actionType,
-            'entity_type' => $entityType,
-            'entity_id' => $entityId,
-            'old_values' => $oldValues,
-            'new_values' => $newValues,
-            'reason' => $reason,
-            'ip_address' => $request?->ip(),
-            'user_agent' => $request?->userAgent(),
-        ]);
+        $activity = activity()
+            ->causedBy(Auth::user())
+            ->event($actionType)
+            ->withProperties($properties)
+            ->tap(function (Activity $activity) use ($request, $reason) {
+                // Determine a sensible description if reason isn't provided
+                $activity->description = $reason ?? str($activity->event)->replace('.', ' ')->ucfirst()->toString();
+                
+                // Track metadata in properties if needed
+                $activity->properties = $activity->properties->merge([
+                    'ip_address' => $request?->ip(),
+                    'user_agent' => $request?->userAgent()
+                ]);
+            });
+
+        if ($entity instanceof Model) {
+            $activity->performedOn($entity);
+        }
+
+        return $activity->log($reason ?? "{$actionType} recorded");
     }
 }
