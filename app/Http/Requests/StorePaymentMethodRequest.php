@@ -17,8 +17,10 @@ final class StorePaymentMethodRequest extends FormRequest
 
     public function rules(): array
     {
+        $tenant = tenant();
+
         return [
-            'name' => ['required', 'string', 'max:255', Rule::unique('payment_methods', 'name')],
+            'name' => ['required', 'string', 'max:255', $tenant->unique('payment_methods', 'name')],
             'is_active' => ['required', 'boolean'],
             'sort_order' => ['required', 'integer', 'min:0'],
             'notes' => ['nullable', 'string', 'max:1000'],

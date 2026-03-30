@@ -2,11 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\LogsModelActivity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 
 class Product extends Model
 {
+    use BelongsToTenant;
+    use LogsModelActivity;
+
     protected $fillable = [
         'product_category_id',
         'name',

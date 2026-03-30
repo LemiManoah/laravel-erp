@@ -17,10 +17,12 @@ final class StoreInvoiceRequest extends FormRequest
 
     public function rules(): array
     {
+        $tenant = tenant();
+
         return [
-            'customer_id' => ['required', 'integer', 'exists:customers,id'],
-            'order_id' => ['nullable', 'integer', 'exists:orders,id'],
-            'currency_id' => ['required', 'integer', 'exists:currencies,id'],
+            'customer_id' => ['required', 'integer', $tenant->exists('customers', 'id')],
+            'order_id' => ['nullable', 'integer', $tenant->exists('orders', 'id')],
+            'currency_id' => ['required', 'integer', $tenant->exists('currencies', 'id')],
             'invoice_date' => ['required', 'date'],
             'due_date' => ['nullable', 'date', 'after_or_equal:invoice_date'],
             'notes' => ['nullable', 'string'],

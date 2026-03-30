@@ -17,9 +17,11 @@ final class StoreCurrencyRequest extends FormRequest
 
     public function rules(): array
     {
+        $tenant = tenant();
+
         return [
-            'name' => ['required', 'string', 'max:255', Rule::unique('currencies', 'name')],
-            'code' => ['required', 'string', 'size:3', Rule::unique('currencies', 'code')],
+            'name' => ['required', 'string', 'max:255', $tenant->unique('currencies', 'name')],
+            'code' => ['required', 'string', 'size:3', $tenant->unique('currencies', 'code')],
             'symbol' => ['required', 'string', 'max:20'],
             'decimal_places' => ['required', 'integer', 'min:0', 'max:4'],
             'exchange_rate' => ['required', 'numeric', 'min:0'],

@@ -13,8 +13,10 @@ class UpdateProductRequest extends FormRequest
 
     public function rules(): array
     {
+        $tenant = tenant();
+
         return [
-            'product_category_id' => ['nullable', 'exists:product_categories,id'],
+            'product_category_id' => ['nullable', $tenant->exists('product_categories', 'id')],
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:1000'],
             'base_price' => ['nullable', 'numeric', 'min:0'],

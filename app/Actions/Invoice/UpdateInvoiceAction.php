@@ -4,23 +4,17 @@ declare(strict_types=1);
 
 namespace App\Actions\Invoice;
 
-use App\Actions\Audit\CreateAuditLogAction;
 use App\Models\Invoice;
 use Illuminate\Support\Facades\DB;
 
 final readonly class UpdateInvoiceAction
 {
-    public function __construct(
-        private CreateAuditLogAction $createAuditLog,
-    ) {}
-
     /**
      * @param  array<string, mixed>  $data
      */
     public function handle(Invoice $invoice, array $data): Invoice
     {
         return DB::transaction(function () use ($invoice, $data): Invoice {
-            $before = $invoice->load('items')->toArray();
             $subtotal = collect($data['items'])->sum(
                 static fn (array $item): float => (float) $item['quantity'] * (float) $item['unit_price']
             );
@@ -52,7 +46,6 @@ final readonly class UpdateInvoiceAction
             }
 
             $invoice->load('items');
-            $this->createAuditLog->handle('invoice.updated', $invoice, $before, $invoice->toArray());
 
             return $invoice;
         });

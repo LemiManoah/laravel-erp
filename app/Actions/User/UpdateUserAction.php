@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Actions\User;
 
-use App\Actions\Audit\CreateAuditLogAction;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -12,10 +11,6 @@ use Illuminate\Validation\ValidationException;
 
 final readonly class UpdateUserAction
 {
-    public function __construct(
-        private CreateAuditLogAction $createAuditLog,
-    ) {}
-
     /**
      * @param  array<string, mixed>  $attributes
      */
@@ -37,8 +32,6 @@ final readonly class UpdateUserAction
                 ]);
             }
 
-            $oldValues = $user->load('roles')->toArray();
-
             $payload = [
                 'name' => $attributes['name'],
                 'email' => $attributes['email'],
@@ -54,8 +47,6 @@ final readonly class UpdateUserAction
             $user->update($payload);
             $user->syncRoles($roles);
             $user->load('roles');
-
-            $this->createAuditLog->handle('user.updated', $user, $oldValues, $user->toArray());
 
             return $user;
         });

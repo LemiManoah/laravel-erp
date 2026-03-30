@@ -4,16 +4,11 @@ declare(strict_types=1);
 
 namespace App\Actions\User;
 
-use App\Actions\Audit\CreateAuditLogAction;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 final readonly class CreateUserAction
 {
-    public function __construct(
-        private CreateAuditLogAction $createAuditLog,
-    ) {}
-
     /**
      * @param  array<string, mixed>  $attributes
      */
@@ -33,8 +28,6 @@ final readonly class CreateUserAction
 
             $user->syncRoles($roles);
             $user->load('roles');
-
-            $this->createAuditLog->handle('user.created', $user, null, $user->toArray());
 
             return $user;
         });

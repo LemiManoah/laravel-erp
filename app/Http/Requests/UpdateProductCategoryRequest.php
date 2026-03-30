@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateProductCategoryRequest extends FormRequest
 {
@@ -13,8 +14,10 @@ class UpdateProductCategoryRequest extends FormRequest
 
     public function rules(): array
     {
+        $tenant = tenant();
+
         return [
-            'name' => ['required', 'string', 'max:255', 'unique:product_categories,name,'.$this->route('productCategory')->id],
+            'name' => ['required', 'string', 'max:255', $tenant->unique('product_categories', 'name')->ignore($this->route('productCategory'))],
             'description' => ['nullable', 'string', 'max:1000'],
         ];
     }

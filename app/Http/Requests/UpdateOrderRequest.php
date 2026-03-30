@@ -13,9 +13,11 @@ class UpdateOrderRequest extends FormRequest
 
     public function rules(): array
     {
+        $tenant = tenant();
+
         return [
-            'customer_id' => 'required|exists:customers,id',
-            'currency_id' => 'required|exists:currencies,id',
+            'customer_id' => ['required', $tenant->exists('customers', 'id')],
+            'currency_id' => ['required', $tenant->exists('currencies', 'id')],
             'order_date' => 'required|date',
             'promised_delivery_date' => 'nullable|date|after_or_equal:order_date',
             'status' => 'required|string',

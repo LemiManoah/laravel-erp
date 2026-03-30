@@ -13,8 +13,10 @@ class StoreProductCategoryRequest extends FormRequest
 
     public function rules(): array
     {
+        $tenant = tenant();
+
         return [
-            'name' => ['required', 'string', 'max:255', 'unique:product_categories,name'],
+            'name' => ['required', 'string', 'max:255', $tenant->unique('product_categories', 'name')],
             'description' => ['nullable', 'string', 'max:1000'],
         ];
     }

@@ -4,17 +4,12 @@ declare(strict_types=1);
 
 namespace App\Actions\PaymentMethod;
 
-use App\Actions\Audit\CreateAuditLogAction;
 use App\Models\PaymentMethod;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 final readonly class CreatePaymentMethodAction
 {
-    public function __construct(
-        private CreateAuditLogAction $createAuditLog,
-    ) {}
-
     /**
      * @param  array<string, mixed>  $data
      */
@@ -28,8 +23,6 @@ final readonly class CreatePaymentMethodAction
                 'sort_order' => (int) $data['sort_order'],
                 'notes' => $data['notes'] ?? null,
             ]);
-
-            $this->createAuditLog->handle('payment_method.created', $paymentMethod, null, $paymentMethod->toArray());
 
             return $paymentMethod;
         });

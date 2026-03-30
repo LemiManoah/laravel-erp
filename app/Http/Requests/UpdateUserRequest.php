@@ -18,10 +18,11 @@ class UpdateUserRequest extends FormRequest
     {
         /** @var User $user */
         $user = $this->route('user');
+        $tenant = tenant();
 
         return [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', Rule::unique(User::class, 'email')->ignore($user->id)],
+            'email' => ['required', 'string', 'email', 'max:255', $tenant->unique('users', 'email')->ignore($user)],
             'phone' => ['nullable', 'string', 'max:30'],
             'password' => ['nullable', 'confirmed', Password::defaults()],
             'roles' => ['required', 'array', 'min:1'],

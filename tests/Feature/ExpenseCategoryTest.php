@@ -1,9 +1,8 @@
 <?php
 
 use App\Models\ExpenseCategory;
+use App\Models\Permission;
 use App\Models\User;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
 
 beforeEach(function () {
     $this->user = User::factory()->create();

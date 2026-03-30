@@ -14,12 +14,14 @@ class UpdateExpenseCategoryRequest extends FormRequest
 
     public function rules(): array
     {
+        $tenant = tenant();
+
         return [
             'name' => [
-                'required', 
-                'string', 
-                'max:255', 
-                Rule::unique('expense_categories', 'name')->ignore($this->expense_category)
+                'required',
+                'string',
+                'max:255',
+                $tenant->unique('expense_categories', 'name')->ignore($this->expense_category),
             ],
             'description' => ['nullable', 'string', 'max:1000'],
         ];

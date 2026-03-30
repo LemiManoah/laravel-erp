@@ -22,16 +22,17 @@ final class UpdateExpenseRequest extends FormRequest
     {
         /** @var Expense $expense */
         $expense = $this->route('expense');
+        $tenant = tenant();
 
         return [
-            'expense_category_id' => 'required|exists:expense_categories,id',
-            'currency_id' => 'required|exists:currencies,id',
+            'expense_category_id' => ['required', $tenant->exists('expense_categories', 'id')],
+            'currency_id' => ['required', $tenant->exists('currencies', 'id')],
             'expense_date' => 'required|date',
             'amount' => 'required|numeric|min:0.01',
             'payment_method_id' => [
                 'required',
                 'integer',
-                Rule::exists('payment_methods', 'id')->where(
+                $tenant->exists('payment_methods', 'id')->where(
                     static fn ($query) => $query
                         ->where('is_active', true)
                         ->orWhere('id', $expense->payment_method_id),
@@ -49,6 +50,7 @@ final class UpdateExpenseRequest extends FormRequest
         return [
             'expense_category_id.required' => 'Select an expense category.',
             'expense_category_id.exists' => 'Select a valid expense category.',
+            'currency_id.exists' => 'Select a valid currency.',
             'expense_date.required' => 'Select the expense date.',
             'amount.required' => 'Enter the expense amount.',
             'amount.numeric' => 'The expense amount must be a valid number.',

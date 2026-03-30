@@ -13,10 +13,12 @@ class UpdateInvoiceRequest extends FormRequest
 
     public function rules(): array
     {
+        $tenant = tenant();
+
         return [
-            'customer_id' => 'required|exists:customers,id',
-            'order_id' => 'nullable|exists:orders,id',
-            'currency_id' => 'required|exists:currencies,id',
+            'customer_id' => ['required', $tenant->exists('customers', 'id')],
+            'order_id' => ['nullable', $tenant->exists('orders', 'id')],
+            'currency_id' => ['required', $tenant->exists('currencies', 'id')],
             'invoice_date' => 'required|date',
             'due_date' => 'nullable|date|after_or_equal:invoice_date',
             'notes' => 'nullable|string',

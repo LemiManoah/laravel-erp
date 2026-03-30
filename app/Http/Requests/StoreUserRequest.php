@@ -14,9 +14,11 @@ class StoreUserRequest extends FormRequest
 
     public function rules(): array
     {
+        $tenant = tenant();
+
         return [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'email' => ['required', 'string', 'email', 'max:255', $tenant->unique('users', 'email')],
             'phone' => ['nullable', 'string', 'max:30'],
             'password' => ['required', 'confirmed', Password::defaults()],
             'roles' => ['required', 'array', 'min:1'],

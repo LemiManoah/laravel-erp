@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreCustomerRequest extends FormRequest
 {
@@ -13,11 +14,13 @@ class StoreCustomerRequest extends FormRequest
 
     public function rules(): array
     {
+        $tenant = tenant();
+
         return [
             'full_name' => 'required|string|max:255',
-            'phone' => 'required|string|unique:customers,phone',
+            'phone' => ['required', 'string', $tenant->unique('customers', 'phone')],
             'alternative_phone' => 'nullable|string',
-            'email' => 'nullable|email|unique:customers,email',
+            'email' => ['nullable', 'email', $tenant->unique('customers', 'email')],
             'address' => 'nullable|string',
             'gender' => 'nullable|string',
             'date_of_birth' => 'nullable|date',

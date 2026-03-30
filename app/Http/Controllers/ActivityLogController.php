@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Models\Activity;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\View\View;
-use Spatie\Activitylog\Models\Activity;
 
 final readonly class ActivityLogController extends Controller implements HasMiddleware
 {

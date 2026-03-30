@@ -2,11 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\LogsModelActivity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 
 class ExpenseCategory extends Model
 {
+    use BelongsToTenant;
+    use LogsModelActivity;
+
     protected $fillable = ['name', 'description', 'is_active'];
 
     protected $casts = [

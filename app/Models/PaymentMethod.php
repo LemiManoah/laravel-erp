@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Concerns\LogsModelActivity;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 
 final class PaymentMethod extends Model
 {
+    use BelongsToTenant;
+    use LogsModelActivity;
+
     protected $fillable = [
         'name',
         'slug',

@@ -8,6 +8,7 @@ use App\Actions\User\CreateUserAction;
 use App\Actions\User\UpdateUserAction;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -15,7 +16,6 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\View\View;
-use Spatie\Permission\Models\Role;
 
 final readonly class UserController extends Controller implements HasMiddleware
 {

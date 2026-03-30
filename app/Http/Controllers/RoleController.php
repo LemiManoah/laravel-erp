@@ -6,11 +6,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreRoleRequest;
 use App\Http\Requests\UpdateRoleRequest;
+use App\Models\Permission;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 
 final readonly class RoleController extends Controller
 {

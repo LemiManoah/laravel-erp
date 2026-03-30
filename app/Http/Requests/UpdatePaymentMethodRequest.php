@@ -22,9 +22,10 @@ final class UpdatePaymentMethodRequest extends FormRequest
     {
         /** @var PaymentMethod $paymentMethod */
         $paymentMethod = $this->route('paymentMethod');
+        $tenant = tenant();
 
         return [
-            'name' => ['required', 'string', 'max:255', Rule::unique('payment_methods', 'name')->ignore($paymentMethod)],
+            'name' => ['required', 'string', 'max:255', $tenant->unique('payment_methods', 'name')->ignore($paymentMethod)],
             'is_active' => ['required', 'boolean'],
             'sort_order' => ['required', 'integer', 'min:0'],
             'notes' => ['nullable', 'string', 'max:1000'],

@@ -4,11 +4,16 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Concerns\LogsModelActivity;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 
 final class Currency extends Model
 {
+    use BelongsToTenant;
+    use LogsModelActivity;
+
     protected $fillable = [
         'name',
         'code',

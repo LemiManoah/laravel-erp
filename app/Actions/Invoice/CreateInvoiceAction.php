@@ -4,17 +4,12 @@ declare(strict_types=1);
 
 namespace App\Actions\Invoice;
 
-use App\Actions\Audit\CreateAuditLogAction;
 use App\Models\Invoice;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 final readonly class CreateInvoiceAction
 {
-    public function __construct(
-        private CreateAuditLogAction $createAuditLog,
-    ) {}
-
     /**
      * @param  array<string, mixed>  $data
      */
@@ -47,7 +42,6 @@ final readonly class CreateInvoiceAction
             }
 
             $invoice->load('items');
-            $this->createAuditLog->handle('invoice.created', $invoice, null, $invoice->toArray());
 
             return $invoice;
         });

@@ -21,14 +21,16 @@ final class StorePaymentRequest extends FormRequest
 
     public function rules(): array
     {
+        $tenant = tenant();
+
         return [
-            'currency_id' => 'required|exists:currencies,id',
+            'currency_id' => ['required', $tenant->exists('currencies', 'id')],
             'amount' => 'required|numeric|min:0.01',
             'payment_date' => 'required|date',
             'payment_method_id' => [
                 'required',
                 'integer',
-                Rule::exists('payment_methods', 'id')->where(static fn ($query) => $query->where('is_active', true)),
+                $tenant->exists('payment_methods', 'id')->where(static fn ($query) => $query->where('is_active', true)),
             ],
             'reference_number' => 'nullable|string|max:255',
             'notes' => 'nullable|string',
@@ -38,6 +40,7 @@ final class StorePaymentRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'currency_id.exists' => 'Select a valid currency.',
             'amount.required' => 'Enter the amount received.',
             'amount.numeric' => 'The payment amount must be a valid number.',
             'amount.min' => 'The payment amount must be at least 0.01.',

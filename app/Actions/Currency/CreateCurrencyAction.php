@@ -4,16 +4,11 @@ declare(strict_types=1);
 
 namespace App\Actions\Currency;
 
-use App\Actions\Audit\CreateAuditLogAction;
 use App\Models\Currency;
 use Illuminate\Support\Facades\DB;
 
 final readonly class CreateCurrencyAction
 {
-    public function __construct(
-        private CreateAuditLogAction $createAuditLog,
-    ) {}
-
     /**
      * @param  array<string, mixed>  $attributes
      */
@@ -30,8 +25,6 @@ final readonly class CreateCurrencyAction
                 ...$attributes,
                 'code' => strtoupper((string) $attributes['code']),
             ]);
-
-            $this->createAuditLog->handle('currency.created', $currency, null, $currency->toArray());
 
             return $currency;
         });

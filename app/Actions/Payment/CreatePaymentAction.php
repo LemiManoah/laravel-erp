@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Actions\Payment;
 
-use App\Actions\Audit\CreateAuditLogAction;
 use App\Actions\Invoice\RefreshInvoiceStatusAction;
 use App\Models\Invoice;
 use App\Models\Payment;
@@ -18,7 +17,6 @@ final readonly class CreatePaymentAction
     public function __construct(
         private GenerateReceiptAction $generateReceipt,
         private RefreshInvoiceStatusAction $refreshInvoiceStatus,
-        private CreateAuditLogAction $createAuditLog,
     ) {}
 
     /**
@@ -52,12 +50,6 @@ final readonly class CreatePaymentAction
             $payment->load('invoice');
             $this->generateReceipt->handle($payment);
             $this->refreshInvoiceStatus->handle($invoice);
-            $this->createAuditLog->handle(
-                'payment.recorded',
-                $payment,
-                null,
-                $payment->fresh()->load('receipt')->toArray(),
-            );
 
             return $payment->fresh(['receipt', 'invoice']);
         });

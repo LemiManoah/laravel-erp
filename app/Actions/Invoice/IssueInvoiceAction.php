@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace App\Actions\Invoice;
 
-use App\Actions\Audit\CreateAuditLogAction;
 use App\Models\Invoice;
 use Illuminate\Validation\ValidationException;
 
 final readonly class IssueInvoiceAction
 {
     public function __construct(
-        private CreateAuditLogAction $createAuditLog,
         private RefreshInvoiceStatusAction $refreshInvoiceStatus,
     ) {}
 
@@ -35,12 +33,6 @@ final readonly class IssueInvoiceAction
         ])->save();
 
         $this->refreshInvoiceStatus->handle($invoice);
-        $this->createAuditLog->handle(
-            'invoice.issued',
-            $invoice,
-            null,
-            $invoice->fresh()->only(['status', 'issued_at', 'amount_paid', 'balance_due']),
-        );
 
         return $invoice->refresh();
     }

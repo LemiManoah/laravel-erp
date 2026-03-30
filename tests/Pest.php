@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TenantTestCase;
 use Tests\TestCase;
 
 /*
@@ -15,8 +15,19 @@ use Tests\TestCase;
 */
 
 pest()->extend(TestCase::class)
-    ->use(RefreshDatabase::class)
-    ->in('Feature');
+    ->in('Feature/ExampleTest.php');
+
+pest()->extend(TenantTestCase::class)
+    ->in(
+        'Feature/ActivityLogControllerTest.php',
+        'Feature/Auth',
+        'Feature/DashboardTest.php',
+        'Feature/ExpenseCategoryTest.php',
+        'Feature/Settings',
+    );
+
+pest()->extend(TestCase::class)
+    ->in('Unit');
 
 /*
 |--------------------------------------------------------------------------

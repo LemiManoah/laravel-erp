@@ -2,13 +2,18 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\LogsModelActivity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 
 class Customer extends Model
 {
+    use BelongsToTenant;
+    use LogsModelActivity;
+
     protected $fillable = [
         'customer_code',
         'full_name',
