@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
-
 use App\Models\Currency;
 use App\Models\Customer;
 use App\Models\Expense;
@@ -27,8 +26,12 @@ use App\Policies\PaymentPolicy;
 use App\Policies\ReceiptPolicy;
 use App\Policies\UserPolicy;
 use App\Support\CurrencyManager;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Livewire\Livewire;
+use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
+use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 
 final class AppServiceProvider extends ServiceProvider
 {
@@ -56,6 +59,14 @@ final class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Livewire::setUpdateRoute(function ($handle) {
+            return Route::post('/livewire/update', $handle)->middleware([
+                'web',
+                InitializeTenancyByDomain::class,
+                PreventAccessFromCentralDomains::class,
+            ]);
+        });
+
         View::composer('*', function ($view): void {
             $currencyManager = app(CurrencyManager::class);
 

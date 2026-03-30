@@ -15,7 +15,6 @@ use App\Models\Expense;
 use App\Models\ExpenseCategory;
 use App\Models\PaymentMethod;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\View\View;
@@ -32,32 +31,11 @@ final readonly class ExpenseController extends Controller implements HasMiddlewa
         ];
     }
 
-    public function index(Request $request): View
+    public function index(): View
     {
         $this->authorize('viewAny', Expense::class);
 
-        $search = trim((string) $request->query('search', ''));
-        $status = $request->query('status');
-        $category = $request->query('category');
-
-        $expenses = Expense::query()
-            ->with('category')
-            ->when($search !== '', function ($query) use ($search): void {
-                $query->where(function ($expenseQuery) use ($search): void {
-                    $expenseQuery->where('description', 'like', sprintf('%%%s%%', $search))
-                        ->orWhere('vendor_name', 'like', sprintf('%%%s%%', $search))
-                        ->orWhere('reference_number', 'like', sprintf('%%%s%%', $search));
-                });
-            })
-            ->when($status, static fn ($query, $value) => $query->where('status', $value))
-            ->when($category, static fn ($query, $value) => $query->where('expense_category_id', $value))
-            ->latest('expense_date')
-            ->paginate(10)
-            ->withQueryString();
-
-        $categories = ExpenseCategory::query()->where('is_active', true)->orderBy('name')->get();
-
-        return view('expenses.index', compact('expenses', 'categories', 'search', 'status', 'category'));
+        return view('expenses.index');
     }
 
     public function create(): View

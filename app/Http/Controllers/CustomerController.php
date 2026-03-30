@@ -10,9 +10,7 @@ use App\Actions\Customer\UpdateCustomerAction;
 use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
 use App\Models\Customer;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\View\View;
@@ -29,25 +27,11 @@ final readonly class CustomerController extends Controller implements HasMiddlew
         ];
     }
 
-    public function index(Request $request): View
+    public function index(): View
     {
         $this->authorize('viewAny', Customer::class);
 
-        $search = trim((string) $request->query('search', ''));
-
-        $customers = Customer::query()
-            ->when(
-                $search !== '',
-                static fn (Builder $query) => $query->where('full_name', 'like', sprintf('%%%s%%', $search))
-                    ->orWhere('phone', 'like', sprintf('%%%s%%', $search))
-                    ->orWhere('email', 'like', sprintf('%%%s%%', $search))
-                    ->orWhere('customer_code', 'like', sprintf('%%%s%%', $search))
-            )
-            ->latest()
-            ->paginate(10)
-            ->withQueryString();
-
-        return view('customers.index', compact('customers', 'search'));
+        return view('customers.index');
     }
 
     public function create(): View

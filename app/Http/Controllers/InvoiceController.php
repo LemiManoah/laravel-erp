@@ -39,31 +39,11 @@ final readonly class InvoiceController extends Controller implements HasMiddlewa
         ];
     }
 
-    public function index(Request $request, SyncInvoiceStatusesAction $syncInvoiceStatuses): View
+    public function index(): View
     {
         $this->authorize('viewAny', Invoice::class);
 
-        $syncInvoiceStatuses->handle();
-        $status = $request->query('status');
-        $search = trim((string) $request->query('search', ''));
-
-        $invoices = Invoice::query()
-            ->with('customer')
-            ->when($status, static fn (Builder $query, string $value) => $query->where('status', $value))
-            ->when($search !== '', function (Builder $query) use ($search): void {
-                $query->where(function (Builder $invoiceQuery) use ($search): void {
-                    $invoiceQuery->where('invoice_number', 'like', sprintf('%%%s%%', $search))
-                        ->orWhereHas('customer', function (Builder $customerQuery) use ($search): void {
-                            $customerQuery->where('full_name', 'like', sprintf('%%%s%%', $search))
-                                ->orWhere('phone', 'like', sprintf('%%%s%%', $search));
-                        });
-                });
-            })
-            ->latest('invoice_date')
-            ->paginate(10)
-            ->withQueryString();
-
-        return view('invoices.index', compact('invoices', 'status', 'search'));
+        return view('invoices.index');
     }
 
     public function create(Request $request, PrepareInvoiceCreateDataAction $action): View

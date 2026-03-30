@@ -6,7 +6,6 @@ use App\Http\Requests\StoreProductCategoryRequest;
 use App\Http\Requests\UpdateProductCategoryRequest;
 use App\Models\ProductCategory;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\View\View;
@@ -22,28 +21,9 @@ final readonly class ProductCategoryController implements HasMiddleware
         ];
     }
 
-    public function index(Request $request): View
+    public function index(): View
     {
-        $search = trim((string) $request->query('search', ''));
-        $status = $request->query('status');
-
-        $categories = ProductCategory::query()
-            ->withCount('products')
-            ->when($search !== '', function ($query) use ($search): void {
-                $query->where(function ($catQuery) use ($search): void {
-                    $catQuery->where('name', 'like', sprintf('%%%s%%', $search))
-                        ->orWhere('description', 'like', sprintf('%%%s%%', $search));
-                });
-            })
-            ->when($status !== null && $status !== '', function ($query) use ($status): void {
-                $isActive = $status === 'active';
-                $query->where('is_active', $isActive);
-            })
-            ->orderBy('name')
-            ->paginate(15)
-            ->withQueryString();
-
-        return view('product-categories.index', compact('categories', 'search', 'status'));
+        return view('product-categories.index');
     }
 
     public function create(): View

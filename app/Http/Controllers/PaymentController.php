@@ -10,9 +10,7 @@ use App\Http\Requests\StorePaymentRequest;
 use App\Http\Requests\VoidPaymentRequest;
 use App\Models\Invoice;
 use App\Models\Payment;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\View\View;
@@ -28,36 +26,11 @@ final readonly class PaymentController extends Controller implements HasMiddlewa
         ];
     }
 
-    public function index(Request $request): View
+    public function index(): View
     {
         $this->authorize('viewAny', Payment::class);
 
-        $search = trim((string) $request->query('search', ''));
-
-        $payments = Payment::query()
-            ->with(['invoice.customer', 'receipt', 'receiver', 'voider', 'currency'])
-            ->when($search !== '', function (Builder $query) use ($search): void {
-                $query->where(function (Builder $paymentQuery) use ($search): void {
-                    $paymentQuery->where('reference_number', 'like', sprintf('%%%s%%', $search))
-                        ->orWhere('payment_method', 'like', sprintf('%%%s%%', $search))
-                        ->orWhere('status', 'like', sprintf('%%%s%%', $search))
-                        ->orWhereHas('invoice', function (Builder $invoiceQuery) use ($search): void {
-                            $invoiceQuery->where('invoice_number', 'like', sprintf('%%%s%%', $search))
-                                ->orWhereHas('customer', function (Builder $customerQuery) use ($search): void {
-                                    $customerQuery->where('full_name', 'like', sprintf('%%%s%%', $search))
-                                        ->orWhere('phone', 'like', sprintf('%%%s%%', $search));
-                                });
-                        })
-                        ->orWhereHas('receipt', function (Builder $receiptQuery) use ($search): void {
-                            $receiptQuery->where('receipt_number', 'like', sprintf('%%%s%%', $search));
-                        });
-                });
-            })
-            ->latest('payment_date')
-            ->paginate(15)
-            ->withQueryString();
-
-        return view('payments.index', compact('payments', 'search'));
+        return view('payments.index');
     }
 
     public function show(Payment $payment): View

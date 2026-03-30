@@ -5,9 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Models\Product;
-use App\Models\ProductCategory;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\View\View;
@@ -23,42 +21,14 @@ final readonly class ProductController implements HasMiddleware
         ];
     }
 
-    public function index(Request $request): View
+    public function index(): View
     {
-        $search = trim((string) $request->query('search', ''));
-        $status = $request->query('status');
-        $category = $request->query('category');
-
-        $products = Product::query()
-            ->with('category')
-            ->when($search !== '', function ($query) use ($search): void {
-                $query->where(function ($productQuery) use ($search): void {
-                    $productQuery->where('name', 'like', sprintf('%%%s%%', $search))
-                        ->orWhere('description', 'like', sprintf('%%%s%%', $search));
-                });
-            })
-            ->when($status !== null && $status !== '', function ($query) use ($status): void {
-                $isActive = $status === 'active';
-                $query->where('is_active', $isActive);
-            })
-            ->when($category !== null && $category !== '', fn ($query) => $query->where('product_category_id', $category))
-            ->orderBy('name')
-            ->paginate(10)
-            ->withQueryString();
-
-        $categories = ProductCategory::query()->where('is_active', true)->orderBy('name')->get();
-
-        return view('products.index', compact('products', 'categories', 'search', 'status', 'category'));
+        return view('products.index');
     }
 
     public function create(): View
     {
-        $categories = ProductCategory::query()
-            ->where('is_active', true)
-            ->orderBy('name')
-            ->get();
-
-        return view('products.create', compact('categories'));
+        return view('products.create');
     }
 
     public function store(StoreProductRequest $request): RedirectResponse
@@ -81,12 +51,7 @@ final readonly class ProductController implements HasMiddleware
 
     public function edit(Product $product): View
     {
-        $categories = ProductCategory::query()
-            ->where('is_active', true)
-            ->orderBy('name')
-            ->get();
-
-        return view('products.edit', compact('product', 'categories'));
+        return view('products.edit', compact('product'));
     }
 
     public function update(UpdateProductRequest $request, Product $product): RedirectResponse

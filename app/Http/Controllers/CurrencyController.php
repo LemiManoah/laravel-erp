@@ -13,9 +13,7 @@ use App\Http\Requests\SetDefaultCurrencyRequest;
 use App\Http\Requests\StoreCurrencyRequest;
 use App\Http\Requests\UpdateCurrencyRequest;
 use App\Models\Currency;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\View\View;
@@ -32,26 +30,11 @@ final readonly class CurrencyController extends Controller implements HasMiddlew
         ];
     }
 
-    public function index(Request $request): View
+    public function index(): View
     {
         $this->authorize('viewAny', Currency::class);
 
-        $search = trim((string) $request->query('search', ''));
-
-        $currencies = Currency::query()
-            ->when($search !== '', static function (Builder $query) use ($search): void {
-                $query->where(function (Builder $currencyQuery) use ($search): void {
-                    $currencyQuery
-                        ->where('name', 'like', sprintf('%%%s%%', $search))
-                        ->orWhere('code', 'like', sprintf('%%%s%%', $search))
-                        ->orWhere('symbol', 'like', sprintf('%%%s%%', $search));
-                });
-            })
-            ->ordered()
-            ->paginate(15)
-            ->withQueryString();
-
-        return view('currencies.index', compact('currencies', 'search'));
+        return view('currencies.index');
     }
 
     public function create(): View

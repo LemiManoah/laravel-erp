@@ -11,9 +11,7 @@ use App\Http\Requests\DeletePaymentMethodRequest;
 use App\Http\Requests\StorePaymentMethodRequest;
 use App\Http\Requests\UpdatePaymentMethodRequest;
 use App\Models\PaymentMethod;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\View\View;
@@ -30,26 +28,11 @@ final readonly class PaymentMethodController extends Controller implements HasMi
         ];
     }
 
-    public function index(Request $request): View
+    public function index(): View
     {
         $this->authorize('viewAny', PaymentMethod::class);
 
-        $search = trim((string) $request->query('search', ''));
-
-        $paymentMethods = PaymentMethod::query()
-            ->withCount(['payments', 'expenses'])
-            ->when($search !== '', static function (Builder $query) use ($search): void {
-                $query->where(function (Builder $paymentMethodQuery) use ($search): void {
-                    $paymentMethodQuery
-                        ->where('name', 'like', sprintf('%%%s%%', $search))
-                        ->orWhere('slug', 'like', sprintf('%%%s%%', $search));
-                });
-            })
-            ->ordered()
-            ->paginate(15)
-            ->withQueryString();
-
-        return view('payment_methods.index', compact('paymentMethods', 'search'));
+        return view('payment_methods.index');
     }
 
     public function create(): View

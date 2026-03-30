@@ -31,31 +31,11 @@ final readonly class OrderController extends Controller implements HasMiddleware
         ];
     }
 
-    public function index(Request $request): View
+    public function index(): View
     {
         $this->authorize('viewAny', Order::class);
 
-        $search = trim((string) $request->query('search', ''));
-        $status = $request->query('status');
-
-        $orders = Order::query()
-            ->with(['customer', 'invoice'])
-            ->when($search !== '', function ($query) use ($search): void {
-                $query->where(function ($orderQuery) use ($search): void {
-                    $orderQuery->where('order_number', 'like', sprintf('%%%s%%', $search))
-                        ->orWhereHas('customer', function ($customerQuery) use ($search): void {
-                            $customerQuery->where('full_name', 'like', sprintf('%%%s%%', $search))
-                                ->orWhere('email', 'like', sprintf('%%%s%%', $search))
-                                ->orWhere('phone', 'like', sprintf('%%%s%%', $search));
-                        });
-                });
-            })
-            ->when($status !== null && $status !== '', fn ($query) => $query->where('status', $status))
-            ->latest()
-            ->paginate(10)
-            ->withQueryString();
-
-        return view('orders.index', compact('orders', 'search', 'status'));
+        return view('orders.index');
     }
 
     public function create(Request $request): View

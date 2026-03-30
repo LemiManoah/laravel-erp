@@ -10,9 +10,7 @@ use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\Role;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\View\View;
@@ -28,35 +26,11 @@ final readonly class UserController extends Controller implements HasMiddleware
         ];
     }
 
-    public function index(Request $request): View
+    public function index(): View
     {
         $this->authorize('viewAny', User::class);
 
-        $search = trim((string) $request->query('search', ''));
-        $role = trim((string) $request->query('role', ''));
-        $status = trim((string) $request->query('status', ''));
-
-        $users = User::query()
-            ->with('roles')
-            ->when(
-                $search !== '',
-                static function (Builder $query) use ($search): void {
-                    $query->where(function (Builder $userQuery) use ($search): void {
-                        $userQuery->where('name', 'like', sprintf('%%%s%%', $search))
-                            ->orWhere('email', 'like', sprintf('%%%s%%', $search))
-                            ->orWhere('phone', 'like', sprintf('%%%s%%', $search));
-                    });
-                },
-            )
-            ->when($role !== '', static fn (Builder $query) => $query->role($role))
-            ->when($status !== '', static fn (Builder $query) => $query->where('is_active', $status === 'active'))
-            ->latest()
-            ->paginate(12)
-            ->withQueryString();
-
-        $roles = Role::query()->orderBy('name')->pluck('name');
-
-        return view('users.index', compact('users', 'roles', 'search', 'role', 'status'));
+        return view('users.index');
     }
 
     public function create(): View

@@ -52,6 +52,7 @@ final class RoleAndPermissionSeeder extends Seeder
             'products.view',
             'products.create',
             'products.update',
+            'products.delete',
             'measurements.view',
             'measurements.create',
             'measurements.update',
