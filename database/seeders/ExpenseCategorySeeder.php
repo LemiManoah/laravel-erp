@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Seeders;
 
 use App\Models\ExpenseCategory;
 use Illuminate\Database\Seeder;
 
-class ExpenseCategorySeeder extends Seeder
+final class ExpenseCategorySeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -26,7 +28,7 @@ class ExpenseCategorySeeder extends Seeder
         ];
 
         foreach ($categories as $category) {
-            ExpenseCategory::updateOrCreate(['name' => $category['name']], $category);
+            ExpenseCategory::query()->updateOrCreate(['name' => $category['name']], $category);
         }
     }
 }

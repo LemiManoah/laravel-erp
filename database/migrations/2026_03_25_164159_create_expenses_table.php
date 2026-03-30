@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('expenses', function (Blueprint $table) {
             $table->id();
+            $table->string('tenant_id');
             $table->foreignId('expense_category_id')->constrained()->restrictOnDelete();
             $table->date('expense_date');
             $table->decimal('amount', 15, 2);
@@ -28,6 +29,7 @@ return new class extends Migration
             $table->text('void_reason')->nullable();
             $table->timestamps();
 
+            $table->foreign('tenant_id')->references('id')->on('tenants')->cascadeOnUpdate()->cascadeOnDelete();
             $table->index(['status', 'expense_date']);
         });
     }

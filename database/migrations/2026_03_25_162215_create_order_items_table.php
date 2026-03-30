@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('order_items', function (Blueprint $table) {
             $table->id();
+            $table->string('tenant_id');
             $table->foreignId('order_id')->constrained()->onDelete('cascade');
             $table->string('garment_type');
             $table->foreignId('product_id')->nullable()->constrained()->onDelete('set null');
@@ -27,6 +28,8 @@ return new class extends Migration
             $table->string('monogram_text')->nullable();
             $table->boolean('urgent_flag')->default(false);
             $table->timestamps();
+
+            $table->foreign('tenant_id')->references('id')->on('tenants')->cascadeOnUpdate()->cascadeOnDelete();
         });
     }
 

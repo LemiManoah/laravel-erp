@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
-            $table->string('invoice_number')->unique();
+            $table->string('tenant_id');
+            $table->string('invoice_number');
             $table->foreignId('customer_id')->constrained()->restrictOnDelete();
             $table->foreignId('order_id')->nullable()->constrained()->nullOnDelete();
             $table->date('invoice_date');
@@ -33,6 +34,8 @@ return new class extends Migration
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
 
+            $table->foreign('tenant_id')->references('id')->on('tenants')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->unique(['tenant_id', 'invoice_number']);
             $table->index(['status', 'due_date']);
             $table->index('invoice_date');
         });

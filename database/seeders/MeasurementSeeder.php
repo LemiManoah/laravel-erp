@@ -1,18 +1,47 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Seeders;
 
+use App\Models\Customer;
 use App\Models\Measurement;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
-class MeasurementSeeder extends Seeder
+final class MeasurementSeeder extends Seeder
 {
     public function run(): void
     {
-        $measurements = [
-            // John Anderson (CUST001) - Male measurements
-            [
-                'customer_id' => 1,
+        $measurerId = User::query()->where('email', 'admin@suits.com')->value('id');
+
+        foreach ($this->measurements() as $customerCode => $attributes) {
+            $customerId = Customer::query()->where('customer_code', $customerCode)->value('id');
+
+            if ($customerId === null) {
+                continue;
+            }
+
+            Measurement::query()->updateOrCreate(
+                [
+                    'customer_id' => $customerId,
+                    'measurement_date' => $attributes['measurement_date'],
+                ],
+                [
+                    ...$attributes,
+                    'measured_by' => $measurerId,
+                ],
+            );
+        }
+    }
+
+    /**
+     * @return array<string, array<string, mixed>>
+     */
+    private function measurements(): array
+    {
+        return [
+            'CUST001' => [
                 'neck' => 15.5,
                 'chest' => 40.0,
                 'waist' => 34.0,
@@ -28,15 +57,12 @@ class MeasurementSeeder extends Seeder
                 'cuff' => 9.5,
                 'height' => 72.0,
                 'weight' => 180.0,
-                'posture_notes' => 'Standard posture',
-                'fitting_notes' => 'Athletic build, prefers slim fit',
+                'posture_notes' => 'Standard posture.',
+                'fitting_notes' => 'Athletic build, prefers slim fit.',
                 'is_current' => true,
-                'measured_by' => 1,
-                'measurement_date' => now()->subDays(30),
+                'measurement_date' => '2026-02-28',
             ],
-            // Sarah Mitchell (CUST002) - Female measurements
-            [
-                'customer_id' => 2,
+            'CUST002' => [
                 'neck' => 13.5,
                 'chest' => 36.0,
                 'waist' => 28.0,
@@ -52,15 +78,12 @@ class MeasurementSeeder extends Seeder
                 'cuff' => 8.5,
                 'height' => 65.0,
                 'weight' => 135.0,
-                'posture_notes' => 'Slight forward lean',
-                'fitting_notes' => 'Pear shape, needs adjustments for hip area',
+                'posture_notes' => 'Slight forward lean.',
+                'fitting_notes' => 'Pear shape, needs adjustments for the hip area.',
                 'is_current' => true,
-                'measured_by' => 1,
-                'measurement_date' => now()->subDays(15),
+                'measurement_date' => '2026-03-15',
             ],
-            // Michael Chen (CUST003) - Male measurements
-            [
-                'customer_id' => 3,
+            'CUST003' => [
                 'neck' => 16.0,
                 'chest' => 42.0,
                 'waist' => 36.0,
@@ -76,15 +99,12 @@ class MeasurementSeeder extends Seeder
                 'cuff' => 10.0,
                 'height' => 74.0,
                 'weight' => 195.0,
-                'posture_notes' => 'Broad shoulders',
-                'fitting_notes' => 'Larger frame, needs extra room in shoulders',
+                'posture_notes' => 'Broad shoulders.',
+                'fitting_notes' => 'Larger frame, needs extra room in the shoulders.',
                 'is_current' => true,
-                'measured_by' => 1,
-                'measurement_date' => now()->subDays(45),
+                'measurement_date' => '2026-02-13',
             ],
-            // Emily Rodriguez (CUST004) - Female measurements
-            [
-                'customer_id' => 4,
+            'CUST004' => [
                 'neck' => 13.0,
                 'chest' => 34.0,
                 'waist' => 26.0,
@@ -100,15 +120,12 @@ class MeasurementSeeder extends Seeder
                 'cuff' => 8.0,
                 'height' => 62.0,
                 'weight' => 120.0,
-                'posture_notes' => 'Upright posture',
-                'fitting_notes' => 'Petite frame, prefers fitted styles',
+                'posture_notes' => 'Upright posture.',
+                'fitting_notes' => 'Petite frame, prefers fitted styles.',
                 'is_current' => true,
-                'measured_by' => 1,
-                'measurement_date' => now()->subDays(20),
+                'measurement_date' => '2026-03-10',
             ],
-            // David Thompson (CUST005) - Male measurements
-            [
-                'customer_id' => 5,
+            'CUST005' => [
                 'neck' => 15.0,
                 'chest' => 38.0,
                 'waist' => 32.0,
@@ -124,14 +141,11 @@ class MeasurementSeeder extends Seeder
                 'cuff' => 9.0,
                 'height' => 70.0,
                 'weight' => 165.0,
-                'posture_notes' => 'Balanced posture',
-                'fitting_notes' => 'Average build, classic proportions',
+                'posture_notes' => 'Balanced posture.',
+                'fitting_notes' => 'Average build, classic proportions.',
                 'is_current' => true,
-                'measured_by' => 1,
-                'measurement_date' => now()->subDays(10),
+                'measurement_date' => '2026-03-20',
             ],
         ];
-
-        Measurement::insert($measurements);
     }
 }

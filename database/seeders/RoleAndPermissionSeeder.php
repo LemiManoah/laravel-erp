@@ -6,7 +6,6 @@ namespace Database\Seeders;
 
 use App\Models\Permission;
 use App\Models\Role;
-use App\Models\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\PermissionRegistrar;
 
@@ -143,9 +142,5 @@ final class RoleAndPermissionSeeder extends Seeder
             'settings.password.update',
             'settings.appearance.update',
         ]);
-
-        User::query()
-            ->where('email', 'admin@suits.com')
-            ->first()?->syncRoles([$admin]);
     }
 }

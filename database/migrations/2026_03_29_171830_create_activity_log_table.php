@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('activity_log', function (Blueprint $table) {
             $table->id();
+            $table->string('tenant_id')->nullable();
             $table->string('log_name')->nullable()->index();
             $table->text('description');
             $table->nullableMorphs('subject', 'subject');
@@ -18,6 +19,8 @@ return new class extends Migration
             $table->json('attribute_changes')->nullable();
             $table->json('properties')->nullable();
             $table->timestamps();
+
+            $table->foreign('tenant_id')->references('id')->on('tenants')->cascadeOnUpdate()->cascadeOnDelete();
         });
     }
 };

@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
+            $table->string('tenant_id');
             $table->foreignId('invoice_id')->constrained()->restrictOnDelete();
             $table->date('payment_date');
             $table->decimal('amount', 15, 2);
@@ -26,6 +27,7 @@ return new class extends Migration
             $table->text('void_reason')->nullable();
             $table->timestamps();
 
+            $table->foreign('tenant_id')->references('id')->on('tenants')->cascadeOnUpdate()->cascadeOnDelete();
             $table->index(['status', 'payment_date']);
         });
     }

@@ -24,7 +24,13 @@ abstract class TenantTestCase extends TestCase
 
         $this->originalAppUrl = config('app.url');
 
-        $this->tenant = Tenant::create();
+        $this->tenant = Tenant::create([
+            'name' => 'Acme Test Tenant',
+            'slug' => 'acme-test-tenant',
+            'email' => 'hello@acme.localhost',
+            'phone' => '+256700000000',
+            'is_active' => true,
+        ]);
         $this->tenant->domains()->create([
             'domain' => $this->tenantDomain,
         ]);

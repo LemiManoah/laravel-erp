@@ -1,15 +1,36 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Seeders;
 
 use App\Models\Customer;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
-class CustomerSeeder extends Seeder
+final class CustomerSeeder extends Seeder
 {
     public function run(): void
     {
-        $customers = [
+        $adminId = User::query()->where('email', 'admin@suits.com')->value('id');
+
+        foreach ($this->customers() as $attributes) {
+            Customer::query()->updateOrCreate(
+                ['customer_code' => $attributes['customer_code']],
+                [
+                    ...$attributes,
+                    'created_by' => $adminId,
+                ],
+            );
+        }
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    private function customers(): array
+    {
+        return [
             [
                 'customer_code' => 'CUST001',
                 'full_name' => 'John Anderson',
@@ -18,8 +39,7 @@ class CustomerSeeder extends Seeder
                 'address' => '123 Business Ave, Suite 100, New York, NY 10001',
                 'gender' => 'male',
                 'date_of_birth' => '1985-03-15',
-                'notes' => 'Regular customer, prefers classic business suits',
-                'created_by' => 1,
+                'notes' => 'Regular customer, prefers classic business suits.',
             ],
             [
                 'customer_code' => 'CUST002',
@@ -29,8 +49,7 @@ class CustomerSeeder extends Seeder
                 'address' => '456 Fashion Blvd, Apt 2B, Los Angeles, CA 90028',
                 'gender' => 'female',
                 'date_of_birth' => '1990-07-22',
-                'notes' => 'Executive client, needs power suits for board meetings',
-                'created_by' => 1,
+                'notes' => 'Executive client, needs power suits for board meetings.',
             ],
             [
                 'customer_code' => 'CUST003',
@@ -40,8 +59,7 @@ class CustomerSeeder extends Seeder
                 'address' => '789 Corporate Plaza, Floor 15, Chicago, IL 60601',
                 'gender' => 'male',
                 'date_of_birth' => '1982-11-08',
-                'notes' => 'Wedding client, ordered tuxedo and formal wear',
-                'created_by' => 1,
+                'notes' => 'Wedding client, ordered tuxedo and formal wear.',
             ],
             [
                 'customer_code' => 'CUST004',
@@ -51,8 +69,7 @@ class CustomerSeeder extends Seeder
                 'address' => '321 Style Street, Miami, FL 33101',
                 'gender' => 'female',
                 'date_of_birth' => '1988-05-30',
-                'notes' => 'Fashion-forward client, likes modern cuts and colors',
-                'created_by' => 1,
+                'notes' => 'Fashion-forward client, likes modern cuts and colors.',
             ],
             [
                 'customer_code' => 'CUST005',
@@ -62,11 +79,8 @@ class CustomerSeeder extends Seeder
                 'address' => '555 Executive Drive, Boston, MA 02101',
                 'gender' => 'male',
                 'date_of_birth' => '1979-09-12',
-                'notes' => 'Long-term client, orders seasonal wardrobe updates',
-                'created_by' => 1,
+                'notes' => 'Long-term client, orders seasonal wardrobe updates.',
             ],
         ];
-
-        Customer::insert($customers);
     }
 }

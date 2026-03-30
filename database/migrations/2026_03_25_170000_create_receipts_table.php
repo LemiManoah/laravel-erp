@@ -13,10 +13,14 @@ return new class extends Migration
     {
         Schema::create('receipts', function (Blueprint $table) {
             $table->id();
-            $table->string('receipt_number')->unique();
+            $table->string('tenant_id');
+            $table->string('receipt_number');
             $table->foreignId('payment_id')->unique()->constrained()->restrictOnDelete();
             $table->date('issued_date');
             $table->timestamps();
+
+            $table->foreign('tenant_id')->references('id')->on('tenants')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->unique(['tenant_id', 'receipt_number']);
         });
     }
 

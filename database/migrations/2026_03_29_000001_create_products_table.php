@@ -10,12 +10,15 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
+            $table->string('tenant_id');
             $table->foreignId('product_category_id')->nullable()->constrained()->onDelete('restrict');
             $table->string('name');
             $table->text('description')->nullable();
             $table->decimal('base_price', 10, 2)->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
+
+            $table->foreign('tenant_id')->references('id')->on('tenants')->cascadeOnUpdate()->cascadeOnDelete();
         });
     }
 

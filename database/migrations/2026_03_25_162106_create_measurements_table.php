@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('measurements', function (Blueprint $table) {
             $table->id();
+            $table->string('tenant_id');
             $table->foreignId('customer_id')->constrained()->restrictOnDelete();
             $table->decimal('neck', 8, 2)->nullable();
             $table->decimal('chest', 8, 2)->nullable();
@@ -35,6 +36,8 @@ return new class extends Migration
             $table->foreignId('measured_by')->nullable()->constrained('users')->nullOnDelete();
             $table->date('measurement_date')->nullable();
             $table->timestamps();
+
+            $table->foreign('tenant_id')->references('id')->on('tenants')->cascadeOnUpdate()->cascadeOnDelete();
         });
     }
 
