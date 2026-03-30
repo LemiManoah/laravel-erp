@@ -6,7 +6,7 @@
             </a>
             <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">{{ $receipt->receipt_number }}</h1>
         </div>
-        <a href="{{ route('receipts.print', $receipt) }}" class="px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-800 transition">
+        <a href="{{ route('receipts.print', $receipt) }}" target="_blank" rel="noopener" class="px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-800 transition">
             <i class="fas fa-print mr-2"></i> Print Receipt
         </a>
     </div>
@@ -39,7 +39,7 @@
             </div>
             <div class="pt-4 border-t border-gray-100 dark:border-gray-700 flex justify-between items-center">
                 <p class="text-base font-bold text-gray-900 dark:text-white uppercase">Amount Received</p>
-                <p class="text-2xl font-black text-green-600 font-mono">{{ $currencyFormatter->formatValue($receipt->payment->amount, 2) }}</p>
+                <p class="text-2xl font-black text-green-600 font-mono">{{ $currencyFormatter->formatValue($receipt->payment->amount, 2, $receipt->payment->currency) }}</p>
             </div>
         </div>
     </div>

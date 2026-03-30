@@ -12,8 +12,8 @@ final class TenantSeeder extends Seeder
     public function run(): void
     {
         foreach ($this->tenants() as $record) {
-            $domain = $record['domain'];
-            unset($record['domain']);
+            $domains = $record['domains'];
+            unset($record['domains']);
 
             $tenant = Tenant::query()->firstWhere('slug', $record['slug']);
 
@@ -27,10 +27,12 @@ final class TenantSeeder extends Seeder
                 }
             }
 
-            $tenant->domains()->updateOrCreate(
-                ['domain' => $domain],
-                [],
-            );
+            foreach ($domains as $domain) {
+                $tenant->domains()->updateOrCreate(
+                    ['domain' => $domain],
+                    [],
+                );
+            }
         }
     }
 
@@ -43,10 +45,10 @@ final class TenantSeeder extends Seeder
             [
                 'name' => 'Acme Bespoke',
                 'slug' => 'acme-bespoke',
-                'email' => 'hello@acme.localhost',
+                'email' => 'hello@erp.test',
                 'phone' => '+256700000101',
                 'is_active' => true,
-                'domain' => 'acme.localhost',
+                'domains' => ['erp.test', 'acme.localhost'],
             ],
             [
                 'name' => 'Savile Demo House',
@@ -54,7 +56,7 @@ final class TenantSeeder extends Seeder
                 'email' => 'hello@savile.localhost',
                 'phone' => '+256700000202',
                 'is_active' => true,
-                'domain' => 'savile.localhost',
+                'domains' => ['savile.localhost'],
             ],
         ];
     }
