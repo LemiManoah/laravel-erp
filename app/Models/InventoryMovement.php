@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\InventoryDirection;
+use App\Enums\InventoryMovementType;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -17,8 +19,8 @@ use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
  * @property int $product_id
  * @property int|null $location_id
  * @property int|null $batch_id
- * @property string $movement_type
- * @property string $direction
+ * @property InventoryMovementType $movement_type
+ * @property InventoryDirection $direction
  * @property float $quantity
  * @property int|null $unit_id
  * @property float $unit_conversion_rate
@@ -59,6 +61,8 @@ final class InventoryMovement extends Model
     protected function casts(): array
     {
         return [
+            'movement_type' => InventoryMovementType::class,
+            'direction' => InventoryDirection::class,
             'quantity' => 'decimal:2',
             'unit_conversion_rate' => 'decimal:4',
             'balance_after' => 'decimal:2',
@@ -75,6 +79,11 @@ final class InventoryMovement extends Model
     public function location(): BelongsTo
     {
         return $this->belongsTo(StockLocation::class, 'location_id');
+    }
+
+    public function batch(): BelongsTo
+    {
+        return $this->belongsTo(InventoryBatch::class, 'batch_id');
     }
 
     public function unit(): BelongsTo

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Products;
 
+use App\Enums\ProductItemType;
 use App\Livewire\Products\Concerns\InteractsWithProductForm;
 use App\Models\Product;
 use App\Models\ProductCategory;
@@ -55,6 +56,7 @@ final class EditPage extends Component
                 ->whereKeyNot($this->productId)
                 ->orderBy('name')
                 ->get(),
+            'itemTypes' => ProductItemType::cases(),
         ]);
     }
 }

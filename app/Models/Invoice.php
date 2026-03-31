@@ -18,6 +18,7 @@ class Invoice extends Model
         'invoice_number',
         'customer_id',
         'order_id',
+        'stock_location_id',
         'currency_id',
         'invoice_date',
         'due_date',
@@ -64,6 +65,11 @@ class Invoice extends Model
         return $this->belongsTo(Order::class);
     }
 
+    public function stockLocation(): BelongsTo
+    {
+        return $this->belongsTo(StockLocation::class, 'stock_location_id');
+    }
+
     public function items(): HasMany
     {
         return $this->hasMany(InvoiceItem::class);
@@ -72,6 +78,12 @@ class Invoice extends Model
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
+    }
+
+    public function inventoryMovements(): HasMany
+    {
+        return $this->hasMany(InventoryMovement::class, 'reference_id')
+            ->where('reference_type', 'invoice');
     }
 
     public function validPayments(): HasMany

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Inventory\Locations;
 
+use App\Enums\StockLocationType;
 use App\Models\StockLocation;
 use Illuminate\Contracts\View\View;
 use Livewire\Component;
@@ -34,7 +35,7 @@ final class CreatePage extends Component
         return [
             'name' => ['required', 'string', 'max:255', $tenant->unique('stock_locations', 'name')],
             'code' => ['nullable', 'string', 'max:20', $tenant->unique('stock_locations', 'code')],
-            'location_type' => ['nullable', 'string', 'max:255'],
+            'location_type' => ['nullable', \Illuminate\Validation\Rule::enum(StockLocationType::class)],
             'address' => ['nullable', 'string'],
             'is_default' => ['boolean'],
             'is_active' => ['boolean'],
@@ -68,6 +69,8 @@ final class CreatePage extends Component
 
     public function render(): View
     {
-        return view('livewire.inventory.locations.create-page');
+        return view('livewire.inventory.locations.create-page', [
+            'locationTypes' => StockLocationType::cases(),
+        ]);
     }
 }

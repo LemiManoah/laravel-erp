@@ -44,12 +44,9 @@
                     <label for="location_type" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Type</label>
                     <select id="location_type" wire:model="location_type" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
                         <option value="">Select type...</option>
-                        <option value="warehouse">Warehouse</option>
-                        <option value="store">Store</option>
-                        <option value="cold_room">Cold Room</option>
-                        <option value="shelf">Shelf</option>
-                        <option value="farm">Farm</option>
-                        <option value="field">Field</option>
+                        @foreach($locationTypes as $locationType)
+                            <option value="{{ $locationType->value }}">{{ $locationType->label() }}</option>
+                        @endforeach
                     </select>
                     @error('location_type') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                 </div>

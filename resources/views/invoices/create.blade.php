@@ -3,11 +3,18 @@
     $initialDiscount = (float) old('discount_amount', $invoiceDefaults['discount_amount']);
     $initialTax = (float) old('tax_amount', $invoiceDefaults['tax_amount']);
     $currencyStep = $activeCurrency->decimal_places > 0 ? '0.01' : '1';
+    $invoiceProducts = $products->map(static fn ($product): array => [
+        'id' => $product->id,
+        'name' => $product->name,
+        'sku' => $product->sku,
+        'base_price' => (float) ($product->base_price ?? 0),
+    ]);
 @endphp
 
 <x-layouts.app title="Create Invoice">
     <div x-data="invoiceForm({{ \Illuminate\Support\Js::from([
         'items' => collect($initialItems)->map(static fn (array $item): array => [
+            'product_id' => isset($item['product_id']) && $item['product_id'] !== '' ? (string) $item['product_id'] : '',
             'item_name' => (string) ($item['item_name'] ?? ''),
             'description' => (string) ($item['description'] ?? ''),
             'quantity' => (int) ($item['quantity'] ?? 1),
@@ -16,6 +23,7 @@
         'discount' => $initialDiscount,
         'tax' => $initialTax,
         'currency' => $activeCurrencyConfig,
+        'products' => $invoiceProducts,
     ]) }})">
         <div class="mb-6">
             <a href="{{ route('invoices.index') }}" class="text-blue-600 hover:text-blue-900 dark:hover:text-blue-400 mb-2 inline-block">
@@ -57,6 +65,7 @@
                             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                 <thead>
                                     <tr>
+                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-48">Product</th>
                                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item Name</th>
                                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
                                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Qty</th>
@@ -68,6 +77,15 @@
                                 <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                                     <template x-for="(item, index) in items" :key="index">
                                         <tr>
+                                            <td class="px-4 py-2">
+                                                <select :name="'items[' + index + '][product_id]'" x-model="item.product_id" @change="applyProduct(index)"
+                                                    class="w-full rounded-md border border-gray-300 px-3 py-1 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                                                    <option value="">Custom item</option>
+                                                    <template x-for="product in products" :key="product.id">
+                                                        <option :value="String(product.id)" x-text="product.sku ? `${product.name} (${product.sku})` : product.name"></option>
+                                                    </template>
+                                                </select>
+                                            </td>
                                             <td class="px-4 py-2">
                                                 <input type="text" :name="'items[' + index + '][item_name]'" x-model="item.item_name" required
                                                     class="w-54 px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white text-sm">
@@ -102,6 +120,9 @@
 
                         @error('items.*.item_name')
                             <p class="mt-3 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                        @error('items.*.product_id')
+                            <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                         @enderror
                         @error('items.*.quantity')
                             <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
@@ -187,6 +208,22 @@
                             </div>
 
                             <div>
+                                <label for="stock_location_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Stock Location</label>
+                                <select name="stock_location_id" id="stock_location_id"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white text-sm">
+                                    <option value="">Use default stock location</option>
+                                    @foreach($stockLocations as $stockLocation)
+                                        <option value="{{ $stockLocation->id }}" @selected((string) old('stock_location_id') === (string) $stockLocation->id)>
+                                            {{ $stockLocation->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('stock_location_id')
+                                    <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
                                 <label for="due_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Due Date</label>
                                 <input type="date" name="due_date" id="due_date" value="{{ old('due_date', $invoiceDefaults['due_date']) }}"
                                     class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white text-sm">
@@ -245,6 +282,7 @@
                 tax: config.tax,
                 total: 0,
                 currency: config.currency,
+                products: config.products,
 
                 init() {
                     this.calculateTotals();
@@ -252,6 +290,7 @@
 
                 addItem() {
                     this.items.push({
+                        product_id: '',
                         item_name: '',
                         description: '',
                         quantity: 1,
@@ -270,6 +309,23 @@
                 calculateTotals() {
                     this.subtotal = this.items.reduce((sum, item) => sum + (item.quantity * item.unit_price), 0);
                     this.total = (this.subtotal - this.discount) + this.tax;
+                },
+
+                applyProduct(index) {
+                    const item = this.items[index];
+                    const product = this.products.find((option) => String(option.id) === String(item.product_id));
+
+                    if (!product) {
+                        return;
+                    }
+
+                    item.item_name = product.name;
+
+                    if (!item.unit_price || Number(item.unit_price) === 0) {
+                        item.unit_price = product.base_price;
+                    }
+
+                    this.calculateTotals();
                 },
 
                 formatCurrency(amount) {

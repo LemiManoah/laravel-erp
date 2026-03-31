@@ -18,11 +18,13 @@ class UpdateInvoiceRequest extends FormRequest
         return [
             'customer_id' => ['required', $tenant->exists('customers', 'id')],
             'order_id' => ['nullable', $tenant->exists('orders', 'id')],
+            'stock_location_id' => ['nullable', $tenant->exists('stock_locations', 'id')],
             'currency_id' => ['required', $tenant->exists('currencies', 'id')],
             'invoice_date' => 'required|date',
             'due_date' => 'nullable|date|after_or_equal:invoice_date',
             'notes' => 'nullable|string',
             'items' => 'required|array|min:1',
+            'items.*.product_id' => ['nullable', $tenant->exists('products', 'id')],
             'items.*.item_name' => 'required|string|max:255',
             'items.*.description' => 'nullable|string',
             'items.*.quantity' => 'required|integer|min:1',

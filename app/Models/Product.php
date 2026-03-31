@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\ProductItemType;
 use App\Models\Concerns\LogsModelActivity;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
@@ -18,7 +19,7 @@ use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
  * @property int|null $product_category_id
  * @property string|null $sku
  * @property string|null $barcode
- * @property string $item_type
+ * @property ProductItemType $item_type
  * @property bool $tracks_inventory
  * @property bool $is_sellable
  * @property bool $is_purchasable
@@ -77,6 +78,7 @@ final class Product extends Model
         return [
             'base_price' => 'decimal:2',
             'is_active' => 'boolean',
+            'item_type' => ProductItemType::class,
             'tracks_inventory' => 'boolean',
             'is_sellable' => 'boolean',
             'is_purchasable' => 'boolean',
@@ -116,6 +118,11 @@ final class Product extends Model
     public function inventoryMovements(): HasMany
     {
         return $this->hasMany(InventoryMovement::class, 'product_id');
+    }
+
+    public function batches(): HasMany
+    {
+        return $this->hasMany(InventoryBatch::class, 'product_id');
     }
 
     protected function isLowStock(): Attribute

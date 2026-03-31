@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\StockLocationType;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,7 +17,7 @@ use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
  * @property string $tenant_id
  * @property string $name
  * @property string|null $code
- * @property string|null $location_type
+ * @property StockLocationType|null $location_type
  * @property string|null $address
  * @property bool $is_default
  * @property bool $is_active
@@ -41,9 +42,15 @@ final class StockLocation extends Model
     protected function casts(): array
     {
         return [
+            'location_type' => StockLocationType::class,
             'is_default' => 'boolean',
             'is_active' => 'boolean',
         ];
+    }
+
+    public function batches(): HasMany
+    {
+        return $this->hasMany(InventoryBatch::class, 'location_id');
     }
 
     public function inventoryMovements(): HasMany

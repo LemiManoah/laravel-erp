@@ -28,12 +28,9 @@
             wire:model.live="item_type"
             class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
         >
-            <option value="stock_item">Stock Item</option>
-            <option value="service">Service</option>
-            <option value="non_stock_item">Non-Stock Item</option>
-            <option value="raw_material">Raw Material</option>
-            <option value="finished_good">Finished Good</option>
-            <option value="consumable">Consumable</option>
+            @foreach($itemTypes as $itemTypeOption)
+                <option value="{{ $itemTypeOption->value }}">{{ $itemTypeOption->label() }}</option>
+            @endforeach
         </select>
         @error('item_type')
             <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>

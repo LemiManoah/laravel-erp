@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('invoice_number');
             $table->foreignId('customer_id')->constrained()->restrictOnDelete();
             $table->foreignId('order_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('stock_location_id')->nullable()->constrained('stock_locations')->nullOnDelete();
             $table->date('invoice_date');
             $table->date('due_date')->nullable();
             $table->string('status')->default('draft');

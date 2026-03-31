@@ -20,6 +20,10 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\Settings;
 use App\Http\Controllers\UserController;
+use App\Livewire\Inventory\Batches\IndexPage as InventoryBatchesIndexPage;
+use App\Livewire\Inventory\Movements\CreatePage as InventoryMovementsCreatePage;
+use App\Livewire\Inventory\Movements\IndexPage as InventoryMovementsIndexPage;
+use App\Livewire\Inventory\Transfers\CreatePage as InventoryTransfersCreatePage;
 use App\Livewire\Inventory\Units\CreatePage;
 use App\Livewire\Inventory\Units\EditPage;
 use App\Livewire\Inventory\Units\IndexPage;
@@ -106,6 +110,20 @@ Route::middleware([
             Route::get('inventory/stock-locations/{location}/edit', App\Livewire\Inventory\Locations\EditPage::class)
                 ->name('inventory.stock-locations.edit')
                 ->middleware('permission:stock-locations.update');
+
+            // Inventory Batches and Movements
+            Route::get('inventory/batches', InventoryBatchesIndexPage::class)
+                ->name('inventory.batches.index')
+                ->middleware('permission:inventory-batches.view');
+            Route::get('inventory/movements', InventoryMovementsIndexPage::class)
+                ->name('inventory.movements.index')
+                ->middleware('permission:inventory-movements.view');
+            Route::get('inventory/movements/create', InventoryMovementsCreatePage::class)
+                ->name('inventory.movements.create')
+                ->middleware('permission:inventory-movements.create');
+            Route::get('inventory/transfers/create', InventoryTransfersCreatePage::class)
+                ->name('inventory.transfers.create')
+                ->middleware('permission:inventory-transfers.create');
         });
 
         Route::get('reports', [ReportController::class, 'index'])->name('reports.index');

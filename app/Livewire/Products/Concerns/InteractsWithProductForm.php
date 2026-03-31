@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Products\Concerns;
 
+use App\Enums\ProductItemType;
 use App\Models\Product;
 use Closure;
 use Illuminate\Validation\Rule;
@@ -73,21 +74,13 @@ trait InteractsWithProductForm
             'product_category_id' => ['nullable', $tenant->exists('product_categories', 'id')],
             'sku' => ['nullable', 'string', 'max:255', $skuRule],
             'barcode' => ['nullable', 'string', 'max:255', $barcodeRule],
-            'item_type' => ['required', Rule::in([
-                'service',
-                'stock_item',
-                'non_stock_item',
-                'raw_material',
-                'finished_good',
-                'consumable',
-            ])],
+            'item_type' => ['required', Rule::enum(ProductItemType::class)],
             'tracks_inventory' => ['boolean'],
             'is_sellable' => ['boolean'],
             'is_purchasable' => ['boolean'],
             'base_unit_id' => ['nullable', Rule::requiredIf($this->tracks_inventory), $tenant->exists('units_of_measure', 'id')],
             'reorder_level' => ['nullable', 'numeric', 'min:0'],
             'reorder_quantity' => ['nullable', 'numeric', 'min:0'],
-            'opening_stock_quantity' => ['nullable', 'numeric', 'min:0'],
             'opening_stock_date' => ['nullable', 'date'],
             'has_variants' => ['boolean'],
             'parent_item_id' => [
@@ -110,6 +103,16 @@ trait InteractsWithProductForm
                 },
             ],
             'is_serialized' => ['boolean'],
+            'opening_stock_quantity' => [
+                'nullable',
+                'numeric',
+                'min:0',
+                function (string $attribute, mixed $value, Closure $fail): void {
+                    if ($this->has_expiry && (float) $value > 0) {
+                        $fail('Use an inventory movement to add opening stock for expiring items so batch and expiry details can be captured.');
+                    }
+                },
+            ],
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:1000'],
             'base_price' => ['nullable', 'numeric', 'min:0'],
@@ -122,7 +125,7 @@ trait InteractsWithProductForm
         $this->product_category_id = $product->product_category_id === null ? null : (string) $product->product_category_id;
         $this->sku = $product->sku;
         $this->barcode = $product->barcode;
-        $this->item_type = $product->item_type;
+        $this->item_type = $product->item_type->value;
         $this->tracks_inventory = $product->tracks_inventory;
         $this->is_sellable = $product->is_sellable;
         $this->is_purchasable = $product->is_purchasable;
@@ -145,7 +148,9 @@ trait InteractsWithProductForm
 
     public function updatedItemType(string $value): void
     {
-        if (in_array($value, ['service', 'non_stock_item'], true)) {
+        $itemType = ProductItemType::tryFrom($value);
+
+        if ($itemType !== null && ! $itemType->tracksInventoryByDefault()) {
             $this->tracks_inventory = false;
         }
     }

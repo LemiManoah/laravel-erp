@@ -18,6 +18,8 @@ use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\Order;
 use App\Models\PaymentMethod;
+use App\Models\Product;
+use App\Models\StockLocation;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -59,6 +61,8 @@ final readonly class InvoiceController extends Controller implements HasMiddlewa
             'customers' => $data['customers'],
             'orders' => $data['orders'],
             'currencies' => Currency::active()->ordered()->get(),
+            'products' => Product::query()->active()->orderBy('name')->get(),
+            'stockLocations' => StockLocation::query()->active()->ordered()->get(),
             'selectedCustomerId' => $data['selectedCustomerId'],
             'selectedOrderId' => $data['selectedOrderId'],
             'selectedOrder' => $data['selectedOrder'],
@@ -98,6 +102,8 @@ final readonly class InvoiceController extends Controller implements HasMiddlewa
         $invoice->load('items');
         $customers = Customer::query()->orderBy('full_name')->get();
         $currencies = Currency::active()->ordered()->get();
+        $products = Product::query()->active()->orderBy('name')->get();
+        $stockLocations = StockLocation::query()->active()->ordered()->get();
         $orders = Order::query()
             ->where('customer_id', $invoice->customer_id)
             ->where(function (Builder $query) use ($invoice): void {
@@ -106,7 +112,7 @@ final readonly class InvoiceController extends Controller implements HasMiddlewa
             })
             ->get();
 
-        return view('invoices.edit', compact('invoice', 'customers', 'currencies', 'orders'));
+        return view('invoices.edit', compact('invoice', 'customers', 'currencies', 'orders', 'products', 'stockLocations'));
     }
 
     public function update(UpdateInvoiceRequest $request, Invoice $invoice, UpdateInvoiceAction $action): RedirectResponse

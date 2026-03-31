@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Inventory\Locations;
 
+use App\Enums\StockLocationType;
 use App\Models\StockLocation;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Locked;
@@ -33,7 +34,7 @@ final class EditPage extends Component
         $this->locationId = $location->id;
         $this->name = $location->name;
         $this->code = $location->code ?? '';
-        $this->location_type = $location->location_type ?? '';
+        $this->location_type = $location->location_type?->value ?? '';
         $this->address = $location->address ?? '';
         $this->is_default = $location->is_default;
         $this->is_active = $location->is_active;
@@ -57,7 +58,7 @@ final class EditPage extends Component
                 'max:20',
                 $tenant->unique('stock_locations', 'code')->ignore($location),
             ],
-            'location_type' => ['nullable', 'string', 'max:255'],
+            'location_type' => ['nullable', \Illuminate\Validation\Rule::enum(StockLocationType::class)],
             'address' => ['nullable', 'string'],
             'is_default' => ['boolean'],
             'is_active' => ['boolean'],
@@ -94,6 +95,8 @@ final class EditPage extends Component
 
     public function render(): View
     {
-        return view('livewire.inventory.locations.edit-page');
+        return view('livewire.inventory.locations.edit-page', [
+            'locationTypes' => StockLocationType::cases(),
+        ]);
     }
 }

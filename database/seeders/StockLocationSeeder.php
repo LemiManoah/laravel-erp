@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Enums\StockLocationType;
 use App\Models\StockLocation;
 use Illuminate\Database\Seeder;
 
@@ -17,7 +18,7 @@ final class StockLocationSeeder extends Seeder
             [
                 'name' => 'Main Warehouse',
                 'code' => 'MAIN-WH',
-                'location_type' => 'warehouse',
+                'location_type' => StockLocationType::Warehouse,
                 'address' => '123 Main St, Warehouse District',
                 'is_default' => true,
                 'is_active' => true,
@@ -25,7 +26,7 @@ final class StockLocationSeeder extends Seeder
             [
                 'name' => 'Store Front',
                 'code' => 'STORE-01',
-                'location_type' => 'store',
+                'location_type' => StockLocationType::Store,
                 'address' => '456 Retail Ave',
                 'is_default' => false,
                 'is_active' => true,
@@ -33,7 +34,7 @@ final class StockLocationSeeder extends Seeder
             [
                 'name' => 'Returns Processing',
                 'code' => 'RET-01',
-                'location_type' => 'processing',
+                'location_type' => StockLocationType::Warehouse,
                 'address' => '123 Main St, Loading Dock B',
                 'is_default' => false,
                 'is_active' => true,

@@ -71,7 +71,7 @@
                                 <div class="space-y-1">
                                     <span class="block text-sm font-medium text-gray-900 dark:text-white">{{ $product->name }}</span>
                                     <div class="flex flex-wrap gap-2 text-xs text-gray-500 dark:text-gray-400">
-                                        <span>{{ str($product->item_type)->replace('_', ' ')->title() }}</span>
+                                        <span>{{ $product->item_type->label() }}</span>
                                         @if($product->sku)
                                             <span>SKU: {{ $product->sku }}</span>
                                         @endif

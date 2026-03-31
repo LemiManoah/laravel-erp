@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('tenant_id');
             $table->foreignId('invoice_id')->constrained()->onDelete('cascade');
+            $table->foreignId('product_id')->nullable()->constrained()->nullOnDelete();
             $table->string('item_name');
             $table->text('description')->nullable();
             $table->integer('quantity')->default(1);

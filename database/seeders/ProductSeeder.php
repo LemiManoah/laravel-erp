@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Enums\ProductItemType;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use Illuminate\Database\Seeder;
@@ -23,6 +24,12 @@ final class ProductSeeder extends Seeder
                 [
                     ...$product,
                     'product_category_id' => $categories->get($category)?->id,
+                    'item_type' => ProductItemType::Service,
+                    'tracks_inventory' => false,
+                    'is_sellable' => true,
+                    'is_purchasable' => false,
+                    'base_unit_id' => null,
+                    'quantity_on_hand' => 0,
                 ],
             );
         }

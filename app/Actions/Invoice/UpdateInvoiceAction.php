@@ -22,6 +22,7 @@ final readonly class UpdateInvoiceAction
             $invoice->update([
                 'customer_id' => $data['customer_id'],
                 'order_id' => $data['order_id'] ?? null,
+                'stock_location_id' => $data['stock_location_id'] ?? null,
                 'invoice_date' => $data['invoice_date'],
                 'due_date' => $data['due_date'] ?? null,
                 'notes' => $data['notes'] ?? '',
@@ -37,6 +38,7 @@ final readonly class UpdateInvoiceAction
 
             foreach ($data['items'] as $item) {
                 $invoice->items()->create([
+                    'product_id' => $item['product_id'] ?? null,
                     'item_name' => $item['item_name'],
                     'description' => $item['description'] ?? null,
                     'quantity' => $item['quantity'],

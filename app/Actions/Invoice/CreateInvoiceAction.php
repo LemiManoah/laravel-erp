@@ -24,6 +24,7 @@ final readonly class CreateInvoiceAction
             $invoice->invoice_number = 'INV-'.strtoupper(uniqid());
             $invoice->status = 'draft';
             $invoice->created_by = Auth::id();
+            $invoice->stock_location_id = $data['stock_location_id'] ?? null;
             $invoice->subtotal_amount = $subtotal;
             $invoice->discount_amount = $data['discount_amount'] ?? 0;
             $invoice->tax_amount = $data['tax_amount'] ?? 0;
@@ -33,6 +34,7 @@ final readonly class CreateInvoiceAction
 
             foreach ($data['items'] as $item) {
                 $invoice->items()->create([
+                    'product_id' => $item['product_id'] ?? null,
                     'item_name' => $item['item_name'],
                     'description' => $item['description'] ?? null,
                     'quantity' => $item['quantity'],

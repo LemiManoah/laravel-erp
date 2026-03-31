@@ -66,7 +66,7 @@
                                 <span class="text-sm text-gray-500 dark:text-gray-400">{{ $location->code ?? '-' }}</span>
                             </td>
                             <td class="whitespace-nowrap px-6 py-4">
-                                <span class="text-sm text-gray-500 dark:text-gray-400">{{ $location->location_type ?? '-' }}</span>
+                                <span class="text-sm text-gray-500 dark:text-gray-400">{{ $location->location_type?->label() ?? '-' }}</span>
                             </td>
                             <td class="whitespace-nowrap px-6 py-4 text-center">
                                 @if($location->is_default)
