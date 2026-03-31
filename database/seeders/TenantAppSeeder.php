@@ -14,6 +14,8 @@ final class TenantAppSeeder extends Seeder
             UserSeeder::class,
             CurrencySeeder::class,
             PaymentMethodSeeder::class,
+            UnitOfMeasureSeeder::class,
+            StockLocationSeeder::class,
             ExpenseCategorySeeder::class,
             ProductCategorySeeder::class,
             ProductSeeder::class,

@@ -6,7 +6,6 @@ namespace App\Http\Requests;
 
 use App\Models\PaymentMethod;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 final class UpdatePaymentMethodRequest extends FormRequest
 {

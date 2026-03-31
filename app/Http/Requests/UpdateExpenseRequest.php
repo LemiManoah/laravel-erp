@@ -6,7 +6,6 @@ namespace App\Http\Requests;
 
 use App\Models\Expense;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 final class UpdateExpenseRequest extends FormRequest
 {

@@ -7,6 +7,7 @@ namespace App\Livewire\Products;
 use App\Livewire\Products\Concerns\InteractsWithProductForm;
 use App\Models\Product;
 use App\Models\ProductCategory;
+use App\Models\UnitOfMeasure;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
@@ -44,6 +45,14 @@ final class EditPage extends Component
         return view('livewire.products.edit-page', [
             'categories' => ProductCategory::query()
                 ->where('is_active', true)
+                ->orderBy('name')
+                ->get(),
+            'units' => UnitOfMeasure::query()
+                ->where('is_active', true)
+                ->orderBy('name')
+                ->get(),
+            'parentProducts' => Product::query()
+                ->whereKeyNot($this->productId)
                 ->orderBy('name')
                 ->get(),
         ]);

@@ -14,7 +14,6 @@ use App\Models\Payment;
 use App\Models\PaymentMethod;
 use App\Models\Receipt;
 use App\Models\User;
-
 use App\Policies\CurrencyPolicy;
 use App\Policies\CustomerPolicy;
 use App\Policies\ExpensePolicy;

@@ -63,6 +63,17 @@ final class RoleAndPermissionSeeder extends Seeder
             'settings.profile.update',
             'settings.password.update',
             'settings.appearance.update',
+            // Inventory Permissions
+            'units-of-measure.view',
+            'units-of-measure.create',
+            'units-of-measure.update',
+            'units-of-measure.delete',
+            'stock-locations.view',
+            'stock-locations.create',
+            'stock-locations.update',
+            'stock-locations.delete',
+            'inventory-movements.view',
+            'inventory-movements.create',
         ];
 
         foreach ($permissions as $permission) {
@@ -103,6 +114,11 @@ final class RoleAndPermissionSeeder extends Seeder
             'settings.profile.update',
             'settings.password.update',
             'settings.appearance.update',
+            // Inventory Permissions for Sales
+            'units-of-measure.view',
+            'stock-locations.view',
+            'inventory-movements.view',
+            'inventory-movements.create',
         ]);
 
         $accountant->syncPermissions([
@@ -131,6 +147,13 @@ final class RoleAndPermissionSeeder extends Seeder
             'settings.profile.update',
             'settings.password.update',
             'settings.appearance.update',
+            // Inventory Permissions for Accountant
+            'units-of-measure.view',
+            'units-of-measure.create',
+            'units-of-measure.update',
+            'stock-locations.view',
+            'inventory-movements.view',
+            'inventory-movements.create',
         ]);
 
         $tailor->syncPermissions([

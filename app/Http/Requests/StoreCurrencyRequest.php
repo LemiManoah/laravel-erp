@@ -6,7 +6,6 @@ namespace App\Http\Requests;
 
 use App\Models\Currency;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 final class StoreCurrencyRequest extends FormRequest
 {

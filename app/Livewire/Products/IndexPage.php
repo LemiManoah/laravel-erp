@@ -97,13 +97,15 @@ final class IndexPage extends Component
             ->get();
 
         $products = Product::query()
-            ->with('category')
+            ->with(['baseUnit', 'category'])
             ->when($this->search !== '', function ($query): void {
                 $query->where(function ($productQuery): void {
                     $search = trim($this->search);
 
                     $productQuery->where('name', 'like', sprintf('%%%s%%', $search))
-                        ->orWhere('description', 'like', sprintf('%%%s%%', $search));
+                        ->orWhere('description', 'like', sprintf('%%%s%%', $search))
+                        ->orWhere('sku', 'like', sprintf('%%%s%%', $search))
+                        ->orWhere('barcode', 'like', sprintf('%%%s%%', $search));
                 });
             })
             ->when($this->status !== '', function ($query): void {

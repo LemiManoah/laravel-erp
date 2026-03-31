@@ -28,6 +28,22 @@
                                     :active="request()->routeIs('products*')">Products</x-layouts.sidebar-link>
                             @endif
 
+                            @if(auth()->user()?->canAny(['units-of-measure.view', 'stock-locations.view']))
+                                <li class="mt-4">
+                                    <div class="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                                        Inventory
+                                    </div>
+                                </li>
+                                @if(auth()->user()?->can('units-of-measure.view'))
+                                    <x-layouts.sidebar-link href="{{ route('inventory.units-of-measure.index') }}" icon='fas-ruler'
+                                        :active="request()->routeIs('inventory.units-of-measure*')">Units of Measure</x-layouts.sidebar-link>
+                                @endif
+                                @if(auth()->user()?->can('stock-locations.view'))
+                                    <x-layouts.sidebar-link href="{{ route('inventory.stock-locations.index') }}" icon='fas-warehouse'
+                                        :active="request()->routeIs('inventory.stock-locations*')">Stock Locations</x-layouts.sidebar-link>
+                                @endif
+                            @endif
+
                             @can('viewAny', \App\Models\Expense::class)
                                 <x-layouts.sidebar-link href="{{ route('expenses.index') }}" icon='fas-money-bill-wave'
                                     :active="request()->routeIs('expenses*')">Expenses</x-layouts.sidebar-link>

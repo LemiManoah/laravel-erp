@@ -2,6 +2,7 @@
 
 use App\Models\Permission;
 use App\Models\User;
+
 use function Pest\Laravel\actingAs;
 
 test('activity logs index page is accessible with permission', function () {

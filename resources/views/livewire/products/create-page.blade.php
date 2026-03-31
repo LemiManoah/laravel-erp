@@ -25,7 +25,7 @@
         </div>
     @endif
 
-    <div class="mb-6 max-w-2xl rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+    <div class="mb-6 max-w-4xl rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
         <form wire:submit="save">
             @include('livewire.products.partials.form-fields')
 

@@ -1,75 +1,325 @@
-<div class="mb-5">
-    <label for="product_category_id" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Category</label>
-    <select
-        id="product_category_id"
-        wire:model="product_category_id"
-        class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-    >
-        <option value="">Select Category (optional)</option>
-        @foreach($categories as $category)
-            <option value="{{ $category->id }}">{{ $category->name }}</option>
-        @endforeach
-    </select>
-    @error('product_category_id')
-        <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
-    @enderror
+<div class="mb-8">
+    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Basic Details</h2>
+    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Define how this item appears in the catalog and how it behaves in operations.</p>
 </div>
 
-<div class="mb-5">
-    <label for="name" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Product Name *</label>
-    <input
-        id="name"
-        type="text"
-        wire:model.blur="name"
-        required
-        class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-    >
-    @error('name')
-        <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
-    @enderror
-</div>
-
-<div class="mb-5">
-    <label for="base_price" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Base Price</label>
-    <input
-        id="base_price"
-        type="number"
-        wire:model.blur="base_price"
-        step="0.01"
-        min="0"
-        placeholder="0.00"
-        class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-    >
-    <p class="mt-1 text-xs text-gray-400">Optional. Default price for this product.</p>
-    @error('base_price')
-        <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
-    @enderror
-</div>
-
-<div class="mb-5">
-    <label for="description" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
-    <textarea
-        id="description"
-        wire:model.blur="description"
-        rows="3"
-        class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-    ></textarea>
-    <p class="mt-1 text-xs text-gray-400">Optional. Describe the product details.</p>
-    @error('description')
-        <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
-    @enderror
-</div>
-
-<div class="mb-6">
-    <label class="flex cursor-pointer items-center">
-        <input
-            type="checkbox"
-            wire:model="is_active"
-            class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:border-gray-600 dark:bg-gray-700"
+<div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+    <div>
+        <label for="product_category_id" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Category</label>
+        <select
+            id="product_category_id"
+            wire:model="product_category_id"
+            class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
         >
-        <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Active (can be selected when creating orders)</span>
-    </label>
-    @error('is_active')
-        <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
-    @enderror
+            <option value="">Select category (optional)</option>
+            @foreach($categories as $category)
+                <option value="{{ $category->id }}">{{ $category->name }}</option>
+            @endforeach
+        </select>
+        @error('product_category_id')
+            <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+        @enderror
+    </div>
+
+    <div>
+        <label for="item_type" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Item Type <span class="text-red-500">*</span></label>
+        <select
+            id="item_type"
+            wire:model.live="item_type"
+            class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+        >
+            <option value="stock_item">Stock Item</option>
+            <option value="service">Service</option>
+            <option value="non_stock_item">Non-Stock Item</option>
+            <option value="raw_material">Raw Material</option>
+            <option value="finished_good">Finished Good</option>
+            <option value="consumable">Consumable</option>
+        </select>
+        @error('item_type')
+            <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+        @enderror
+    </div>
+
+    <div class="md:col-span-2">
+        <label for="name" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Product Name <span class="text-red-500">*</span></label>
+        <input
+            id="name"
+            type="text"
+            wire:model.blur="name"
+            required
+            class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+        >
+        @error('name')
+            <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+        @enderror
+    </div>
+
+    <div>
+        <label for="sku" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">SKU</label>
+        <input
+            id="sku"
+            type="text"
+            wire:model.blur="sku"
+            placeholder="Internal stock code"
+            class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+        >
+        @error('sku')
+            <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+        @enderror
+    </div>
+
+    <div>
+        <label for="barcode" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Barcode</label>
+        <input
+            id="barcode"
+            type="text"
+            wire:model.blur="barcode"
+            placeholder="Scanner or POS code"
+            class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+        >
+        @error('barcode')
+            <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+        @enderror
+    </div>
+
+    <div>
+        <label for="base_price" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Base Price</label>
+        <input
+            id="base_price"
+            type="number"
+            wire:model.blur="base_price"
+            step="0.01"
+            min="0"
+            placeholder="0.00"
+            class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+        >
+        <p class="mt-1 text-xs text-gray-400">Optional. Default selling price or catalog price.</p>
+        @error('base_price')
+            <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+        @enderror
+    </div>
+
+    <div>
+        <label for="parent_item_id" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Parent Item</label>
+        <select
+            id="parent_item_id"
+            wire:model="parent_item_id"
+            class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+        >
+            <option value="">None</option>
+            @foreach($parentProducts as $parentProduct)
+                <option value="{{ $parentProduct->id }}">{{ $parentProduct->name }}</option>
+            @endforeach
+        </select>
+        <p class="mt-1 text-xs text-gray-400">Use this for variants or pack-size children.</p>
+        @error('parent_item_id')
+            <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+        @enderror
+    </div>
+
+    <div class="md:col-span-2">
+        <label for="description" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
+        <textarea
+            id="description"
+            wire:model.blur="description"
+            rows="3"
+            class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+        ></textarea>
+        <p class="mt-1 text-xs text-gray-400">Optional. Describe the product details.</p>
+        @error('description')
+            <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+        @enderror
+    </div>
+</div>
+
+<div class="my-8 border-t border-gray-200 pt-6 dark:border-gray-700">
+    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Inventory Settings</h2>
+    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Choose whether this item affects stock, where it should warn, and whether batch or expiry controls are needed.</p>
+</div>
+
+<div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+    <div class="rounded-lg border border-gray-200 p-4 dark:border-gray-700 md:col-span-2">
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <label class="flex cursor-pointer items-center">
+                <input
+                    type="checkbox"
+                    wire:model.live="tracks_inventory"
+                    class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:border-gray-600 dark:bg-gray-700"
+                >
+                <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Tracks inventory</span>
+            </label>
+
+            <label class="flex cursor-pointer items-center">
+                <input
+                    type="checkbox"
+                    wire:model="is_sellable"
+                    class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:border-gray-600 dark:bg-gray-700"
+                >
+                <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Can be sold</span>
+            </label>
+
+            <label class="flex cursor-pointer items-center">
+                <input
+                    type="checkbox"
+                    wire:model="is_purchasable"
+                    class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:border-gray-600 dark:bg-gray-700"
+                >
+                <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Can be purchased</span>
+            </label>
+
+            <label class="flex cursor-pointer items-center">
+                <input
+                    type="checkbox"
+                    wire:model="has_variants"
+                    class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:border-gray-600 dark:bg-gray-700"
+                >
+                <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Has variants or pack sizes</span>
+            </label>
+
+            <label class="flex cursor-pointer items-center">
+                <input
+                    type="checkbox"
+                    wire:model="is_active"
+                    class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:border-gray-600 dark:bg-gray-700"
+                >
+                <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Active</span>
+            </label>
+        </div>
+        @error('tracks_inventory')
+            <p class="mt-2 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+        @enderror
+    </div>
+
+    @if($tracks_inventory)
+        <div>
+            <label for="base_unit_id" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Base Unit <span class="text-red-500">*</span></label>
+            <select
+                id="base_unit_id"
+                wire:model="base_unit_id"
+                class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+            >
+                <option value="">Select unit</option>
+                @foreach($units as $unit)
+                    <option value="{{ $unit->id }}">{{ $unit->name }} ({{ $unit->abbreviation }})</option>
+                @endforeach
+            </select>
+            @error('base_unit_id')
+                <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+            @enderror
+        </div>
+
+        <div>
+            <label for="opening_stock_quantity" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Opening Stock Quantity</label>
+            <input
+                id="opening_stock_quantity"
+                type="number"
+                wire:model.blur="opening_stock_quantity"
+                step="0.01"
+                min="0"
+                placeholder="0.00"
+                class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+            >
+            @error('opening_stock_quantity')
+                <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+            @enderror
+        </div>
+
+        <div>
+            <label for="opening_stock_date" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Opening Stock Date</label>
+            <input
+                id="opening_stock_date"
+                type="datetime-local"
+                wire:model.blur="opening_stock_date"
+                class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+            >
+            @error('opening_stock_date')
+                <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+            @enderror
+        </div>
+
+        <div>
+            <label for="reorder_level" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Reorder Level</label>
+            <input
+                id="reorder_level"
+                type="number"
+                wire:model.blur="reorder_level"
+                step="0.01"
+                min="0"
+                placeholder="0.00"
+                class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+            >
+            @error('reorder_level')
+                <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+            @enderror
+        </div>
+
+        <div>
+            <label for="reorder_quantity" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Reorder Quantity</label>
+            <input
+                id="reorder_quantity"
+                type="number"
+                wire:model.blur="reorder_quantity"
+                step="0.01"
+                min="0"
+                placeholder="0.00"
+                class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+            >
+            @error('reorder_quantity')
+                <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+            @enderror
+        </div>
+
+        <div class="rounded-lg border border-dashed border-gray-300 p-4 dark:border-gray-600 md:col-span-2">
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <label class="flex cursor-pointer items-center">
+                    <input
+                        type="checkbox"
+                        wire:model="allow_negative_stock"
+                        class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:border-gray-600 dark:bg-gray-700"
+                    >
+                    <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Allow negative stock</span>
+                </label>
+
+                <label class="flex cursor-pointer items-center">
+                    <input
+                        type="checkbox"
+                        wire:model.live="has_expiry"
+                        class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:border-gray-600 dark:bg-gray-700"
+                    >
+                    <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Item expires</span>
+                </label>
+
+                <label class="flex cursor-pointer items-center">
+                    <input
+                        type="checkbox"
+                        wire:model="requires_batch_tracking"
+                        @disabled($has_expiry)
+                        class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:border-gray-600 dark:bg-gray-700"
+                    >
+                    <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Requires batch tracking</span>
+                </label>
+
+                <label class="flex cursor-pointer items-center">
+                    <input
+                        type="checkbox"
+                        wire:model="is_serialized"
+                        class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:border-gray-600 dark:bg-gray-700"
+                    >
+                    <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Serialized item</span>
+                </label>
+            </div>
+
+            @if($has_expiry)
+                <p class="mt-3 text-xs text-amber-600 dark:text-amber-300">Batch tracking is automatically enforced for expiring items.</p>
+            @endif
+
+            @error('requires_batch_tracking')
+                <p class="mt-2 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+            @enderror
+        </div>
+    @else
+        <div class="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-4 text-sm text-gray-500 dark:border-gray-600 dark:bg-gray-900/40 dark:text-gray-400 md:col-span-2">
+            Inventory-only fields are hidden because this item does not track stock.
+        </div>
+    @endif
 </div>

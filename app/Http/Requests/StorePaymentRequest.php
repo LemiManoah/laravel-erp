@@ -7,7 +7,6 @@ namespace App\Http\Requests;
 use App\Models\Invoice;
 use App\Models\Payment;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 final class StorePaymentRequest extends FormRequest
 {

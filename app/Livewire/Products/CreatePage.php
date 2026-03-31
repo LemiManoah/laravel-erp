@@ -7,6 +7,7 @@ namespace App\Livewire\Products;
 use App\Livewire\Products\Concerns\InteractsWithProductForm;
 use App\Models\Product;
 use App\Models\ProductCategory;
+use App\Models\UnitOfMeasure;
 use Illuminate\Contracts\View\View;
 use Livewire\Component;
 
@@ -36,6 +37,13 @@ final class CreatePage extends Component
         return view('livewire.products.create-page', [
             'categories' => ProductCategory::query()
                 ->where('is_active', true)
+                ->orderBy('name')
+                ->get(),
+            'units' => UnitOfMeasure::query()
+                ->where('is_active', true)
+                ->orderBy('name')
+                ->get(),
+            'parentProducts' => Product::query()
                 ->orderBy('name')
                 ->get(),
         ]);

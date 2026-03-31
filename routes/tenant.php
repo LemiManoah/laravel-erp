@@ -20,6 +20,9 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\Settings;
 use App\Http\Controllers\UserController;
+use App\Livewire\Inventory\Units\CreatePage;
+use App\Livewire\Inventory\Units\EditPage;
+use App\Livewire\Inventory\Units\IndexPage;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
@@ -79,6 +82,31 @@ Route::middleware([
         Route::resource('expenses', ExpenseController::class)->except(['destroy']);
         Route::post('expenses/{expense}/void', [ExpenseController::class, 'void'])->name('expenses.void');
         Route::resource('expense-categories', ExpenseCategoryController::class)->except(['show']);
+
+        // Inventory Module
+        Route::group([], function () {
+            // Units of Measure
+            Route::get('inventory/units-of-measure', IndexPage::class)
+                ->name('inventory.units-of-measure.index')
+                ->middleware('permission:units-of-measure.view');
+            Route::get('inventory/units-of-measure/create', CreatePage::class)
+                ->name('inventory.units-of-measure.create')
+                ->middleware('permission:units-of-measure.create');
+            Route::get('inventory/units-of-measure/{unit}/edit', EditPage::class)
+                ->name('inventory.units-of-measure.edit')
+                ->middleware('permission:units-of-measure.update');
+
+            // Stock Locations
+            Route::get('inventory/stock-locations', App\Livewire\Inventory\Locations\IndexPage::class)
+                ->name('inventory.stock-locations.index')
+                ->middleware('permission:stock-locations.view');
+            Route::get('inventory/stock-locations/create', App\Livewire\Inventory\Locations\CreatePage::class)
+                ->name('inventory.stock-locations.create')
+                ->middleware('permission:stock-locations.create');
+            Route::get('inventory/stock-locations/{location}/edit', App\Livewire\Inventory\Locations\EditPage::class)
+                ->name('inventory.stock-locations.edit')
+                ->middleware('permission:stock-locations.update');
+        });
 
         Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
         Route::get('reports/sales', [ReportController::class, 'sales'])->name('reports.sales');
