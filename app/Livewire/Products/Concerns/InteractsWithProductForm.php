@@ -31,10 +31,6 @@ trait InteractsWithProductForm
 
     public ?string $reorder_quantity = null;
 
-    public ?string $opening_stock_quantity = null;
-
-    public ?string $opening_stock_date = null;
-
     public bool $has_variants = false;
 
     public ?string $parent_item_id = null;
@@ -43,13 +39,13 @@ trait InteractsWithProductForm
 
     public bool $has_expiry = false;
 
-    public bool $requires_batch_tracking = false;
-
     public bool $is_serialized = false;
 
     public string $name = '';
 
     public ?string $description = null;
+
+    public ?string $buying_price = null;
 
     public ?string $base_price = null;
 
@@ -81,7 +77,6 @@ trait InteractsWithProductForm
             'base_unit_id' => ['nullable', Rule::requiredIf($this->tracks_inventory), $tenant->exists('units_of_measure', 'id')],
             'reorder_level' => ['nullable', 'numeric', 'min:0'],
             'reorder_quantity' => ['nullable', 'numeric', 'min:0'],
-            'opening_stock_date' => ['nullable', 'date'],
             'has_variants' => ['boolean'],
             'parent_item_id' => [
                 'nullable',
@@ -94,28 +89,11 @@ trait InteractsWithProductForm
             ],
             'allow_negative_stock' => ['boolean'],
             'has_expiry' => ['boolean'],
-            'requires_batch_tracking' => [
-                'boolean',
-                function (string $attribute, mixed $value, Closure $fail): void {
-                    if ($this->has_expiry && ! $value) {
-                        $fail('Batch tracking is required when the item has expiry.');
-                    }
-                },
-            ],
             'is_serialized' => ['boolean'],
-            'opening_stock_quantity' => [
-                'nullable',
-                'numeric',
-                'min:0',
-                function (string $attribute, mixed $value, Closure $fail): void {
-                    if ($this->has_expiry && (float) $value > 0) {
-                        $fail('Use an inventory movement to add opening stock for expiring items so batch and expiry details can be captured.');
-                    }
-                },
-            ],
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:1000'],
-            'base_price' => ['nullable', 'numeric', 'min:0'],
+            'buying_price' => ['nullable', 'numeric', 'min:0'],
+            'base_price' => ['nullable', Rule::requiredIf($this->is_sellable), 'numeric', 'min:0'],
             'is_active' => ['boolean'],
         ];
     }
@@ -132,16 +110,14 @@ trait InteractsWithProductForm
         $this->base_unit_id = $product->base_unit_id === null ? null : (string) $product->base_unit_id;
         $this->reorder_level = $product->reorder_level === null ? null : (string) $product->reorder_level;
         $this->reorder_quantity = $product->reorder_quantity === null ? null : (string) $product->reorder_quantity;
-        $this->opening_stock_quantity = $product->opening_stock_quantity === null ? null : (string) $product->opening_stock_quantity;
-        $this->opening_stock_date = $product->opening_stock_date?->format('Y-m-d\TH:i');
         $this->has_variants = $product->has_variants;
         $this->parent_item_id = $product->parent_item_id === null ? null : (string) $product->parent_item_id;
         $this->allow_negative_stock = $product->allow_negative_stock;
         $this->has_expiry = $product->has_expiry;
-        $this->requires_batch_tracking = $product->requires_batch_tracking;
         $this->is_serialized = $product->is_serialized;
         $this->name = $product->name;
         $this->description = $product->description;
+        $this->buying_price = $product->buying_price === null ? null : (string) $product->buying_price;
         $this->base_price = $product->base_price === null ? null : (string) $product->base_price;
         $this->is_active = $product->is_active;
     }
@@ -164,22 +140,25 @@ trait InteractsWithProductForm
         $this->base_unit_id = null;
         $this->reorder_level = null;
         $this->reorder_quantity = null;
-        $this->opening_stock_quantity = null;
-        $this->opening_stock_date = null;
         $this->allow_negative_stock = false;
         $this->has_expiry = false;
-        $this->requires_batch_tracking = false;
         $this->is_serialized = false;
+    }
+
+    public function updatedIsSellable(bool $value): void
+    {
+        if ($value) {
+            return;
+        }
+
+        $this->base_price = null;
     }
 
     public function updatedHasExpiry(bool $value): void
     {
-        if (! $value) {
-            return;
+        if ($value) {
+            $this->tracks_inventory = true;
         }
-
-        $this->tracks_inventory = true;
-        $this->requires_batch_tracking = true;
     }
 
     /**
@@ -190,11 +169,7 @@ trait InteractsWithProductForm
         $sku = $this->trimOrNull($this->sku);
         $barcode = $this->trimOrNull($this->barcode);
         $description = $this->description === null ? null : trim($this->description);
-        $basePrice = $this->base_price === null ? null : trim($this->base_price);
         $tracksInventory = $this->tracks_inventory;
-        $hasExpiry = $tracksInventory && $this->has_expiry;
-        $requiresBatchTracking = $hasExpiry ? true : ($tracksInventory ? $this->requires_batch_tracking : false);
-        $openingStockQuantity = $tracksInventory ? $this->trimOrNull($this->opening_stock_quantity) : null;
 
         return [
             'product_category_id' => filled($this->product_category_id) ? (int) $this->product_category_id : null,
@@ -207,19 +182,28 @@ trait InteractsWithProductForm
             'base_unit_id' => $tracksInventory && filled($this->base_unit_id) ? (int) $this->base_unit_id : null,
             'reorder_level' => $tracksInventory ? $this->trimOrNull($this->reorder_level) : null,
             'reorder_quantity' => $tracksInventory ? $this->trimOrNull($this->reorder_quantity) : null,
-            'opening_stock_quantity' => $openingStockQuantity,
-            'opening_stock_date' => $tracksInventory ? $this->trimOrNull($this->opening_stock_date) : null,
             'has_variants' => $this->has_variants,
             'parent_item_id' => filled($this->parent_item_id) ? (int) $this->parent_item_id : null,
             'allow_negative_stock' => $tracksInventory ? $this->allow_negative_stock : false,
-            'has_expiry' => $hasExpiry,
-            'requires_batch_tracking' => $requiresBatchTracking,
+            'has_expiry' => $tracksInventory && $this->has_expiry,
             'is_serialized' => $tracksInventory ? $this->is_serialized : false,
-            'quantity_on_hand' => $tracksInventory ? ($openingStockQuantity ?? '0') : '0',
             'name' => trim($this->name),
             'description' => $description === '' ? null : $description,
-            'base_price' => $basePrice === '' ? null : $basePrice,
             'is_active' => $this->is_active,
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function pricePayload(): array
+    {
+        $buyingPrice = $this->buying_price === null ? null : trim($this->buying_price);
+        $basePrice = $this->base_price === null ? null : trim($this->base_price);
+
+        return [
+            'buying_price' => $buyingPrice === '' ? null : $buyingPrice,
+            'selling_price' => $basePrice === '' ? null : $basePrice,
         ];
     }
 

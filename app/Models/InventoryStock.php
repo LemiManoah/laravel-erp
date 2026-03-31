@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\InventoryBatchStatus;
 use App\Models\Concerns\LogsModelActivity;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -18,18 +17,14 @@ use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
  * @property string $tenant_id
  * @property int $product_id
  * @property int|null $location_id
- * @property string $batch_number
+ * @property string|null $batch_number
  * @property Carbon|null $expiry_date
- * @property Carbon|null $manufactured_at
  * @property Carbon|null $received_at
  * @property float $quantity_on_hand
- * @property float|null $cost_price
- * @property InventoryBatchStatus $status
+ * @property float|null $unit_cost
  * @property string|null $notes
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
  */
-final class InventoryBatch extends Model
+final class InventoryStock extends Model
 {
     use BelongsToTenant;
     use LogsModelActivity;
@@ -40,11 +35,9 @@ final class InventoryBatch extends Model
         'location_id',
         'batch_number',
         'expiry_date',
-        'manufactured_at',
         'received_at',
         'quantity_on_hand',
-        'cost_price',
-        'status',
+        'unit_cost',
         'notes',
     ];
 
@@ -52,11 +45,9 @@ final class InventoryBatch extends Model
     {
         return [
             'expiry_date' => 'date',
-            'manufactured_at' => 'date',
             'received_at' => 'date',
             'quantity_on_hand' => 'decimal:2',
-            'cost_price' => 'decimal:2',
-            'status' => InventoryBatchStatus::class,
+            'unit_cost' => 'decimal:2',
         ];
     }
 
@@ -72,29 +63,25 @@ final class InventoryBatch extends Model
 
     public function movements(): HasMany
     {
-        return $this->hasMany(InventoryMovement::class, 'batch_id');
+        return $this->hasMany(InventoryMovement::class, 'inventory_stock_id');
     }
 
     public function scopeAvailable(Builder $query): Builder
     {
-        return $query
-            ->where('quantity_on_hand', '>', 0)
-            ->where('status', InventoryBatchStatus::Active);
+        return $query->where('quantity_on_hand', '>', 0);
     }
 
     public function scopeNearExpiry(Builder $query, int $days = 30): Builder
     {
-        return $query
-            ->whereNotNull('expiry_date')
-            ->whereDate('expiry_date', '>=', now()->toDateString())
-            ->whereDate('expiry_date', '<=', now()->addDays($days)->toDateString());
+        return $query->whereNotNull('expiry_date')
+            ->whereDate('expiry_date', '>=', today())
+            ->whereDate('expiry_date', '<=', today()->addDays($days));
     }
 
     public function scopeExpired(Builder $query): Builder
     {
-        return $query
-            ->whereNotNull('expiry_date')
-            ->whereDate('expiry_date', '<', now()->toDateString());
+        return $query->whereNotNull('expiry_date')
+            ->whereDate('expiry_date', '<', today());
     }
 
     public function isExpired(): bool

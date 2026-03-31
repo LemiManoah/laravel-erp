@@ -60,17 +60,17 @@
                     @error('unit_cost') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                 </div>
 
-                @if($selectedProduct && ($selectedProduct->requires_batch_tracking || $selectedProduct->has_expiry))
-                    @if($selectedMovementType->direction()->value === 'out')
-                        <div class="md:col-span-2">
-                            <label for="batch_id" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Source Batch <span class="text-red-500">*</span></label>
-                            <select id="batch_id" wire:model="batch_id" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
-                                <option value="">Select batch</option>
-                                @foreach($batches as $batch)
-                                    <option value="{{ $batch->id }}">{{ $batch->batch_number }} | Qty {{ number_format((float) $batch->quantity_on_hand, 2) }} | Exp {{ $batch->expiry_date?->format('d M Y') ?? 'N/A' }}</option>
+                    @if($selectedProduct && $selectedProduct->has_expiry)
+                        @if($selectedMovementType->direction()->value === 'out')
+                            <div class="md:col-span-2">
+                            <label for="inventory_stock_id" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Source Stock Row <span class="text-red-500">*</span></label>
+                            <select id="inventory_stock_id" wire:model="inventory_stock_id" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                                <option value="">Select stock row</option>
+                                @foreach($stocks as $stock)
+                                    <option value="{{ $stock->id }}">{{ $stock->batch_number }} | Qty {{ number_format((float) $stock->quantity_on_hand, 2) }} | Exp {{ $stock->expiry_date?->format('d M Y') ?? 'N/A' }}</option>
                                 @endforeach
                             </select>
-                            @error('batch_id') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                            @error('inventory_stock_id') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                         </div>
                     @else
                         <div>
@@ -85,11 +85,6 @@
                             @error('expiry_date') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                         </div>
 
-                        <div class="md:col-span-2">
-                            <label for="manufactured_at" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Manufactured Date</label>
-                            <input id="manufactured_at" type="date" wire:model="manufactured_at" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
-                            @error('manufactured_at') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                        </div>
                     @endif
                 @endif
 

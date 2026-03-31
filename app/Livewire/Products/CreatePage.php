@@ -27,7 +27,11 @@ final class CreatePage extends Component
 
         $this->validate($this->productRules());
 
-        Product::create($this->productPayload());
+        $product = Product::create($this->productPayload());
+        $product->defaultPrice()->updateOrCreate(
+            ['tenant_id' => tenant('id'), 'product_id' => $product->id],
+            $this->pricePayload(),
+        );
 
         return redirect()->route('products.index')
             ->with('success', 'Product created successfully.');

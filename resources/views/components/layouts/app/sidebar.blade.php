@@ -28,7 +28,7 @@
                                     :active="request()->routeIs('products*')">Products</x-layouts.sidebar-link>
                             @endif
 
-                            @if(auth()->user()?->canAny(['units-of-measure.view', 'stock-locations.view', 'inventory-batches.view', 'inventory-movements.view']))
+                            @if(auth()->user()?->canAny(['units-of-measure.view', 'stock-locations.view', 'inventory-stocks.view', 'inventory-movements.view']))
                                 <li class="mt-4">
                                     <div class="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                                         Inventory
@@ -42,9 +42,9 @@
                                     <x-layouts.sidebar-link href="{{ route('inventory.stock-locations.index') }}" icon='fas-warehouse'
                                         :active="request()->routeIs('inventory.stock-locations*')">Stock Locations</x-layouts.sidebar-link>
                                 @endif
-                                @if(auth()->user()?->can('inventory-batches.view'))
-                                    <x-layouts.sidebar-link href="{{ route('inventory.batches.index') }}" icon='fas-layer-group'
-                                        :active="request()->routeIs('inventory.batches*')">Batches</x-layouts.sidebar-link>
+                                @if(auth()->user()?->can('inventory-stocks.view'))
+                                    <x-layouts.sidebar-link href="{{ route('inventory.stocks.index') }}" icon='fas-layer-group'
+                                        :active="request()->routeIs('inventory.stocks*')">Inventory Stocks</x-layouts.sidebar-link>
                                 @endif
                                 @if(auth()->user()?->can('inventory-movements.view'))
                                     <x-layouts.sidebar-link href="{{ route('inventory.movements.index') }}" icon='fas-boxes-stacked'

@@ -26,7 +26,7 @@
 
     <div class="mb-6 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
         <div class="grid grid-cols-1 gap-3 md:grid-cols-5">
-            <input type="text" wire:model.live.debounce.300ms="search" placeholder="Search product, batch, or location" class="rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+            <input type="text" wire:model.live.debounce.300ms="search" placeholder="Search product, stock row, or location" class="rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
             <select wire:model.live="movementType" class="rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
                 <option value="">All movement types</option>
                 @foreach($movementTypes as $movementTypeOption)
@@ -58,7 +58,7 @@
                         <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Product</th>
                         <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Type</th>
                         <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Location</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Batch</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Stock Row</th>
                         <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Qty</th>
                         <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Balance</th>
                     </tr>
@@ -79,7 +79,7 @@
                                 </div>
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $movement->location?->name ?? 'N/A' }}</td>
-                            <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $movement->batch?->batch_number ?? 'N/A' }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $movement->inventoryStock?->batch_number ?? 'Standard stock row' }}</td>
                             <td class="px-6 py-4 text-sm text-gray-900 dark:text-white">{{ number_format((float) $movement->quantity, 2) }}</td>
                             <td class="px-6 py-4 text-sm text-gray-900 dark:text-white">{{ number_format((float) $movement->balance_after, 2) }}</td>
                         </tr>

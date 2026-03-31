@@ -80,7 +80,24 @@
     </div>
 
     <div>
-        <label for="base_price" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Base Price</label>
+        <label for="buying_price" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Buying Price</label>
+        <input
+            id="buying_price"
+            type="number"
+            wire:model.blur="buying_price"
+            step="0.01"
+            min="0"
+            placeholder="0.00"
+            class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+        >
+        <p class="mt-1 text-xs text-gray-400">Optional. Use this as the default buying or cost price.</p>
+        @error('buying_price')
+            <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+        @enderror
+    </div>
+
+    <div>
+        <label for="base_price" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Selling Price @if($is_sellable)<span class="text-red-500">*</span>@endif</label>
         <input
             id="base_price"
             type="number"
@@ -90,7 +107,7 @@
             placeholder="0.00"
             class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
         >
-        <p class="mt-1 text-xs text-gray-400">Optional. Default selling price or catalog price.</p>
+        <p class="mt-1 text-xs text-gray-400">Required when the item can be sold.</p>
         @error('base_price')
             <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
         @enderror
@@ -131,7 +148,7 @@
 
 <div class="my-8 border-t border-gray-200 pt-6 dark:border-gray-700">
     <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Inventory Settings</h2>
-    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Choose whether this item affects stock, where it should warn, and whether batch or expiry controls are needed.</p>
+    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Define whether this item tracks stock and the rules inventory records should follow later.</p>
 </div>
 
 <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
@@ -149,7 +166,7 @@
             <label class="flex cursor-pointer items-center">
                 <input
                     type="checkbox"
-                    wire:model="is_sellable"
+                    wire:model.live="is_sellable"
                     class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:border-gray-600 dark:bg-gray-700"
                 >
                 <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Can be sold</span>
@@ -201,35 +218,6 @@
                 @endforeach
             </select>
             @error('base_unit_id')
-                <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
-            @enderror
-        </div>
-
-        <div>
-            <label for="opening_stock_quantity" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Opening Stock Quantity</label>
-            <input
-                id="opening_stock_quantity"
-                type="number"
-                wire:model.blur="opening_stock_quantity"
-                step="0.01"
-                min="0"
-                placeholder="0.00"
-                class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-            >
-            @error('opening_stock_quantity')
-                <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
-            @enderror
-        </div>
-
-        <div>
-            <label for="opening_stock_date" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Opening Stock Date</label>
-            <input
-                id="opening_stock_date"
-                type="datetime-local"
-                wire:model.blur="opening_stock_date"
-                class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-            >
-            @error('opening_stock_date')
                 <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
             @enderror
         </div>
@@ -289,16 +277,6 @@
                 <label class="flex cursor-pointer items-center">
                     <input
                         type="checkbox"
-                        wire:model="requires_batch_tracking"
-                        @disabled($has_expiry)
-                        class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:border-gray-600 dark:bg-gray-700"
-                    >
-                    <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Requires batch tracking</span>
-                </label>
-
-                <label class="flex cursor-pointer items-center">
-                    <input
-                        type="checkbox"
                         wire:model="is_serialized"
                         class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:border-gray-600 dark:bg-gray-700"
                     >
@@ -307,12 +285,8 @@
             </div>
 
             @if($has_expiry)
-                <p class="mt-3 text-xs text-amber-600 dark:text-amber-300">Batch tracking is automatically enforced for expiring items.</p>
+                <p class="mt-3 text-xs text-amber-600 dark:text-amber-300">Expiry-controlled items will require batch number and expiry date when you later receive or open stock in the inventory module.</p>
             @endif
-
-            @error('requires_batch_tracking')
-                <p class="mt-2 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
-            @enderror
         </div>
     @else
         <div class="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-4 text-sm text-gray-500 dark:border-gray-600 dark:bg-gray-900/40 dark:text-gray-400 md:col-span-2">

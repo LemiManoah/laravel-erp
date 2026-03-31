@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('tenant_id');
             $table->foreignId('product_id')->constrained()->onDelete('restrict');
             $table->foreignId('location_id')->nullable()->constrained('stock_locations')->onDelete('restrict');
-            $table->unsignedBigInteger('batch_id')->nullable();
+            $table->unsignedBigInteger('inventory_stock_id')->nullable();
             $table->string('movement_type');
             $table->string('direction');
             $table->decimal('quantity', 12, 2);
@@ -32,6 +32,7 @@ return new class extends Migration
             $table->index(['tenant_id', 'product_id']);
             $table->index(['tenant_id', 'movement_type']);
             $table->index(['tenant_id', 'movement_date']);
+            $table->index(['tenant_id', 'inventory_stock_id']);
             $table->index(['reference_type', 'reference_id']);
         });
     }

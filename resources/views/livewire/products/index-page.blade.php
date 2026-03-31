@@ -59,7 +59,7 @@
                         <th class="w-1/4 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Name</th>
                         <th class="w-1/4 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Category</th>
                         <th class="w-1/4 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Description</th>
-                        <th class="w-1/6 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Base Price</th>
+                        <th class="w-1/6 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Selling Price</th>
                         <th class="w-1/12 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Status</th>
                         <th class="w-1/6 px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Actions</th>
                     </tr>
@@ -91,7 +91,7 @@
                                 <span class="line-clamp-2 max-w-sm text-sm text-gray-500 dark:text-gray-400">{{ $product->description ?? 'N/A' }}</span>
                             </td>
                             <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
-                                {{ number_format((float) $product->base_price, 2) }}
+                                {{ $product->base_price === null ? 'N/A' : number_format((float) $product->base_price, 2) }}
                             </td>
                             <td class="whitespace-nowrap px-6 py-4">
                                 <span @class([

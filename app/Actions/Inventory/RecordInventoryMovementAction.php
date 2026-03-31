@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\Actions\Inventory;
 
-use App\Enums\InventoryBatchStatus;
 use App\Enums\InventoryDirection;
 use App\Enums\InventoryMovementType;
-use App\Models\InventoryBatch;
 use App\Models\InventoryMovement;
+use App\Models\InventoryStock;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -38,41 +37,25 @@ final readonly class RecordInventoryMovementAction
             $conversionRate = max(0.0001, (float) ($attributes['unit_conversion_rate'] ?? 1));
             $baseQuantity = round($quantity * $conversionRate, 2);
             $delta = $baseQuantity * $direction->multiplier();
-            $batch = $this->resolveBatch($product, $movementType, $direction, $attributes);
+            $stock = $this->resolveInventoryStock($product, $movementType, $direction, $attributes);
 
-            if ($direction === InventoryDirection::Out && ! $product->allow_negative_stock && ((float) $product->quantity_on_hand + $delta) < 0) {
-                throw ValidationException::withMessages([
-                    'quantity' => sprintf('Insufficient stock for %s. Available quantity is %s.', $product->name, number_format((float) $product->quantity_on_hand, 2)),
-                ]);
-            }
+            $this->validateStockUsage($product, $stock, $movementType, $direction, $baseQuantity, $attributes);
 
-            if ($batch !== null) {
-                $this->validateBatchUsage($product, $batch, $movementType, $direction, $baseQuantity, $attributes);
-            }
+            $stockBalance = round((float) $stock->quantity_on_hand + $delta, 2);
+            $stock->forceFill([
+                'quantity_on_hand' => $stockBalance,
+                'unit_cost' => $attributes['unit_cost'] ?? $stock->unit_cost,
+                'received_at' => $attributes['received_at'] ?? $stock->received_at,
+                'notes' => $attributes['notes'] ?? $stock->notes,
+            ])->save();
 
-            $newBalance = round((float) $product->quantity_on_hand + $delta, 2);
-            $product->forceFill(['quantity_on_hand' => $newBalance])->save();
-
-            if ($batch !== null) {
-                $batchBalance = round((float) $batch->quantity_on_hand + $delta, 2);
-
-                if ($direction === InventoryDirection::Out && ! $product->allow_negative_stock && $batchBalance < 0) {
-                    throw ValidationException::withMessages([
-                        'batch_id' => sprintf('Batch %s does not have enough stock.', $batch->batch_number),
-                    ]);
-                }
-
-                $batch->forceFill([
-                    'quantity_on_hand' => $batchBalance,
-                    'status' => $this->resolveBatchStatus($batch, $batchBalance),
-                ])->save();
-            }
+            $newBalance = round((float) $product->inventoryStocks()->sum('quantity_on_hand'), 2);
 
             return InventoryMovement::query()->create([
                 'tenant_id' => tenant('id'),
                 'product_id' => $product->id,
-                'location_id' => $attributes['location_id'] ?? $batch?->location_id,
-                'batch_id' => $batch?->id,
+                'location_id' => $attributes['location_id'] ?? $stock->location_id,
+                'inventory_stock_id' => $stock->id,
                 'movement_type' => $movementType,
                 'direction' => $direction,
                 'quantity' => $quantity,
@@ -92,92 +75,145 @@ final readonly class RecordInventoryMovementAction
     /**
      * @param  array<string, mixed>  $attributes
      */
-    private function resolveBatch(Product $product, InventoryMovementType $movementType, InventoryDirection $direction, array $attributes): ?InventoryBatch
+    private function resolveInventoryStock(Product $product, InventoryMovementType $movementType, InventoryDirection $direction, array $attributes): InventoryStock
     {
-        $batch = $attributes['batch'] ?? null;
+        $stock = $attributes['inventory_stock'] ?? null;
 
-        if ($batch instanceof InventoryBatch) {
-            return $batch;
+        if ($stock instanceof InventoryStock) {
+            return $stock;
         }
 
-        if (isset($attributes['batch_id']) && $attributes['batch_id'] !== null && $attributes['batch_id'] !== '') {
-            return InventoryBatch::query()->findOrFail((int) $attributes['batch_id']);
+        if (isset($attributes['inventory_stock_id']) && filled($attributes['inventory_stock_id'])) {
+            return InventoryStock::query()->lockForUpdate()->findOrFail((int) $attributes['inventory_stock_id']);
         }
 
-        if ($direction === InventoryDirection::In && ($product->requires_batch_tracking || $product->has_expiry)) {
-            $batchNumber = trim((string) ($attributes['batch_number'] ?? ''));
-            $expiryDate = $attributes['expiry_date'] ?? null;
+        $locationId = isset($attributes['location_id']) && filled($attributes['location_id'])
+            ? (int) $attributes['location_id']
+            : null;
 
-            if ($batchNumber === '') {
-                throw ValidationException::withMessages([
-                    'batch_number' => 'A batch number is required for this item.',
-                ]);
+        if ($direction === InventoryDirection::In) {
+            if ($product->has_expiry) {
+                $batchNumber = trim((string) ($attributes['batch_number'] ?? ''));
+                $expiryDate = $attributes['expiry_date'] ?? null;
+
+                if ($batchNumber === '') {
+                    throw ValidationException::withMessages([
+                        'batch_number' => 'A batch number is required for this item.',
+                    ]);
+                }
+
+                if (blank($expiryDate)) {
+                    throw ValidationException::withMessages([
+                        'expiry_date' => 'An expiry date is required for this item.',
+                    ]);
+                }
+
+                return InventoryStock::query()->lockForUpdate()->firstOrCreate(
+                    [
+                        'tenant_id' => tenant('id'),
+                        'product_id' => $product->id,
+                        'location_id' => $locationId,
+                        'batch_number' => $batchNumber,
+                    ],
+                    [
+                        'expiry_date' => $expiryDate,
+                        'received_at' => $attributes['received_at'] ?? ($attributes['movement_date'] ?? now()),
+                        'unit_cost' => $attributes['unit_cost'] ?? null,
+                        'notes' => $attributes['notes'] ?? null,
+                        'quantity_on_hand' => 0,
+                    ]
+                );
             }
 
-            if ($product->has_expiry && blank($expiryDate)) {
-                throw ValidationException::withMessages([
-                    'expiry_date' => 'An expiry date is required for this item.',
-                ]);
-            }
-
-            return InventoryBatch::query()->firstOrCreate(
+            return InventoryStock::query()->lockForUpdate()->firstOrCreate(
                 [
                     'tenant_id' => tenant('id'),
                     'product_id' => $product->id,
-                    'location_id' => $attributes['location_id'] ?? null,
-                    'batch_number' => $batchNumber,
+                    'location_id' => $locationId,
+                    'batch_number' => null,
                 ],
                 [
-                    'expiry_date' => $expiryDate,
-                    'manufactured_at' => $attributes['manufactured_at'] ?? null,
                     'received_at' => $attributes['received_at'] ?? ($attributes['movement_date'] ?? now()),
-                    'cost_price' => $attributes['unit_cost'] ?? null,
-                    'status' => InventoryBatchStatus::Active,
+                    'unit_cost' => $attributes['unit_cost'] ?? null,
                     'notes' => $attributes['notes'] ?? null,
                     'quantity_on_hand' => 0,
                 ]
             );
         }
 
-        return null;
+        if ($product->has_expiry) {
+            throw ValidationException::withMessages([
+                'inventory_stock_id' => 'Choose the stock record to issue from for expiring items.',
+            ]);
+        }
+
+        $existingStock = InventoryStock::query()->lockForUpdate()
+            ->where('product_id', $product->id)
+            ->when($locationId !== null, fn ($query) => $query->where('location_id', $locationId))
+            ->whereNull('batch_number')
+            ->first();
+
+        if ($existingStock !== null) {
+            return $existingStock;
+        }
+
+        if (! $product->allow_negative_stock) {
+            throw ValidationException::withMessages([
+                'quantity' => sprintf('No available stock record exists for %s in the selected location.', $product->name),
+            ]);
+        }
+
+        return InventoryStock::query()->create([
+            'tenant_id' => tenant('id'),
+            'product_id' => $product->id,
+            'location_id' => $locationId,
+            'batch_number' => null,
+            'received_at' => $attributes['received_at'] ?? ($attributes['movement_date'] ?? now()),
+            'quantity_on_hand' => 0,
+        ]);
     }
 
     /**
      * @param  array<string, mixed>  $attributes
      */
-    private function validateBatchUsage(Product $product, InventoryBatch $batch, InventoryMovementType $movementType, InventoryDirection $direction, float $baseQuantity, array $attributes): void
+    private function validateStockUsage(Product $product, InventoryStock $stock, InventoryMovementType $movementType, InventoryDirection $direction, float $baseQuantity, array $attributes): void
     {
-        if ((int) $batch->product_id !== $product->id) {
+        if ((int) $stock->product_id !== $product->id) {
             throw ValidationException::withMessages([
-                'batch_id' => 'The selected batch does not belong to the selected product.',
+                'inventory_stock_id' => 'The selected stock record does not belong to the selected product.',
             ]);
         }
 
-        if (isset($attributes['location_id']) && $attributes['location_id'] !== null && (int) $batch->location_id !== (int) $attributes['location_id']) {
+        if (isset($attributes['location_id']) && $attributes['location_id'] !== null && (int) $stock->location_id !== (int) $attributes['location_id']) {
             throw ValidationException::withMessages([
-                'location_id' => 'The selected batch does not belong to the selected stock location.',
+                'location_id' => 'The selected stock record does not belong to the selected stock location.',
             ]);
         }
 
-        if ($direction === InventoryDirection::Out && ! $product->allow_negative_stock && ((float) $batch->quantity_on_hand - $baseQuantity) < 0) {
+        if ($product->has_expiry) {
+            if (blank($stock->batch_number)) {
+                throw ValidationException::withMessages([
+                    'inventory_stock_id' => 'Expiring items must use a stock record with batch details.',
+                ]);
+            }
+
+            if ($stock->expiry_date === null) {
+                throw ValidationException::withMessages([
+                    'inventory_stock_id' => 'Expiring items must use a stock record with an expiry date.',
+                ]);
+            }
+        }
+
+        if ($direction === InventoryDirection::Out && ! $product->allow_negative_stock && ((float) $stock->quantity_on_hand - $baseQuantity) < 0) {
             throw ValidationException::withMessages([
-                'batch_id' => sprintf('Batch %s does not have enough stock.', $batch->batch_number),
+                'inventory_stock_id' => sprintf('The selected stock record does not have enough quantity for %s.', $product->name),
             ]);
         }
 
-        if ($movementType === InventoryMovementType::SaleIssue && $batch->isExpired()) {
+        if ($movementType === InventoryMovementType::SaleIssue && $stock->isExpired()) {
             throw ValidationException::withMessages([
-                'batch_id' => sprintf('Batch %s is expired and cannot be sold.', $batch->batch_number),
+                'inventory_stock_id' => sprintf('Batch %s is expired and cannot be sold.', $stock->batch_number),
             ]);
         }
-    }
-
-    private function resolveBatchStatus(InventoryBatch $batch, float $balance): InventoryBatchStatus
-    {
-        if ($batch->expiry_date !== null && $batch->expiry_date->lt(today())) {
-            return InventoryBatchStatus::Expired;
-        }
-
-        return $balance <= 0 ? InventoryBatchStatus::Depleted : InventoryBatchStatus::Active;
     }
 }

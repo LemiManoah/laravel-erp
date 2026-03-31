@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Livewire\Inventory\Batches;
+namespace App\Livewire\Inventory\Stocks;
 
-use App\Enums\InventoryBatchStatus;
-use App\Models\InventoryBatch;
+use App\Models\InventoryStock;
 use App\Models\StockLocation;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Url;
@@ -20,9 +19,6 @@ final class IndexPage extends Component
     public string $search = '';
 
     #[Url(except: '')]
-    public string $status = '';
-
-    #[Url(except: '')]
     public string $expiry = '';
 
     #[Url(except: '')]
@@ -30,15 +26,10 @@ final class IndexPage extends Component
 
     public function mount(): void
     {
-        abort_unless(auth()->user()?->can('inventory-batches.view'), 403);
+        abort_unless(auth()->user()?->can('inventory-stocks.view'), 403);
     }
 
     public function updatedSearch(): void
-    {
-        $this->resetPage();
-    }
-
-    public function updatedStatus(): void
     {
         $this->resetPage();
     }
@@ -56,7 +47,6 @@ final class IndexPage extends Component
     public function clearFilters(): void
     {
         $this->search = '';
-        $this->status = '';
         $this->expiry = '';
         $this->location = '';
         $this->resetPage();
@@ -66,16 +56,15 @@ final class IndexPage extends Component
     {
         $search = trim($this->search);
 
-        $batches = InventoryBatch::query()
+        $stocks = InventoryStock::query()
             ->with(['location', 'product'])
             ->when($search !== '', function ($query) use ($search): void {
-                $query->where(function ($batchQuery) use ($search): void {
-                    $batchQuery->where('batch_number', 'like', sprintf('%%%s%%', $search))
+                $query->where(function ($stockQuery) use ($search): void {
+                    $stockQuery->where('batch_number', 'like', sprintf('%%%s%%', $search))
                         ->orWhereHas('product', fn ($productQuery) => $productQuery->where('name', 'like', sprintf('%%%s%%', $search)))
                         ->orWhereHas('location', fn ($locationQuery) => $locationQuery->where('name', 'like', sprintf('%%%s%%', $search)));
                 });
             })
-            ->when($this->status !== '', fn ($query) => $query->where('status', $this->status))
             ->when($this->location !== '', fn ($query) => $query->where('location_id', $this->location))
             ->when($this->expiry === 'near_expiry', fn ($query) => $query->nearExpiry())
             ->when($this->expiry === 'expired', fn ($query) => $query->expired())
@@ -84,9 +73,8 @@ final class IndexPage extends Component
             ->orderBy('batch_number')
             ->paginate(12);
 
-        return view('livewire.inventory.batches.index-page', [
-            'batches' => $batches,
-            'statuses' => InventoryBatchStatus::cases(),
+        return view('livewire.inventory.stocks.index-page', [
+            'stocks' => $stocks,
             'locations' => StockLocation::query()->active()->ordered()->get(),
         ]);
     }

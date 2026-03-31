@@ -6,7 +6,7 @@ namespace App\Livewire\Inventory\Movements;
 
 use App\Actions\Inventory\RecordInventoryMovementAction;
 use App\Enums\InventoryMovementType;
-use App\Models\InventoryBatch;
+use App\Models\InventoryStock;
 use App\Models\Product;
 use App\Models\StockLocation;
 use Illuminate\Contracts\View\View;
@@ -21,7 +21,7 @@ final class CreatePage extends Component
 
     public string $location_id = '';
 
-    public string $batch_id = '';
+    public string $inventory_stock_id = '';
 
     public string $quantity = '';
 
@@ -32,8 +32,6 @@ final class CreatePage extends Component
     public string $batch_number = '';
 
     public string $expiry_date = '';
-
-    public string $manufactured_at = '';
 
     public string $notes = '';
 
@@ -49,20 +47,19 @@ final class CreatePage extends Component
         $tenant = tenant();
         $product = $this->selectedProduct();
         $movementType = $this->selectedMovementType();
-        $requiresBatchOnIn = $movementType->direction()->value === 'in' && $product !== null && ($product->requires_batch_tracking || $product->has_expiry);
-        $requiresExistingBatch = $movementType->direction()->value === 'out' && $product !== null && ($product->requires_batch_tracking || $product->has_expiry);
+        $requiresNewExpiryDetails = $movementType->direction()->value === 'in' && $product?->has_expiry;
+        $requiresExistingStock = $movementType->direction()->value === 'out' && $product?->has_expiry;
 
         return [
             'movement_type' => ['required', Rule::enum(InventoryMovementType::class), Rule::notIn([InventoryMovementType::SaleIssue->value, InventoryMovementType::TransferIn->value, InventoryMovementType::TransferOut->value])],
             'product_id' => ['required', $tenant->exists('products', 'id')],
             'location_id' => ['required', $tenant->exists('stock_locations', 'id')],
-            'batch_id' => ['nullable', Rule::requiredIf($requiresExistingBatch), $tenant->exists('inventory_batches', 'id')],
+            'inventory_stock_id' => ['nullable', Rule::requiredIf($requiresExistingStock), $tenant->exists('inventory_stocks', 'id')],
             'quantity' => ['required', 'numeric', 'gt:0'],
             'unit_cost' => ['nullable', 'numeric', 'min:0'],
             'movement_date' => ['required', 'date'],
-            'batch_number' => ['nullable', Rule::requiredIf($requiresBatchOnIn), 'string', 'max:255'],
-            'expiry_date' => ['nullable', Rule::requiredIf($product?->has_expiry && $requiresBatchOnIn), 'date'],
-            'manufactured_at' => ['nullable', 'date', 'before_or_equal:movement_date'],
+            'batch_number' => ['nullable', Rule::requiredIf($requiresNewExpiryDetails), 'string', 'max:255'],
+            'expiry_date' => ['nullable', Rule::requiredIf($requiresNewExpiryDetails), 'date'],
             'notes' => ['nullable', 'string'],
         ];
     }
@@ -78,10 +75,9 @@ final class CreatePage extends Component
 
         $recordInventoryMovement->handle($product, $movementType, (float) $this->quantity, [
             'location_id' => (int) $this->location_id,
-            'batch_id' => filled($this->batch_id) ? (int) $this->batch_id : null,
+            'inventory_stock_id' => filled($this->inventory_stock_id) ? (int) $this->inventory_stock_id : null,
             'batch_number' => $this->batch_number !== '' ? trim($this->batch_number) : null,
             'expiry_date' => $this->expiry_date !== '' ? $this->expiry_date : null,
-            'manufactured_at' => $this->manufactured_at !== '' ? $this->manufactured_at : null,
             'received_at' => substr($this->movement_date, 0, 10),
             'movement_date' => $this->movement_date,
             'unit_cost' => $this->unit_cost !== '' ? (float) $this->unit_cost : null,
@@ -98,7 +94,7 @@ final class CreatePage extends Component
         return view('livewire.inventory.movements.create-page', [
             'products' => Product::query()->stockTracked()->active()->orderBy('name')->get(),
             'locations' => StockLocation::query()->active()->ordered()->get(),
-            'batches' => $this->availableBatches(),
+            'stocks' => $this->availableStocks(),
             'movementTypes' => collect(InventoryMovementType::cases())
                 ->reject(fn (InventoryMovementType $type): bool => $type->isTransfer() || $type === InventoryMovementType::SaleIssue)
                 ->values(),
@@ -116,13 +112,13 @@ final class CreatePage extends Component
         return Product::query()->find((int) $this->product_id);
     }
 
-    private function availableBatches()
+    private function availableStocks()
     {
         if (! filled($this->product_id) || ! filled($this->location_id)) {
             return collect();
         }
 
-        return InventoryBatch::query()
+        return InventoryStock::query()
             ->where('product_id', (int) $this->product_id)
             ->where('location_id', (int) $this->location_id)
             ->available()

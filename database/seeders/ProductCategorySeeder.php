@@ -25,14 +25,16 @@ final class ProductCategorySeeder extends Seeder
     private function categories(): array
     {
         return [
-            ['name' => 'Suit (2-Piece)', 'description' => 'Two-piece suits including jacket and trousers.', 'is_active' => true],
-            ['name' => 'Suit (3-Piece)', 'description' => 'Three-piece suits including jacket, trousers, and waistcoat.', 'is_active' => true],
-            ['name' => 'Jacket/Blazer', 'description' => 'Single jackets and blazers.', 'is_active' => true],
-            ['name' => 'Trouser', 'description' => 'Standalone trousers and pants.', 'is_active' => true],
-            ['name' => 'Waistcoat', 'description' => 'Waistcoats and vests.', 'is_active' => true],
-            ['name' => 'Shirt', 'description' => 'Custom shirts and blouses.', 'is_active' => true],
-            ['name' => 'Coat', 'description' => 'Overcoats and long coats.', 'is_active' => true],
-            ['name' => 'Alterations', 'description' => 'Alteration services.', 'is_active' => true],
+            ['name' => 'Grocery Staples', 'description' => 'Shelf-stable staple foods and household pantry items.', 'is_active' => true],
+            ['name' => 'Fresh Produce', 'description' => 'Perishable fruits, vegetables, and farm-fresh produce.', 'is_active' => true],
+            ['name' => 'Beverages', 'description' => 'Packaged drinks, water, and liquid refreshment products.', 'is_active' => true],
+            ['name' => 'Farm Inputs', 'description' => 'Seeds, fertilizers, feeds, and other agricultural inputs.', 'is_active' => true],
+            ['name' => 'Animal Feed & Vet', 'description' => 'Feeds, supplements, and veterinary consumables for livestock operations.', 'is_active' => true],
+            ['name' => 'Household Goods', 'description' => 'Cleaning, daily-use, and home-care products.', 'is_active' => true],
+            ['name' => 'Office Supplies', 'description' => 'Stationery and routine business consumables.', 'is_active' => true],
+            ['name' => 'Hardware & Utilities', 'description' => 'Tools, fittings, and practical maintenance supplies.', 'is_active' => true],
+            ['name' => 'Services', 'description' => 'Non-stock services billed through the ERP.', 'is_active' => true],
+            ['name' => 'Health & Personal Care', 'description' => 'Personal hygiene products and other quick-moving care items.', 'is_active' => true],
         ];
     }
 }

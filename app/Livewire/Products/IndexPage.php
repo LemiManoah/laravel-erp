@@ -97,7 +97,7 @@ final class IndexPage extends Component
             ->get();
 
         $products = Product::query()
-            ->with(['baseUnit', 'category'])
+            ->with(['baseUnit', 'category', 'defaultPrice', 'inventoryStocks'])
             ->when($this->search !== '', function ($query): void {
                 $query->where(function ($productQuery): void {
                     $search = trim($this->search);

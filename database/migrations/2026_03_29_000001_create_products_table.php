@@ -21,18 +21,13 @@ return new class extends Migration
             $table->unsignedBigInteger('base_unit_id')->nullable();
             $table->decimal('reorder_level', 12, 2)->nullable();
             $table->decimal('reorder_quantity', 12, 2)->nullable();
-            $table->decimal('opening_stock_quantity', 12, 2)->nullable();
-            $table->dateTime('opening_stock_date')->nullable();
             $table->boolean('has_variants')->default(false);
             $table->foreignId('parent_item_id')->nullable()->constrained('products')->onDelete('restrict');
             $table->boolean('allow_negative_stock')->default(false);
             $table->boolean('has_expiry')->default(false);
-            $table->boolean('requires_batch_tracking')->default(false);
             $table->boolean('is_serialized')->default(false);
-            $table->decimal('quantity_on_hand', 12, 2)->default(0);
             $table->string('name');
             $table->text('description')->nullable();
-            $table->decimal('base_price', 10, 2)->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
 

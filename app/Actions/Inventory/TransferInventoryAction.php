@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Actions\Inventory;
 
-use App\Enums\InventoryBatchStatus;
 use App\Enums\InventoryMovementType;
-use App\Models\InventoryBatch;
+use App\Models\InventoryStock;
 use App\Models\Product;
 use App\Models\StockLocation;
 use Illuminate\Support\Facades\DB;
@@ -31,31 +30,29 @@ final readonly class TransferInventoryAction
         }
 
         return DB::transaction(function () use ($product, $fromLocation, $toLocation, $quantity, $attributes): array {
-            $batch = null;
-            $destinationBatch = null;
+            $stock = null;
+            $destinationStock = null;
 
-            if (isset($attributes['batch_id']) && filled($attributes['batch_id'])) {
-                $batch = InventoryBatch::query()->lockForUpdate()->findOrFail((int) $attributes['batch_id']);
+            if (isset($attributes['inventory_stock_id']) && filled($attributes['inventory_stock_id'])) {
+                $stock = InventoryStock::query()->lockForUpdate()->findOrFail((int) $attributes['inventory_stock_id']);
 
-                if ((int) $batch->location_id !== $fromLocation->id) {
+                if ((int) $stock->location_id !== $fromLocation->id) {
                     throw ValidationException::withMessages([
-                        'batch_id' => 'The selected batch is not stored in the source location.',
+                        'inventory_stock_id' => 'The selected stock record is not stored in the source location.',
                     ]);
                 }
 
-                $destinationBatch = InventoryBatch::query()->firstOrCreate(
+                $destinationStock = InventoryStock::query()->firstOrCreate(
                     [
                         'tenant_id' => tenant('id'),
                         'product_id' => $product->id,
                         'location_id' => $toLocation->id,
-                        'batch_number' => $batch->batch_number,
+                        'batch_number' => $stock->batch_number,
                     ],
                     [
-                        'expiry_date' => $batch->expiry_date,
-                        'manufactured_at' => $batch->manufactured_at,
-                        'received_at' => $batch->received_at,
-                        'cost_price' => $batch->cost_price,
-                        'status' => InventoryBatchStatus::Active,
+                        'expiry_date' => $stock->expiry_date,
+                        'received_at' => $stock->received_at,
+                        'unit_cost' => $stock->unit_cost,
                         'quantity_on_hand' => 0,
                         'notes' => $attributes['notes'] ?? null,
                     ]
@@ -65,16 +62,15 @@ final readonly class TransferInventoryAction
             $out = $this->recordInventoryMovement->handle($product, InventoryMovementType::TransferOut, $quantity, [
                 ...$attributes,
                 'location_id' => $fromLocation->id,
-                'batch' => $batch,
+                'inventory_stock' => $stock,
             ]);
 
             $in = $this->recordInventoryMovement->handle($product, InventoryMovementType::TransferIn, $quantity, [
                 ...$attributes,
                 'location_id' => $toLocation->id,
-                'batch' => $destinationBatch,
-                'batch_number' => $destinationBatch?->batch_number,
-                'expiry_date' => $destinationBatch?->expiry_date,
-                'manufactured_at' => $destinationBatch?->manufactured_at,
+                'inventory_stock' => $destinationStock,
+                'batch_number' => $destinationStock?->batch_number,
+                'expiry_date' => $destinationStock?->expiry_date,
                 'received_at' => $attributes['movement_date'] ?? now(),
             ]);
 

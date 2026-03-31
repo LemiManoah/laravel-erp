@@ -36,6 +36,10 @@ final class EditPage extends Component
 
         $product = Product::query()->findOrFail($this->productId);
         $product->update($this->productPayload());
+        $product->defaultPrice()->updateOrCreate(
+            ['tenant_id' => tenant('id'), 'product_id' => $product->id],
+            $this->pricePayload(),
+        );
 
         return redirect()->route('products.index')
             ->with('success', 'Product updated successfully.');

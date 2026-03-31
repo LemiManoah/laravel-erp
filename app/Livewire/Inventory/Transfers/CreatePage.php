@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Inventory\Transfers;
 
 use App\Actions\Inventory\TransferInventoryAction;
-use App\Models\InventoryBatch;
+use App\Models\InventoryStock;
 use App\Models\Product;
 use App\Models\StockLocation;
 use Illuminate\Contracts\View\View;
@@ -19,7 +19,7 @@ final class CreatePage extends Component
 
     public string $to_location_id = '';
 
-    public string $batch_id = '';
+    public string $inventory_stock_id = '';
 
     public string $quantity = '';
 
@@ -38,13 +38,13 @@ final class CreatePage extends Component
     {
         $tenant = tenant();
         $product = $this->selectedProduct();
-        $requiresBatch = $product !== null && ($product->requires_batch_tracking || $product->has_expiry);
+        $requiresStockSelection = $product?->has_expiry;
 
         return [
             'product_id' => ['required', $tenant->exists('products', 'id')],
             'from_location_id' => ['required', $tenant->exists('stock_locations', 'id')],
             'to_location_id' => ['required', 'different:from_location_id', $tenant->exists('stock_locations', 'id')],
-            'batch_id' => ['nullable', \Illuminate\Validation\Rule::requiredIf($requiresBatch), $tenant->exists('inventory_batches', 'id')],
+            'inventory_stock_id' => ['nullable', \Illuminate\Validation\Rule::requiredIf($requiresStockSelection), $tenant->exists('inventory_stocks', 'id')],
             'quantity' => ['required', 'numeric', 'gt:0'],
             'movement_date' => ['required', 'date'],
             'notes' => ['nullable', 'string'],
@@ -63,7 +63,7 @@ final class CreatePage extends Component
             StockLocation::query()->findOrFail((int) $this->to_location_id),
             (float) $this->quantity,
             [
-                'batch_id' => filled($this->batch_id) ? (int) $this->batch_id : null,
+                'inventory_stock_id' => filled($this->inventory_stock_id) ? (int) $this->inventory_stock_id : null,
                 'movement_date' => $this->movement_date,
                 'notes' => $this->notes !== '' ? trim($this->notes) : null,
                 'reference_type' => 'inventory_transfer',
@@ -80,7 +80,7 @@ final class CreatePage extends Component
         return view('livewire.inventory.transfers.create-page', [
             'products' => Product::query()->stockTracked()->active()->orderBy('name')->get(),
             'locations' => StockLocation::query()->active()->ordered()->get(),
-            'batches' => $this->availableBatches(),
+            'stocks' => $this->availableStocks(),
             'selectedProduct' => $this->selectedProduct(),
         ]);
     }
@@ -94,13 +94,13 @@ final class CreatePage extends Component
         return Product::query()->find((int) $this->product_id);
     }
 
-    private function availableBatches()
+    private function availableStocks()
     {
         if (! filled($this->product_id) || ! filled($this->from_location_id)) {
             return collect();
         }
 
-        return InventoryBatch::query()
+        return InventoryStock::query()
             ->where('product_id', (int) $this->product_id)
             ->where('location_id', (int) $this->from_location_id)
             ->available()

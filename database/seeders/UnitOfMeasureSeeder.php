@@ -22,6 +22,8 @@ final class UnitOfMeasureSeeder extends Seeder
             ['name' => 'Liter', 'abbreviation' => 'l', 'is_active' => true],
             ['name' => 'Milliliter', 'abbreviation' => 'ml', 'is_active' => true],
             ['name' => 'Box', 'abbreviation' => 'box', 'is_active' => true],
+            ['name' => 'Bag', 'abbreviation' => 'bag', 'is_active' => true],
+            ['name' => 'Dozen', 'abbreviation' => 'doz', 'is_active' => true],
             ['name' => 'Set', 'abbreviation' => 'set', 'is_active' => true],
         ];
 

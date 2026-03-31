@@ -48,9 +48,9 @@ final class StockLocation extends Model
         ];
     }
 
-    public function batches(): HasMany
+    public function inventoryStocks(): HasMany
     {
-        return $this->hasMany(InventoryBatch::class, 'location_id');
+        return $this->hasMany(InventoryStock::class, 'location_id');
     }
 
     public function inventoryMovements(): HasMany

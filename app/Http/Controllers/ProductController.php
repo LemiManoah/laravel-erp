@@ -37,8 +37,12 @@ final readonly class ProductController implements HasMiddleware
             'product_category_id' => $request->validated('product_category_id'),
             'name' => $request->validated('name'),
             'description' => $request->validated('description'),
-            'base_price' => $request->validated('base_price'),
+            'is_sellable' => $request->boolean('is_sellable', true),
             'is_active' => $request->boolean('is_active', true),
+        ])->defaultPrice()->create([
+            'tenant_id' => tenant('id'),
+            'buying_price' => $request->validated('buying_price'),
+            'selling_price' => $request->validated('base_price'),
         ]);
 
         return to_route('products.index')->with('success', 'Product created successfully.');
@@ -60,9 +64,17 @@ final readonly class ProductController implements HasMiddleware
             'product_category_id' => $request->validated('product_category_id'),
             'name' => $request->validated('name'),
             'description' => $request->validated('description'),
-            'base_price' => $request->validated('base_price'),
+            'is_sellable' => $request->boolean('is_sellable', true),
             'is_active' => $request->boolean('is_active'),
         ]);
+
+        $product->defaultPrice()->updateOrCreate(
+            ['tenant_id' => tenant('id'), 'product_id' => $product->id],
+            [
+                'buying_price' => $request->validated('buying_price'),
+                'selling_price' => $request->validated('base_price'),
+            ],
+        );
 
         return to_route('products.index')->with('success', 'Product updated successfully.');
     }

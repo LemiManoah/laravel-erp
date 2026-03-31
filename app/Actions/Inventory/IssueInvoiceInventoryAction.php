@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Actions\Inventory;
 
 use App\Enums\InventoryMovementType;
-use App\Models\InventoryBatch;
 use App\Models\Invoice;
+use App\Models\InventoryStock;
 use App\Models\Product;
 use App\Models\StockLocation;
 use Illuminate\Validation\ValidationException;
@@ -36,8 +36,8 @@ final readonly class IssueInvoiceInventoryAction
 
             $quantity = (float) $item->quantity;
 
-            if ($product->requires_batch_tracking || $product->has_expiry) {
-                $this->issueFromBatches($invoice, $product, $location, $quantity);
+            if ($product->has_expiry) {
+                $this->issueFromStockRows($invoice, $product, $location, $quantity);
 
                 continue;
             }
@@ -75,10 +75,10 @@ final readonly class IssueInvoiceInventoryAction
         return $location;
     }
 
-    private function issueFromBatches(Invoice $invoice, Product $product, StockLocation $location, float $quantity): void
+    private function issueFromStockRows(Invoice $invoice, Product $product, StockLocation $location, float $quantity): void
     {
         $remaining = $quantity;
-        $batches = InventoryBatch::query()
+        $stocks = InventoryStock::query()
             ->where('product_id', $product->id)
             ->where('location_id', $location->id)
             ->available()
@@ -92,12 +92,12 @@ final readonly class IssueInvoiceInventoryAction
             ->lockForUpdate()
             ->get();
 
-        foreach ($batches as $batch) {
+        foreach ($stocks as $stock) {
             if ($remaining <= 0) {
                 break;
             }
 
-            $available = (float) $batch->quantity_on_hand;
+            $available = (float) $stock->quantity_on_hand;
 
             if ($available <= 0) {
                 continue;
@@ -107,7 +107,7 @@ final readonly class IssueInvoiceInventoryAction
 
             $this->recordInventoryMovement->handle($product, InventoryMovementType::SaleIssue, $issueQuantity, [
                 'location_id' => $location->id,
-                'batch' => $batch,
+                'inventory_stock' => $stock,
                 'reference_type' => 'invoice',
                 'reference_id' => $invoice->id,
                 'movement_date' => $invoice->issued_at ?? now(),
@@ -119,7 +119,7 @@ final readonly class IssueInvoiceInventoryAction
 
         if ($remaining > 0) {
             throw ValidationException::withMessages([
-                'items' => sprintf('Not enough batch stock is available for %s in %s.', $product->name, $location->name),
+                'items' => sprintf('Not enough expiry-controlled stock is available for %s in %s.', $product->name, $location->name),
             ]);
         }
     }

@@ -18,7 +18,7 @@ use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
  * @property string $tenant_id
  * @property int $product_id
  * @property int|null $location_id
- * @property int|null $batch_id
+ * @property int|null $inventory_stock_id
  * @property InventoryMovementType $movement_type
  * @property InventoryDirection $direction
  * @property float $quantity
@@ -43,7 +43,7 @@ final class InventoryMovement extends Model
         'tenant_id',
         'product_id',
         'location_id',
-        'batch_id',
+        'inventory_stock_id',
         'movement_type',
         'direction',
         'quantity',
@@ -81,9 +81,9 @@ final class InventoryMovement extends Model
         return $this->belongsTo(StockLocation::class, 'location_id');
     }
 
-    public function batch(): BelongsTo
+    public function inventoryStock(): BelongsTo
     {
-        return $this->belongsTo(InventoryBatch::class, 'batch_id');
+        return $this->belongsTo(InventoryStock::class, 'inventory_stock_id');
     }
 
     public function unit(): BelongsTo

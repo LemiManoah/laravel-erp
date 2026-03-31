@@ -68,12 +68,12 @@ final class IndexPage extends Component
         $search = trim($this->search);
 
         $movements = InventoryMovement::query()
-            ->with(['batch', 'location', 'product'])
+            ->with(['inventoryStock', 'location', 'product'])
             ->when($search !== '', function ($query) use ($search): void {
                 $query->where(function ($movementQuery) use ($search): void {
                     $movementQuery->whereHas('product', fn ($productQuery) => $productQuery->where('name', 'like', sprintf('%%%s%%', $search)))
                         ->orWhereHas('location', fn ($locationQuery) => $locationQuery->where('name', 'like', sprintf('%%%s%%', $search)))
-                        ->orWhereHas('batch', fn ($batchQuery) => $batchQuery->where('batch_number', 'like', sprintf('%%%s%%', $search)))
+                        ->orWhereHas('inventoryStock', fn ($stockQuery) => $stockQuery->where('batch_number', 'like', sprintf('%%%s%%', $search)))
                         ->orWhere('reference_type', 'like', sprintf('%%%s%%', $search));
                 });
             })

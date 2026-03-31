@@ -16,7 +16,7 @@ final readonly class ReverseInvoiceInventoryAction
     public function handle(Invoice $invoice): void
     {
         $issueMovements = $invoice->inventoryMovements()
-            ->with(['product', 'batch'])
+            ->with(['product', 'inventoryStock'])
             ->where('movement_type', InventoryMovementType::SaleIssue)
             ->get();
 
@@ -27,7 +27,7 @@ final readonly class ReverseInvoiceInventoryAction
 
             $this->recordInventoryMovement->handle($movement->product, InventoryMovementType::SalesReturn, (float) $movement->quantity, [
                 'location_id' => $movement->location_id,
-                'batch' => $movement->batch,
+                'inventory_stock' => $movement->inventoryStock,
                 'unit_id' => $movement->unit_id,
                 'unit_conversion_rate' => $movement->unit_conversion_rate,
                 'unit_cost' => $movement->unit_cost,

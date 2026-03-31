@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 
@@ -26,18 +27,13 @@ use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
  * @property int|null $base_unit_id
  * @property float|null $reorder_level
  * @property float|null $reorder_quantity
- * @property float|null $opening_stock_quantity
- * @property Carbon|null $opening_stock_date
  * @property bool $has_variants
  * @property int|null $parent_item_id
  * @property bool $allow_negative_stock
  * @property bool $has_expiry
- * @property bool $requires_batch_tracking
  * @property bool $is_serialized
- * @property float $quantity_on_hand
  * @property string $name
  * @property string|null $description
- * @property float|null $base_price
  * @property bool $is_active
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -58,25 +54,25 @@ final class Product extends Model
         'base_unit_id',
         'reorder_level',
         'reorder_quantity',
-        'opening_stock_quantity',
-        'opening_stock_date',
         'has_variants',
         'parent_item_id',
         'allow_negative_stock',
         'has_expiry',
-        'requires_batch_tracking',
         'is_serialized',
-        'quantity_on_hand',
         'name',
         'description',
-        'base_price',
         'is_active',
+    ];
+
+    protected $appends = [
+        'base_price',
+        'buying_price',
+        'quantity_on_hand',
     ];
 
     protected function casts(): array
     {
         return [
-            'base_price' => 'decimal:2',
             'is_active' => 'boolean',
             'item_type' => ProductItemType::class,
             'tracks_inventory' => 'boolean',
@@ -85,13 +81,9 @@ final class Product extends Model
             'has_variants' => 'boolean',
             'allow_negative_stock' => 'boolean',
             'has_expiry' => 'boolean',
-            'requires_batch_tracking' => 'boolean',
             'is_serialized' => 'boolean',
             'reorder_level' => 'decimal:2',
             'reorder_quantity' => 'decimal:2',
-            'opening_stock_quantity' => 'decimal:2',
-            'quantity_on_hand' => 'decimal:2',
-            'opening_stock_date' => 'datetime',
         ];
     }
 
@@ -120,9 +112,14 @@ final class Product extends Model
         return $this->hasMany(InventoryMovement::class, 'product_id');
     }
 
-    public function batches(): HasMany
+    public function inventoryStocks(): HasMany
     {
-        return $this->hasMany(InventoryBatch::class, 'product_id');
+        return $this->hasMany(InventoryStock::class, 'product_id');
+    }
+
+    public function defaultPrice(): HasOne
+    {
+        return $this->hasOne(ProductPrice::class, 'product_id');
     }
 
     protected function isLowStock(): Attribute
@@ -132,14 +129,45 @@ final class Product extends Model
                 return false;
             }
 
-            return $this->quantity_on_hand <= $this->reorder_level;
+            return (float) $this->quantity_on_hand <= (float) $this->reorder_level;
         });
     }
 
     protected function isOutOfStock(): Attribute
     {
-        return Attribute::get(function () {
-            return $this->quantity_on_hand <= 0;
+        return Attribute::get(fn () => (float) $this->quantity_on_hand <= 0);
+    }
+
+    protected function quantityOnHand(): Attribute
+    {
+        return Attribute::get(function (): string {
+            $total = $this->relationLoaded('inventoryStocks')
+                ? $this->inventoryStocks->sum(fn (InventoryStock $stock): float => (float) $stock->quantity_on_hand)
+                : (float) $this->inventoryStocks()->sum('quantity_on_hand');
+
+            return number_format($total, 2, '.', '');
+        });
+    }
+
+    protected function basePrice(): Attribute
+    {
+        return Attribute::get(function (): ?string {
+            $price = $this->relationLoaded('defaultPrice')
+                ? $this->defaultPrice?->selling_price
+                : $this->defaultPrice()->value('selling_price');
+
+            return $price === null ? null : number_format((float) $price, 2, '.', '');
+        });
+    }
+
+    protected function buyingPrice(): Attribute
+    {
+        return Attribute::get(function (): ?string {
+            $price = $this->relationLoaded('defaultPrice')
+                ? $this->defaultPrice?->buying_price
+                : $this->defaultPrice()->value('buying_price');
+
+            return $price === null ? null : number_format((float) $price, 2, '.', '');
         });
     }
 
@@ -165,13 +193,12 @@ final class Product extends Model
 
     public function scopeLowStock($query)
     {
-        return $query->whereNotNull('reorder_level')
-            ->whereRaw('quantity_on_hand <= reorder_level');
+        return $query->whereNotNull('reorder_level');
     }
 
     public function scopeOutOfStock($query)
     {
-        return $query->where('quantity_on_hand', '<=', 0);
+        return $query;
     }
 
     public function scopeBySku($query, string $sku)
