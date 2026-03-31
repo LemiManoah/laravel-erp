@@ -20,10 +20,19 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\Settings;
 use App\Http\Controllers\UserController;
+use App\Livewire\Purchasing\Receipts\CreatePage as PurchaseReceiptsCreatePage;
+use App\Livewire\Purchasing\Receipts\IndexPage as PurchaseReceiptsIndexPage;
+use App\Livewire\Purchasing\Receipts\ShowPage as PurchaseReceiptsShowPage;
 use App\Livewire\Inventory\Movements\CreatePage as InventoryMovementsCreatePage;
 use App\Livewire\Inventory\Movements\IndexPage as InventoryMovementsIndexPage;
+use App\Livewire\Inventory\Monitoring\IndexPage as InventoryMonitoringIndexPage;
+use App\Livewire\Inventory\Receipts\CreatePage as InventoryReceiptsCreatePage;
 use App\Livewire\Inventory\Stocks\IndexPage as InventoryStocksIndexPage;
 use App\Livewire\Inventory\Transfers\CreatePage as InventoryTransfersCreatePage;
+use App\Livewire\Inventory\Adjustments\CreatePage as InventoryAdjustmentsCreatePage;
+use App\Livewire\Suppliers\CreatePage as SuppliersCreatePage;
+use App\Livewire\Suppliers\EditPage as SuppliersEditPage;
+use App\Livewire\Suppliers\IndexPage as SuppliersIndexPage;
 use App\Livewire\Inventory\Units\CreatePage;
 use App\Livewire\Inventory\Units\EditPage;
 use App\Livewire\Inventory\Units\IndexPage;
@@ -87,6 +96,26 @@ Route::middleware([
         Route::post('expenses/{expense}/void', [ExpenseController::class, 'void'])->name('expenses.void');
         Route::resource('expense-categories', ExpenseCategoryController::class)->except(['show']);
 
+        Route::get('suppliers', SuppliersIndexPage::class)
+            ->name('suppliers.index')
+            ->middleware('permission:suppliers.view');
+        Route::get('suppliers/create', SuppliersCreatePage::class)
+            ->name('suppliers.create')
+            ->middleware('permission:suppliers.create');
+        Route::get('suppliers/{supplier}/edit', SuppliersEditPage::class)
+            ->name('suppliers.edit')
+            ->middleware('permission:suppliers.update');
+
+        Route::get('purchase-receipts', PurchaseReceiptsIndexPage::class)
+            ->name('purchase-receipts.index')
+            ->middleware('permission:purchase-receipts.view');
+        Route::get('purchase-receipts/create', PurchaseReceiptsCreatePage::class)
+            ->name('purchase-receipts.create')
+            ->middleware('permission:purchase-receipts.create');
+        Route::get('purchase-receipts/{receipt}', PurchaseReceiptsShowPage::class)
+            ->name('purchase-receipts.show')
+            ->middleware('permission:purchase-receipts.view');
+
         // Inventory Module
         Route::group([], function () {
             // Units of Measure
@@ -115,6 +144,15 @@ Route::middleware([
             Route::get('inventory/stocks', InventoryStocksIndexPage::class)
                 ->name('inventory.stocks.index')
                 ->middleware('permission:inventory-stocks.view');
+            Route::get('inventory/monitoring', InventoryMonitoringIndexPage::class)
+                ->name('inventory.monitoring.index')
+                ->middleware('permission:inventory-stocks.view');
+            Route::get('inventory/receipts/create', InventoryReceiptsCreatePage::class)
+                ->name('inventory.receipts.create')
+                ->middleware('permission:inventory-movements.create');
+            Route::get('inventory/adjustments/create', InventoryAdjustmentsCreatePage::class)
+                ->name('inventory.adjustments.create')
+                ->middleware('permission:inventory-movements.create');
             Route::get('inventory/movements', InventoryMovementsIndexPage::class)
                 ->name('inventory.movements.index')
                 ->middleware('permission:inventory-movements.view');
@@ -127,6 +165,10 @@ Route::middleware([
         });
 
         Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::get('reports/inventory-status', [ReportController::class, 'inventoryStatus'])->name('reports.inventory-status');
+        Route::get('reports/inventory-status/print', [ReportController::class, 'inventoryStatusPrint'])->name('reports.inventory-status.print');
+        Route::get('reports/stock-card', [ReportController::class, 'stockCard'])->name('reports.stock-card');
+        Route::get('reports/stock-card/print', [ReportController::class, 'stockCardPrint'])->name('reports.stock-card.print');
         Route::get('reports/sales', [ReportController::class, 'sales'])->name('reports.sales');
         Route::get('reports/sales/print', [ReportController::class, 'salesPrint'])->name('reports.sales.print');
         Route::get('reports/payments', [ReportController::class, 'payments'])->name('reports.payments');

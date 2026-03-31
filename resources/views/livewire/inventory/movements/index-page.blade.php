@@ -6,8 +6,11 @@
         </div>
         <div class="flex gap-2">
             @can('inventory-movements.create')
-                <a href="{{ route('inventory.movements.create') }}" class="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700">
-                    <i class="fas fa-plus mr-2"></i> Record Movement
+                <a href="{{ route('inventory.receipts.create') }}" class="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700">
+                    <i class="fas fa-plus mr-2"></i> Receive Stock
+                </a>
+                <a href="{{ route('inventory.adjustments.create') }}" class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
+                    <i class="fas fa-sliders mr-2"></i> Adjust Stock
                 </a>
             @endcan
             @can('inventory-transfers.create')

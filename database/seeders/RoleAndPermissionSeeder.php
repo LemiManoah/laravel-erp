@@ -81,6 +81,12 @@ final class RoleAndPermissionSeeder extends Seeder
             'inventory-movements.update',
             'inventory-movements.delete',
             'inventory-transfers.create',
+            'suppliers.view',
+            'suppliers.create',
+            'suppliers.update',
+            'suppliers.delete',
+            'purchase-receipts.view',
+            'purchase-receipts.create',
         ];
 
         foreach ($permissions as $permission) {
@@ -128,6 +134,9 @@ final class RoleAndPermissionSeeder extends Seeder
             'inventory-movements.view',
             'inventory-movements.create',
             'inventory-transfers.create',
+            'suppliers.view',
+            'purchase-receipts.view',
+            'purchase-receipts.create',
         ]);
 
         $accountant->syncPermissions([
@@ -165,6 +174,11 @@ final class RoleAndPermissionSeeder extends Seeder
             'inventory-movements.view',
             'inventory-movements.create',
             'inventory-transfers.create',
+            'suppliers.view',
+            'suppliers.create',
+            'suppliers.update',
+            'purchase-receipts.view',
+            'purchase-receipts.create',
         ]);
 
         $tailor->syncPermissions([

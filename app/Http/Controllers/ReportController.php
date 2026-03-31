@@ -7,11 +7,14 @@ namespace App\Http\Controllers;
 use App\Actions\Invoice\SyncInvoiceStatusesAction;
 use App\Actions\Report\ComputeCustomerStatementAction;
 use App\Actions\Report\ComputeExpensesReportAction;
+use App\Actions\Report\ComputeInventoryStatusReportAction;
 use App\Actions\Report\ComputeOutstandingBalancesReportAction;
 use App\Actions\Report\ComputePaymentsReportAction;
 use App\Actions\Report\ComputeProfitLossReportAction;
 use App\Actions\Report\ComputeSalesReportAction;
+use App\Actions\Report\ComputeStockCardReportAction;
 use App\Http\Requests\ReportDateRangeRequest;
+use App\Http\Requests\StockCardReportRequest;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\View\View;
@@ -28,6 +31,36 @@ final readonly class ReportController extends Controller implements HasMiddlewar
     public function index(): View
     {
         return view('reports.index');
+    }
+
+    public function inventoryStatus(ComputeInventoryStatusReportAction $action): View
+    {
+        return view('reports.inventory_status', $action->handle());
+    }
+
+    public function stockCard(StockCardReportRequest $request, ComputeStockCardReportAction $action): View
+    {
+        return view('reports.stock_card', $action->handle(
+            $request->integer('product_id') ?: null,
+            $request->integer('location_id') ?: null,
+            $request->input('start_date'),
+            $request->input('end_date'),
+        ));
+    }
+
+    public function inventoryStatusPrint(ComputeInventoryStatusReportAction $action): View
+    {
+        return view('reports.print.inventory_status', $action->handle());
+    }
+
+    public function stockCardPrint(StockCardReportRequest $request, ComputeStockCardReportAction $action): View
+    {
+        return view('reports.print.stock_card', $action->handle(
+            $request->integer('product_id') ?: null,
+            $request->integer('location_id') ?: null,
+            $request->input('start_date'),
+            $request->input('end_date'),
+        ));
     }
 
     public function sales(

@@ -215,12 +215,23 @@ That tradeoff is worth it for flexibility and correctness.
 - add `inventory_stocks`
 - add inventory movement ledger
 - add stock locations and units
+- add dedicated operator pages for receiving stock and making stock adjustments
+
+Status:
+
+- completed
 
 ### Phase 2
 
 - enforce expiry-only stock rows with batch details
 - add near-expiry and expired stock monitoring
 - use FEFO for sales issue on expiry items
+- keep generic ledger entry as an advanced fallback, not the primary operator flow
+
+Status:
+
+- completed for stock monitoring and FEFO-based issue flow
+- generic movement entry remains available as the fallback page
 
 ### Phase 3
 
@@ -229,6 +240,53 @@ That tradeoff is worth it for flexibility and correctness.
 - transfers
 - returns
 - richer reporting by product, location, and stock row
+
+Status:
+
+- completed for receipts, adjustments, transfers, inventory status reporting, and stock card reporting
+- completed for suppliers and purchase receipts
+- still pending for purchase orders and broader purchasing workflows
+- still pending for dedicated sales return and purchase return operator pages if we want them separate from the generic movement engine
+
+## What Exists Now
+
+The current inventory module now includes:
+
+- products as catalog records with default pricing
+- units of measure
+- stock locations
+- inventory stocks
+- inventory movements ledger
+- inventory monitoring dashboard
+- receive stock flow
+- stock adjustment flow
+- transfer flow
+- inventory status report
+- stock card report
+- suppliers
+- purchase receipts
+
+## Next Recommended Milestone
+
+The next best step is to deepen the purchasing layer so inventory receipts come from complete business transactions instead of only direct posting.
+
+Recommended next build items:
+
+- purchase orders
+- purchase returns
+- supplier purchasing reports
+- supplier balances or payable visibility later if finance expands
+
+After that, we can add cleaner return workflows:
+
+- sales returns
+- purchase returns
+
+And then optional deeper controls:
+
+- stock counts / stock takes
+- reserved stock
+- approval flow for adjustments and transfers
 
 ## Summary
 

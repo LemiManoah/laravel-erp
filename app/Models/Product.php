@@ -122,6 +122,11 @@ final class Product extends Model
         return $this->hasOne(ProductPrice::class, 'product_id');
     }
 
+    public function purchaseReceiptItems(): HasMany
+    {
+        return $this->hasMany(PurchaseReceiptItem::class);
+    }
+
     protected function isLowStock(): Attribute
     {
         return Attribute::get(function () {
