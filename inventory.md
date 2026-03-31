@@ -246,7 +246,8 @@ Status:
 - completed for receipts, adjustments, transfers, inventory status reporting, and stock card reporting
 - completed for suppliers and purchase receipts
 - completed for purchase orders
-- still pending for receipt-against-order flow and broader purchasing workflows
+- completed for receipt-against-order flow
+- still pending for broader purchasing workflows
 - still pending for dedicated sales return and purchase return operator pages if we want them separate from the generic movement engine
 
 ## What Exists Now
@@ -267,6 +268,7 @@ The current inventory module now includes:
 - suppliers
 - purchase orders
 - purchase receipts
+- receipt-against-order flow
 
 ## Next Recommended Milestone
 
@@ -274,7 +276,6 @@ The next best step is to deepen the purchasing layer so inventory receipts come 
 
 Recommended next build items:
 
-- receipt-against-order flow
 - purchase returns
 - supplier purchasing reports
 - supplier balances or payable visibility later if finance expands

@@ -6,6 +6,7 @@ namespace Database\Seeders;
 
 use App\Actions\Purchasing\CreatePurchaseReceiptAction;
 use App\Models\Product;
+use App\Models\PurchaseOrder;
 use App\Models\PurchaseReceipt;
 use App\Models\StockLocation;
 use App\Models\Supplier;
@@ -18,6 +19,7 @@ final class PurchaseReceiptSeeder extends Seeder
         $suppliers = Supplier::query()->get()->keyBy('code');
         $products = Product::query()->get()->keyBy('sku');
         $locations = StockLocation::query()->get()->keyBy('code');
+        $orders = PurchaseOrder::query()->get()->keyBy('order_number');
         $action = app(CreatePurchaseReceiptAction::class);
 
         foreach ($this->receipts() as $receipt) {
@@ -27,6 +29,7 @@ final class PurchaseReceiptSeeder extends Seeder
 
             $supplier = $suppliers->get($receipt['supplier_code']);
             $location = $locations->get($receipt['location_code']);
+            $order = isset($receipt['order_number']) ? $orders->get($receipt['order_number']) : null;
 
             if ($supplier === null || $location === null) {
                 continue;
@@ -64,6 +67,7 @@ final class PurchaseReceiptSeeder extends Seeder
             $action->handle([
                 'receipt_number' => $receipt['receipt_number'],
                 'supplier_id' => $supplier->id,
+                'purchase_order_id' => $order?->id,
                 'stock_location_id' => $location->id,
                 'receipt_date' => $receipt['receipt_date'],
                 'notes' => $receipt['notes'],
@@ -79,6 +83,7 @@ final class PurchaseReceiptSeeder extends Seeder
         return [
             [
                 'receipt_number' => 'PRC-2026-001',
+                'order_number' => 'PO-2026-001',
                 'supplier_code' => 'SUP-001',
                 'location_code' => 'STORE-01',
                 'receipt_date' => '2026-03-31',
@@ -90,6 +95,7 @@ final class PurchaseReceiptSeeder extends Seeder
             ],
             [
                 'receipt_number' => 'PRC-2026-002',
+                'order_number' => 'PO-2026-002',
                 'supplier_code' => 'SUP-002',
                 'location_code' => 'MAIN-WH',
                 'receipt_date' => '2026-03-31',

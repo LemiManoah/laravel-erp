@@ -20,6 +20,7 @@ final class PurchaseReceipt extends Model
         'tenant_id',
         'receipt_number',
         'supplier_id',
+        'purchase_order_id',
         'stock_location_id',
         'receipt_date',
         'status',
@@ -42,6 +43,11 @@ final class PurchaseReceipt extends Model
     public function supplier(): BelongsTo
     {
         return $this->belongsTo(Supplier::class);
+    }
+
+    public function purchaseOrder(): BelongsTo
+    {
+        return $this->belongsTo(PurchaseOrder::class);
     }
 
     public function stockLocation(): BelongsTo

@@ -27,6 +27,7 @@ final readonly class CreatePurchaseReceiptAction
                 'tenant_id' => tenant('id'),
                 'receipt_number' => $attributes['receipt_number'],
                 'supplier_id' => $attributes['supplier_id'],
+                'purchase_order_id' => $attributes['purchase_order_id'] ?? null,
                 'stock_location_id' => $attributes['stock_location_id'],
                 'receipt_date' => $attributes['receipt_date'],
                 'status' => PurchaseReceiptStatus::Posted,
@@ -63,7 +64,13 @@ final readonly class CreatePurchaseReceiptAction
                 ]);
             }
 
-            return $receipt->load(['supplier', 'stockLocation', 'items.product']);
+            if (! empty($attributes['purchase_order_id'])) {
+                $receipt->purchaseOrder?->update([
+                    'status' => \App\Enums\PurchaseOrderStatus::Received,
+                ]);
+            }
+
+            return $receipt->load(['supplier', 'purchaseOrder', 'stockLocation', 'items.product']);
         });
     }
 }

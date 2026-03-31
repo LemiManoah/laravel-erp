@@ -7,6 +7,13 @@
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Post supplier-delivered stock directly into inventory.</p>
     </div>
 
+    @if($selectedOrder)
+        <div class="mb-6 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800 dark:border-blue-900/50 dark:bg-blue-900/20 dark:text-blue-200">
+            Prefilled from purchase order <span class="font-semibold">{{ $selectedOrder->order_number }}</span> for {{ $selectedOrder->supplier?->name }}.
+            Review batch and expiry details before posting stock.
+        </div>
+    @endif
+
     <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
         <form wire:submit="save">
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -22,7 +29,7 @@
                 </div>
                 <div>
                     <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Supplier <span class="text-red-500">*</span></label>
-                    <select wire:model="supplier_id" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                    <select wire:model.live="supplier_id" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white" @disabled($selectedOrder !== null)>
                         <option value="">Select supplier</option>
                         @foreach($suppliers as $supplier)
                             <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
@@ -32,7 +39,7 @@
                 </div>
                 <div>
                     <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Location <span class="text-red-500">*</span></label>
-                    <select wire:model="stock_location_id" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                    <select wire:model.live="stock_location_id" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white" @disabled($selectedOrder !== null)>
                         <option value="">Select location</option>
                         @foreach($locations as $location)
                             <option value="{{ $location->id }}">{{ $location->name }}</option>
@@ -71,12 +78,12 @@
                                 </div>
                                 <div>
                                     <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Quantity <span class="text-red-500">*</span></label>
-                                    <input type="number" step="0.01" min="0.01" wire:model.blur="items.{{ $index }}.quantity" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                                    <input type="number" step="0.01" min="0.01" wire:model.live="items.{{ $index }}.quantity" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
                                     @error("items.$index.quantity") <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                                 </div>
                                 <div>
                                     <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Unit Cost <span class="text-red-500">*</span></label>
-                                    <input type="number" step="0.01" min="0" wire:model.blur="items.{{ $index }}.unit_cost" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                                    <input type="number" step="0.01" min="0" wire:model.live="items.{{ $index }}.unit_cost" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
                                     @error("items.$index.unit_cost") <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                                 </div>
                                 @if($product?->has_expiry)
@@ -93,7 +100,7 @@
                                 @endif
                                 <div class="md:col-span-3">
                                     <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Line Notes</label>
-                                    <input type="text" wire:model.blur="items.{{ $index }}.notes" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                                    <input type="text" wire:model.live.debounce.300ms="items.{{ $index }}.notes" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
                                     @error("items.$index.notes") <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                                 </div>
                                 <div class="flex items-end justify-between md:justify-end">

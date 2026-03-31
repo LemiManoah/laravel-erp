@@ -6,14 +6,19 @@ namespace App\Livewire\Purchasing\Receipts;
 
 use App\Actions\Purchasing\CreatePurchaseReceiptAction;
 use App\Models\Product;
+use App\Models\PurchaseOrder;
 use App\Models\PurchaseReceipt;
 use App\Models\StockLocation;
 use App\Models\Supplier;
 use Illuminate\Contracts\View\View;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 
 final class CreatePage extends Component
 {
+    #[Url(as: 'order')]
+    public ?int $purchase_order_id = null;
+
     public string $receipt_number = '';
     public string $supplier_id = '';
     public string $stock_location_id = '';
@@ -32,6 +37,10 @@ final class CreatePage extends Component
         $this->receipt_number = $this->generateReceiptNumber();
         $this->receipt_date = now()->toDateString();
         $this->items = [$this->blankItem()];
+
+        if ($this->purchase_order_id !== null) {
+            $this->prefillFromPurchaseOrder();
+        }
     }
 
     protected function rules(): array
@@ -69,8 +78,12 @@ final class CreatePage extends Component
         }
     }
 
-    public function updatedItems($value, string $key): void
+    public function updatedItems($value, ?string $key = null): void
     {
+        if ($key === null) {
+            return;
+        }
+
         [$index, $field] = explode('.', $key, 2);
         $index = (int) $index;
 
@@ -100,6 +113,7 @@ final class CreatePage extends Component
         $receipt = $createPurchaseReceipt->handle([
             'receipt_number' => trim($this->receipt_number),
             'supplier_id' => (int) $this->supplier_id,
+            'purchase_order_id' => $this->purchase_order_id,
             'stock_location_id' => (int) $this->stock_location_id,
             'receipt_date' => $this->receipt_date,
             'notes' => $this->notes === '' ? null : trim($this->notes),
@@ -126,6 +140,7 @@ final class CreatePage extends Component
     public function render(): View
     {
         return view('livewire.purchasing.receipts.create-page', [
+            'selectedOrder' => $this->selectedOrder(),
             'suppliers' => Supplier::query()->where('is_active', true)->orderBy('name')->get(),
             'locations' => StockLocation::query()->active()->ordered()->get(),
             'products' => Product::query()->stockTracked()->purchasable()->active()->with('defaultPrice')->orderBy('name')->get(),
@@ -184,5 +199,45 @@ final class CreatePage extends Component
         $count = PurchaseReceipt::query()->count() + 1;
 
         return sprintf('PRC-%s-%03d', now()->format('Y'), $count);
+    }
+
+    private function selectedOrder(): ?PurchaseOrder
+    {
+        if ($this->purchase_order_id === null) {
+            return null;
+        }
+
+        return PurchaseOrder::query()
+            ->with(['supplier', 'stockLocation', 'items.product.defaultPrice'])
+            ->find($this->purchase_order_id);
+    }
+
+    private function prefillFromPurchaseOrder(): void
+    {
+        $order = $this->selectedOrder();
+
+        if ($order === null) {
+            $this->purchase_order_id = null;
+
+            return;
+        }
+
+        $this->supplier_id = (string) $order->supplier_id;
+        $this->stock_location_id = (string) $order->stock_location_id;
+        $this->notes = $order->notes ?? '';
+        $this->items = $order->items->map(function ($item): array {
+            return [
+                'product_id' => (string) $item->product_id,
+                'quantity' => (string) ((float) $item->quantity),
+                'unit_cost' => (string) ((float) $item->unit_cost),
+                'batch_number' => '',
+                'expiry_date' => '',
+                'notes' => $item->notes ?? '',
+            ];
+        })->values()->all();
+
+        if ($this->items === []) {
+            $this->items = [$this->blankItem()];
+        }
     }
 }
