@@ -38,4 +38,9 @@ final class Supplier extends Model
     {
         return $this->hasMany(PurchaseReceipt::class);
     }
+
+    public function purchaseOrders(): HasMany
+    {
+        return $this->hasMany(PurchaseOrder::class);
+    }
 }

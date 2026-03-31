@@ -127,6 +127,11 @@ final class Product extends Model
         return $this->hasMany(PurchaseReceiptItem::class);
     }
 
+    public function purchaseOrderItems(): HasMany
+    {
+        return $this->hasMany(PurchaseOrderItem::class);
+    }
+
     protected function isLowStock(): Attribute
     {
         return Attribute::get(function () {

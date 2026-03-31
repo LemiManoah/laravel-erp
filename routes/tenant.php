@@ -23,6 +23,9 @@ use App\Http\Controllers\UserController;
 use App\Livewire\Purchasing\Receipts\CreatePage as PurchaseReceiptsCreatePage;
 use App\Livewire\Purchasing\Receipts\IndexPage as PurchaseReceiptsIndexPage;
 use App\Livewire\Purchasing\Receipts\ShowPage as PurchaseReceiptsShowPage;
+use App\Livewire\Purchasing\Orders\CreatePage as PurchaseOrdersCreatePage;
+use App\Livewire\Purchasing\Orders\IndexPage as PurchaseOrdersIndexPage;
+use App\Livewire\Purchasing\Orders\ShowPage as PurchaseOrdersShowPage;
 use App\Livewire\Inventory\Movements\CreatePage as InventoryMovementsCreatePage;
 use App\Livewire\Inventory\Movements\IndexPage as InventoryMovementsIndexPage;
 use App\Livewire\Inventory\Monitoring\IndexPage as InventoryMonitoringIndexPage;
@@ -115,6 +118,15 @@ Route::middleware([
         Route::get('purchase-receipts/{receipt}', PurchaseReceiptsShowPage::class)
             ->name('purchase-receipts.show')
             ->middleware('permission:purchase-receipts.view');
+        Route::get('purchase-orders', PurchaseOrdersIndexPage::class)
+            ->name('purchase-orders.index')
+            ->middleware('permission:purchase-orders.view');
+        Route::get('purchase-orders/create', PurchaseOrdersCreatePage::class)
+            ->name('purchase-orders.create')
+            ->middleware('permission:purchase-orders.create');
+        Route::get('purchase-orders/{order}', PurchaseOrdersShowPage::class)
+            ->name('purchase-orders.show')
+            ->middleware('permission:purchase-orders.view');
 
         // Inventory Module
         Route::group([], function () {

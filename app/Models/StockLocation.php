@@ -58,6 +58,11 @@ final class StockLocation extends Model
         return $this->hasMany(PurchaseReceipt::class, 'stock_location_id');
     }
 
+    public function purchaseOrders(): HasMany
+    {
+        return $this->hasMany(PurchaseOrder::class, 'stock_location_id');
+    }
+
     public function inventoryMovements(): HasMany
     {
         return $this->hasMany(InventoryMovement::class, 'location_id');
