@@ -74,8 +74,12 @@ final class CreatePage extends Component
         }
     }
 
-    public function updatedItems($value, string $key): void
+    public function updatedItems($value, ?string $key = null): void
     {
+        if ($key === null) {
+            return;
+        }
+
         [$index, $field] = explode('.', $key, 2);
         $index = (int) $index;
 
