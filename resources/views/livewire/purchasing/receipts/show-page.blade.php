@@ -7,9 +7,9 @@
             <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">{{ $receipt->receipt_number }}</h1>
             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Posted on {{ $receipt->receipt_date?->format('M d, Y') }}</p>
         </div>
-        <!-- <a href="{{ route('purchase-receipts.create') }}" class="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700">
-            <i class="fas fa-plus mr-2"></i> New Receipt
-        </a> -->
+        <a href="{{ route('purchase-returns.create', ['receipt' => $receipt->id]) }}" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
+            Create Return
+        </a>
     </div>
 
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">

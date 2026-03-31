@@ -13,8 +13,10 @@ use App\Actions\Report\ComputePaymentsReportAction;
 use App\Actions\Report\ComputeProfitLossReportAction;
 use App\Actions\Report\ComputeSalesReportAction;
 use App\Actions\Report\ComputeStockCardReportAction;
+use App\Actions\Report\ComputeSupplierPurchasingReportAction;
 use App\Http\Requests\ReportDateRangeRequest;
 use App\Http\Requests\StockCardReportRequest;
+use App\Http\Requests\SupplierPurchasingReportRequest;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\View\View;
@@ -60,6 +62,28 @@ final readonly class ReportController extends Controller implements HasMiddlewar
             $request->integer('location_id') ?: null,
             $request->input('start_date'),
             $request->input('end_date'),
+        ));
+    }
+
+    public function supplierPurchasing(
+        SupplierPurchasingReportRequest $request,
+        ComputeSupplierPurchasingReportAction $action,
+    ): View {
+        return view('reports.supplier_purchasing', $action->handle(
+            $request->integer('supplier_id') ?: null,
+            $request->input('start_date', now()->startOfMonth()->toDateString()),
+            $request->input('end_date', now()->endOfMonth()->toDateString()),
+        ));
+    }
+
+    public function supplierPurchasingPrint(
+        SupplierPurchasingReportRequest $request,
+        ComputeSupplierPurchasingReportAction $action,
+    ): View {
+        return view('reports.print.supplier_purchasing', $action->handle(
+            $request->integer('supplier_id') ?: null,
+            $request->input('start_date', now()->startOfMonth()->toDateString()),
+            $request->input('end_date', now()->endOfMonth()->toDateString()),
         ));
     }
 

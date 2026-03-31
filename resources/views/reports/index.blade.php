@@ -82,5 +82,14 @@
             <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">View movement history and running balances for one stock-tracked product.</p>
             <span class="inline-flex mt-4 px-3 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded text-sm group-hover:bg-gray-200 dark:group-hover:bg-gray-600 transition">Open report</span>
         </a>
+
+        <a href="{{ route('reports.supplier-purchasing') }}" class="block p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition shadow-sm group">
+            <div class="text-gray-500 dark:text-gray-400 mb-3 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition">
+                <i class="fas fa-truck-loading fa-lg"></i>
+            </div>
+            <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-1">Supplier Purchasing</h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">Track supplier order, receipt, and return activity over a selected period.</p>
+            <span class="inline-flex mt-4 px-3 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded text-sm group-hover:bg-gray-200 dark:group-hover:bg-gray-600 transition">Open report</span>
+        </a>
     </div>
 </x-layouts.app>

@@ -72,7 +72,7 @@
                     @endif
                 @endif
 
-                @if(auth()->user()?->canAny(['suppliers.view', 'purchase-orders.view', 'purchase-receipts.view']))
+                @if(auth()->user()?->canAny(['suppliers.view', 'purchase-orders.view', 'purchase-receipts.view', 'purchase-returns.view']))
                     <li class="mt-4">
                         <div class="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                             Procurement
@@ -89,6 +89,10 @@
                     @if(auth()->user()?->can('purchase-receipts.view'))
                         <x-layouts.sidebar-link href="{{ route('purchase-receipts.index') }}" icon='fas-dolly'
                             :active="request()->routeIs('purchase-receipts*')">Purchase Receipts</x-layouts.sidebar-link>
+                    @endif
+                    @if(auth()->user()?->can('purchase-returns.view'))
+                        <x-layouts.sidebar-link href="{{ route('purchase-returns.index') }}" icon='fas-rotate-left'
+                            :active="request()->routeIs('purchase-returns*')">Purchase Returns</x-layouts.sidebar-link>
                     @endif
                 @endif
 

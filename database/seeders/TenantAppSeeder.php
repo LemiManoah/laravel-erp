@@ -23,6 +23,7 @@ final class TenantAppSeeder extends Seeder
             InventoryStockSeeder::class,
             PurchaseOrderSeeder::class,
             PurchaseReceiptSeeder::class,
+            PurchaseReturnSeeder::class,
             CustomerSeeder::class,
             MeasurementSeeder::class,
             OrderSeeder::class,

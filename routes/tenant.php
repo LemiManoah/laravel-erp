@@ -26,6 +26,9 @@ use App\Livewire\Purchasing\Receipts\ShowPage as PurchaseReceiptsShowPage;
 use App\Livewire\Purchasing\Orders\CreatePage as PurchaseOrdersCreatePage;
 use App\Livewire\Purchasing\Orders\IndexPage as PurchaseOrdersIndexPage;
 use App\Livewire\Purchasing\Orders\ShowPage as PurchaseOrdersShowPage;
+use App\Livewire\Purchasing\Returns\CreatePage as PurchaseReturnsCreatePage;
+use App\Livewire\Purchasing\Returns\IndexPage as PurchaseReturnsIndexPage;
+use App\Livewire\Purchasing\Returns\ShowPage as PurchaseReturnsShowPage;
 use App\Livewire\Inventory\Movements\CreatePage as InventoryMovementsCreatePage;
 use App\Livewire\Inventory\Movements\IndexPage as InventoryMovementsIndexPage;
 use App\Livewire\Inventory\Monitoring\IndexPage as InventoryMonitoringIndexPage;
@@ -127,6 +130,15 @@ Route::middleware([
         Route::get('purchase-orders/{order}', PurchaseOrdersShowPage::class)
             ->name('purchase-orders.show')
             ->middleware('permission:purchase-orders.view');
+        Route::get('purchase-returns', PurchaseReturnsIndexPage::class)
+            ->name('purchase-returns.index')
+            ->middleware('permission:purchase-returns.view');
+        Route::get('purchase-returns/create', PurchaseReturnsCreatePage::class)
+            ->name('purchase-returns.create')
+            ->middleware('permission:purchase-returns.create');
+        Route::get('purchase-returns/{purchaseReturn}', PurchaseReturnsShowPage::class)
+            ->name('purchase-returns.show')
+            ->middleware('permission:purchase-returns.view');
 
         // Inventory Module
         Route::group([], function () {
@@ -181,6 +193,8 @@ Route::middleware([
         Route::get('reports/inventory-status/print', [ReportController::class, 'inventoryStatusPrint'])->name('reports.inventory-status.print');
         Route::get('reports/stock-card', [ReportController::class, 'stockCard'])->name('reports.stock-card');
         Route::get('reports/stock-card/print', [ReportController::class, 'stockCardPrint'])->name('reports.stock-card.print');
+        Route::get('reports/supplier-purchasing', [ReportController::class, 'supplierPurchasing'])->name('reports.supplier-purchasing');
+        Route::get('reports/supplier-purchasing/print', [ReportController::class, 'supplierPurchasingPrint'])->name('reports.supplier-purchasing.print');
         Route::get('reports/sales', [ReportController::class, 'sales'])->name('reports.sales');
         Route::get('reports/sales/print', [ReportController::class, 'salesPrint'])->name('reports.sales.print');
         Route::get('reports/payments', [ReportController::class, 'payments'])->name('reports.payments');

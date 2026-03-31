@@ -247,8 +247,9 @@ Status:
 - completed for suppliers and purchase receipts
 - completed for purchase orders
 - completed for receipt-against-order flow
-- still pending for broader purchasing workflows
-- still pending for dedicated sales return and purchase return operator pages if we want them separate from the generic movement engine
+- completed for purchase returns
+- completed for supplier purchasing reports
+- dedicated sales return workflows remain optional if we want a separate operator flow beyond the existing stock movement engine
 
 ## What Exists Now
 
@@ -269,24 +270,17 @@ The current inventory module now includes:
 - purchase orders
 - purchase receipts
 - receipt-against-order flow
+- purchase returns
+- supplier purchasing report
 
 ## Next Recommended Milestone
 
-The next best step is to deepen the purchasing layer so inventory receipts come from complete business transactions instead of only direct posting.
+The current inventory and procurement plan is complete for the intended first release shape.
 
-Recommended next build items:
+Recommended next build items if we expand further:
 
-- purchase returns
-- supplier purchasing reports
 - supplier balances or payable visibility later if finance expands
-
-After that, we can add cleaner return workflows:
-
-- sales returns
-- purchase returns
-
-And then optional deeper controls:
-
+- dedicated sales returns if we want a separate return screen instead of relying on stock movement tools
 - stock counts / stock takes
 - reserved stock
 - approval flow for adjustments and transfers
