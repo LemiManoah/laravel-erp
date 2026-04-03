@@ -60,7 +60,7 @@ final readonly class CreatePurchaseReturnAction
                 ]);
             }
 
-            return $return->load(['supplier', 'purchaseReceipt', 'stockLocation', 'items.product', 'items.inventoryStock']);
+            return $return->load(['supplier', 'purchaseReceipt', 'stockLocation', 'items.inventoryItem', 'items.inventoryStock']);
         });
     }
 }

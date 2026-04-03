@@ -40,7 +40,7 @@ final readonly class CreatePurchaseOrderAction
                 ]);
             }
 
-            return $order->load(['supplier', 'stockLocation', 'items.product']);
+            return $order->load(['supplier', 'stockLocation', 'items.inventoryItem']);
         });
     }
 }

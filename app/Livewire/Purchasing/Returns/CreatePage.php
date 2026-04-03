@@ -90,7 +90,7 @@ final class CreatePage extends Component
             return;
         }
 
-        $stock = InventoryStock::query()->with('product')->find((int) $value);
+        $stock = InventoryStock::query()->with('inventoryItem')->find((int) $value);
 
         if ($stock === null) {
             return;
@@ -150,7 +150,7 @@ final class CreatePage extends Component
         }
 
         return PurchaseReceipt::query()
-            ->with(['supplier', 'stockLocation', 'items.product'])
+            ->with(['supplier', 'stockLocation', 'items.inventoryItem'])
             ->find($this->purchase_receipt_id);
     }
 
@@ -195,7 +195,7 @@ final class CreatePage extends Component
         }
 
         return InventoryStock::query()
-            ->with('product')
+            ->with('inventoryItem')
             ->where('location_id', (int) $this->stock_location_id)
             ->available()
             ->orderByRaw('CASE WHEN expiry_date IS NULL THEN 1 ELSE 0 END')

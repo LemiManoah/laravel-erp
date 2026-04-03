@@ -16,7 +16,7 @@ final class ShowPage extends Component
     {
         abort_unless(auth()->user()?->can('purchase-returns.view'), 403);
 
-        $this->purchaseReturn = $purchaseReturn->load(['supplier', 'purchaseReceipt', 'stockLocation', 'items.product.baseUnit', 'creator']);
+        $this->purchaseReturn = $purchaseReturn->load(['supplier', 'purchaseReceipt', 'stockLocation', 'items.inventoryItem.baseUnit', 'creator']);
     }
 
     public function render(): View

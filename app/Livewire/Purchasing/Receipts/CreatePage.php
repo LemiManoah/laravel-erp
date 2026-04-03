@@ -208,7 +208,7 @@ final class CreatePage extends Component
         }
 
         return PurchaseOrder::query()
-            ->with(['supplier', 'stockLocation', 'items.product.defaultPrice'])
+            ->with(['supplier', 'stockLocation', 'items.inventoryItem.defaultPrice'])
             ->find($this->purchase_order_id);
     }
 

@@ -19,7 +19,7 @@ final readonly class IssueInvoiceInventoryAction
 
     public function handle(Invoice $invoice): void
     {
-        $invoice->loadMissing(['items.product', 'stockLocation']);
+        $invoice->loadMissing(['items.inventoryItem', 'stockLocation']);
 
         if ($invoice->items->every(fn ($item): bool => $item->inventoryItem === null || ! $item->inventoryItem->tracks_inventory)) {
             return;

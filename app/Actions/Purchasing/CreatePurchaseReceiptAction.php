@@ -70,7 +70,7 @@ final readonly class CreatePurchaseReceiptAction
                 ]);
             }
 
-            return $receipt->load(['supplier', 'purchaseOrder', 'stockLocation', 'items.product']);
+            return $receipt->load(['supplier', 'purchaseOrder', 'stockLocation', 'items.inventoryItem']);
         });
     }
 }

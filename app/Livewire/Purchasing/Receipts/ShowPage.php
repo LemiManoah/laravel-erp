@@ -16,7 +16,7 @@ final class ShowPage extends Component
     {
         abort_unless(auth()->user()?->can('purchase-receipts.view'), 403);
 
-        $this->receipt = $receipt->load(['supplier', 'stockLocation', 'items.product.baseUnit', 'creator']);
+        $this->receipt = $receipt->load(['supplier', 'stockLocation', 'items.inventoryItem.baseUnit', 'creator']);
     }
 
     public function render(): View

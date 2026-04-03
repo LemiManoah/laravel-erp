@@ -12,7 +12,7 @@ class OrderItem extends Model
     use BelongsToTenant;
     use LogsModelActivity;
 
-    protected $with = ['product'];
+    protected $with = ['inventoryItem'];
 
     protected $fillable = [
         'order_id',
