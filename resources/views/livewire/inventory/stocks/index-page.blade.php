@@ -1,13 +1,13 @@
 <div>
     <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-            <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Inventory Stocks</h1>
+            <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Inventory Stock</h1>
             <p class="text-sm text-gray-500 dark:text-gray-400">Monitor stock rows by product, location, and expiry details where applicable.</p>
         </div>
         <div class="flex gap-2">
             @can('inventory-movements.create')
                 <a href="{{ route('inventory.receipts.create') }}" class="inline-flex w-full items-center justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700 sm:w-auto">
-                    <i class="fas fa-plus mr-2"></i> Receive Stock
+                    <i class="fas fa-plus mr-2"></i> Add Stock
                 </a>
                 <a href="{{ route('inventory.adjustments.create') }}" class="inline-flex w-full items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 sm:w-auto">
                     <i class="fas fa-sliders mr-2"></i> Adjust Stock

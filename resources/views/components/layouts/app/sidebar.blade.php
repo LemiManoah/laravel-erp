@@ -22,10 +22,6 @@
                         <x-layouts.sidebar-link href="{{ route('orders.index') }}" icon='fas-shopping-bag'
                             :active="request()->routeIs('orders*')">Orders</x-layouts.sidebar-link>
                     @endcan
-                    @if(auth()->user()?->can('inventory-items.view'))
-                        <x-layouts.sidebar-link href="{{ route('inventory-items.index') }}" icon='fas-box'
-                            :active="request()->routeIs('inventory-items*') || request()->routeIs('item-categories*')">Inventory Items</x-layouts.sidebar-link>
-                    @endif
                 @endif
 
                 @if(auth()->user()?->canAny(['invoices.view', 'payments.view']))
@@ -54,9 +50,13 @@
                         <x-layouts.sidebar-link href="{{ route('inventory.monitoring.index') }}" icon='fas-chart-column'
                             :active="request()->routeIs('inventory.monitoring*')">Monitoring</x-layouts.sidebar-link>
                     @endif
+                    @if(auth()->user()?->can('inventory-items.view'))
+                        <x-layouts.sidebar-link href="{{ route('inventory-items.index') }}" icon='fas-box'
+                            :active="request()->routeIs('inventory-items*') || request()->routeIs('item-categories*')">Inventory Items</x-layouts.sidebar-link>
+                    @endif
                     @if(auth()->user()?->can('inventory-stocks.view'))
                         <x-layouts.sidebar-link href="{{ route('inventory.stocks.index') }}" icon='fas-layer-group'
-                            :active="request()->routeIs('inventory.stocks*') || request()->routeIs('inventory.receipts*') || request()->routeIs('inventory.adjustments*')">Inventory Stocks</x-layouts.sidebar-link>
+                            :active="request()->routeIs('inventory.stocks*') || request()->routeIs('inventory.receipts*') || request()->routeIs('inventory.adjustments*')">Inventory Stock</x-layouts.sidebar-link>
                     @endif
                     @if(auth()->user()?->can('inventory-movements.view'))
                         <x-layouts.sidebar-link href="{{ route('inventory.movements.index') }}" icon='fas-boxes-stacked'
