@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Livewire\PaymentMethods;
 
+use App\Actions\PaymentMethod\DeletePaymentMethodAction;
 use App\Models\PaymentMethod;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -32,6 +34,25 @@ final class IndexPage extends Component
     {
         $this->search = '';
         $this->resetPage();
+    }
+
+    public function delete(int $paymentMethodId, DeletePaymentMethodAction $action): void
+    {
+        $paymentMethod = PaymentMethod::query()->findOrFail($paymentMethodId);
+
+        abort_unless(auth()->user()?->can('delete', $paymentMethod), 403);
+
+        try {
+            $action->handle($paymentMethod);
+        } catch (ValidationException $e) {
+            foreach ($e->errors() as $field => $messages) {
+                $this->addError($field, $messages[0]);
+            }
+
+            return;
+        }
+
+        session()->flash('success', 'Payment method deleted successfully.');
     }
 
     public function render(): View

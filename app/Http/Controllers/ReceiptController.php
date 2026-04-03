@@ -18,15 +18,6 @@ final readonly class ReceiptController extends Controller implements HasMiddlewa
         ];
     }
 
-    public function show(Receipt $receipt): View
-    {
-        $this->authorize('view', $receipt);
-
-        $receipt->load(['payment.invoice.customer', 'payment.receiver', 'payment.currency']);
-
-        return view('receipts.show', compact('receipt'));
-    }
-
     public function print(Receipt $receipt): View
     {
         $this->authorize('print', $receipt);

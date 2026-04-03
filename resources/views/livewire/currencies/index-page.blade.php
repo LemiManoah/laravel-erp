@@ -1,4 +1,10 @@
 <div>
+    @if (session('success'))
+        <div class="mb-6 rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700 dark:border-green-900/50 dark:bg-green-900/20 dark:text-green-300">
+            {{ session('success') }}
+        </div>
+    @endif
+
     <div class="mb-6 flex items-center justify-between">
         <div>
             <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Currencies</h1>
@@ -92,7 +98,7 @@
                                         </a>
                                     @endcan
                                     @can('delete', $currency)
-                                        <button type="button" @click="$dispatch('open-delete-modal', { url: '{{ route('currencies.destroy', $currency) }}', item: '{{ addslashes($currency->code) }}' })"
+                                        <button type="button" wire:click="delete({{ $currency->id }})" wire:confirm="Delete currency '{{ addslashes($currency->code) }}'? This cannot be undone."
                                             class="inline-flex items-center rounded-md border border-red-200 px-2.5 py-1.5 text-xs font-medium text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-900/30">
                                             Delete
                                         </button>

@@ -12,24 +12,14 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\View\View;
 
 final readonly class ProfileController extends Controller implements HasMiddleware
 {
     public static function middleware(): array
     {
         return [
-            new Middleware('permission:settings.profile.update', only: ['edit', 'update']),
+            new Middleware('permission:settings.profile.update', only: ['update']),
         ];
-    }
-
-    public function edit(Request $request): View
-    {
-        $this->authorize('updateProfile', $request->user());
-
-        return view('settings.profile', [
-            'user' => $request->user(),
-        ]);
     }
 
     public function update(UpdateProfileRequest $request, UpdateProfileAction $action): RedirectResponse

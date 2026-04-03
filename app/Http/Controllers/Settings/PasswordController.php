@@ -11,24 +11,14 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
-use Illuminate\View\View;
 
 final readonly class PasswordController extends Controller implements HasMiddleware
 {
     public static function middleware(): array
     {
         return [
-            new Middleware('permission:settings.password.update', only: ['edit', 'update']),
+            new Middleware('permission:settings.password.update', only: ['update']),
         ];
-    }
-
-    public function edit(Request $request): View
-    {
-        $this->authorize('updatePassword', $request->user());
-
-        return view('settings.password', [
-            'user' => $request->user(),
-        ]);
     }
 
     public function update(UpdatePasswordRequest $request, UpdatePasswordAction $action): RedirectResponse
