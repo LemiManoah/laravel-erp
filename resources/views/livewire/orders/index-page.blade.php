@@ -1,12 +1,13 @@
 <div>
-    <div class="mb-6 flex items-center justify-between">
-        <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Orders</h1>
-        @can('create', \App\Models\Order::class)
-            <a href="{{ route('orders.create') }}" class="rounded-md bg-blue-600 px-4 py-2 text-sm text-white transition hover:bg-blue-700">
-                <i class="fas fa-plus mr-2"></i> Create Order
-            </a>
-        @endcan
-    </div>
+    <x-ui.page-header title="Orders" description="Monitor tailoring orders from intake through delivery.">
+        <x-slot:actions>
+            @can('create', \App\Models\Order::class)
+                <x-ui.action-link href="{{ route('orders.create') }}" variant="primary">
+                    <i class="fas fa-plus mr-2"></i> Create Order
+                </x-ui.action-link>
+            @endcan
+        </x-slot:actions>
+    </x-ui.page-header>
 
     <div class="mb-6 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
         <div class="grid grid-cols-1 gap-3 md:grid-cols-3">
@@ -27,9 +28,9 @@
                 <option value="delivered">Delivered</option>
                 <option value="cancelled">Cancelled</option>
             </select>
-            <button type="button" wire:click="clearFilters" class="rounded-md bg-gray-900 px-4 py-2 text-sm text-white transition hover:bg-gray-700">
+            <x-ui.action-link tag="button" type="button" wire:click="clearFilters" variant="secondary">
                 Clear Filters
-            </button>
+            </x-ui.action-link>
         </div>
     </div>
 

@@ -1,26 +1,13 @@
 <div>
-    @if (session('success'))
-        <div class="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700 dark:border-green-900/50 dark:bg-green-900/20 dark:text-green-300">
-            {{ session('success') }}
-        </div>
-    @endif
-    @if (session('error'))
-        <div class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-300">
-            {{ session('error') }}
-        </div>
-    @endif
-
-    <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-            <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Roles & Permissions</h1>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Manage user roles and their associated system permissions.</p>
-        </div>
-        @can('roles.create')
-            <a href="{{ route('roles.create') }}" class="inline-flex w-full items-center justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700 sm:w-auto">
-                <i class="fas fa-plus mr-2"></i> Create Role
-            </a>
-        @endcan
-    </div>
+    <x-ui.page-header title="Roles & Permissions" description="Manage user roles and the permissions assigned to them.">
+        <x-slot:actions>
+            @can('roles.create')
+                <x-ui.action-link href="{{ route('roles.create') }}" variant="primary">
+                    <i class="fas fa-plus mr-2"></i> Create Role
+                </x-ui.action-link>
+            @endcan
+        </x-slot:actions>
+    </x-ui.page-header>
 
     <div class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
         <div class="overflow-x-auto">
@@ -49,11 +36,15 @@
                             <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
                                 <div class="flex justify-end gap-2">
                                     @can('roles.update')
-                                        <a href="{{ route('roles.edit', $role) }}" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">Edit</a>
+                                        <x-ui.action-link href="{{ route('roles.edit', $role) }}" variant="warning">
+                                            Edit
+                                        </x-ui.action-link>
                                     @endcan
                                     @if($role->name !== 'Admin')
                                         @can('roles.delete')
-                                            <button type="button" wire:click="delete({{ $role->id }})" wire:confirm="Delete role '{{ $role->name }}'? This cannot be undone." class="ml-2 text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">Delete</button>
+                                            <x-ui.action-link tag="button" type="button" wire:click="delete({{ $role->id }})" wire:confirm="Delete role '{{ $role->name }}'? This cannot be undone." variant="danger">
+                                                Delete
+                                            </x-ui.action-link>
                                         @endcan
                                     @endif
                                 </div>

@@ -21,6 +21,7 @@ pest()->extend(TenantTestCase::class)
     ->in(
         'Feature/ActivityLogControllerTest.php',
         'Feature/Auth',
+        'Feature/Business',
         'Feature/DashboardTest.php',
         'Feature/ExpenseCategoryTest.php',
         'Feature/Livewire',

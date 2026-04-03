@@ -1,15 +1,13 @@
 <div>
-    <div class="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-            <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Suppliers</h1>
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Manage the vendors you buy stock and supplies from.</p>
-        </div>
-        @can('suppliers.create')
-            <a href="{{ route('suppliers.create') }}" class="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700">
-                <i class="fas fa-plus mr-2"></i> New Supplier
-            </a>
-        @endcan
-    </div>
+    <x-ui.page-header title="Suppliers" description="Manage the vendors you buy stock and supplies from.">
+        <x-slot:actions>
+            @can('suppliers.create')
+                <x-ui.action-link href="{{ route('suppliers.create') }}" variant="primary">
+                    <i class="fas fa-plus mr-2"></i> New Supplier
+                </x-ui.action-link>
+            @endcan
+        </x-slot:actions>
+    </x-ui.page-header>
 
     <div class="mb-6 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
         <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -26,9 +24,9 @@
                 </select>
             </div>
             <div class="flex items-end">
-                <button type="button" wire:click="clearFilters" class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
+                <x-ui.action-link tag="button" type="button" wire:click="clearFilters" variant="secondary">
                     Clear Filters
-                </button>
+                </x-ui.action-link>
             </div>
         </div>
     </div>
@@ -63,10 +61,14 @@
                             <td class="px-6 py-4 text-right text-sm">
                                 <div class="flex justify-end gap-3">
                                     @can('suppliers.update')
-                                        <a href="{{ route('suppliers.edit', $supplier) }}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">Edit</a>
+                                        <x-ui.action-link href="{{ route('suppliers.edit', $supplier) }}" variant="warning">
+                                            Edit
+                                        </x-ui.action-link>
                                     @endcan
                                     @can('suppliers.delete')
-                                        <button type="button" wire:click="confirmDelete({{ $supplier->id }})" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300">Delete</button>
+                                        <x-ui.action-link tag="button" type="button" wire:click="confirmDelete({{ $supplier->id }})" variant="danger">
+                                            Delete
+                                        </x-ui.action-link>
                                     @endcan
                                 </div>
                             </td>

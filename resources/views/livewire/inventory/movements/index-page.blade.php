@@ -21,12 +21,6 @@
         </div>
     </div>
 
-    @if(session('success'))
-        <div class="mb-6 rounded-md border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-900/30">
-            <p class="text-sm text-green-700 dark:text-green-300">{{ session('success') }}</p>
-        </div>
-    @endif
-
     <div class="mb-6 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
         <div class="grid grid-cols-1 gap-3 md:grid-cols-5">
             <input type="text" wire:model.live.debounce.300ms="search" placeholder="Search product, stock row, or location" class="rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">

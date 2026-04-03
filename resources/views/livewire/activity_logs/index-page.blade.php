@@ -1,8 +1,5 @@
 <div>
-    <div class="mb-6">
-        <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Activity Logs</h1>
-        <p class="text-sm text-gray-500 dark:text-gray-400">Track and monitor all application activity and changes.</p>
-    </div>
+    <x-ui.page-header title="Activity Logs" description="Track and monitor all application activity and changes." />
 
     <div class="mb-6 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
         <div class="grid grid-cols-1 gap-3 md:grid-cols-3">
@@ -12,9 +9,9 @@
                 placeholder="Search action, causer, subject, or event"
                 class="rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white md:col-span-2"
             >
-            <button type="button" wire:click="clearSearch" class="rounded-md bg-gray-900 px-4 py-2 text-sm text-white transition hover:bg-gray-700">
+            <x-ui.action-link tag="button" type="button" wire:click="clearSearch" variant="secondary">
                 Clear
-            </button>
+            </x-ui.action-link>
         </div>
     </div>
 

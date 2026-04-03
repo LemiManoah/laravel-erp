@@ -36,6 +36,10 @@ return new class extends Migration
             $table->index(['tenant_id', 'barcode']);
             $table->index(['tenant_id', 'item_type']);
             $table->index(['tenant_id', 'tracks_inventory']);
+            $table->index(['tenant_id', 'is_active', 'name']);
+            $table->index(['tenant_id', 'product_category_id', 'is_active']);
+            $table->index(['tenant_id', 'tracks_inventory', 'is_active']);
+            $table->index(['tenant_id', 'is_purchasable', 'is_active']);
         });
     }
 

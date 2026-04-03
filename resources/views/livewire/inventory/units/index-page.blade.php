@@ -31,18 +31,6 @@
         </div>
     </div>
 
-    @if(session('success'))
-        <div class="mb-6 rounded-md border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-900/30">
-            <p class="text-sm text-green-700 dark:text-green-300">{{ session('success') }}</p>
-        </div>
-    @endif
-
-    @if(session('error'))
-        <div class="mb-6 rounded-md border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/30">
-            <p class="text-sm text-red-700 dark:text-red-300">{{ session('error') }}</p>
-        </div>
-    @endif
-
     <div class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">

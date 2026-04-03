@@ -1,21 +1,13 @@
 <div>
-    @if (session('success'))
-        <div class="mb-6 rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700 dark:border-green-900/50 dark:bg-green-900/20 dark:text-green-300">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    <div class="mb-6 flex items-center justify-between">
-        <div>
-            <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Payment Methods</h1>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Manage the allowed methods used in payments and expenses.</p>
-        </div>
-        @can('create', \App\Models\PaymentMethod::class)
-            <a href="{{ route('payment-methods.create') }}" class="rounded-md bg-blue-600 px-4 py-2 text-sm text-white transition hover:bg-blue-700">
-                Add Payment Method
-            </a>
-        @endcan
-    </div>
+    <x-ui.page-header title="Payment Methods" description="Manage the allowed methods used in payments and expenses.">
+        <x-slot:actions>
+            @can('create', \App\Models\PaymentMethod::class)
+                <x-ui.action-link href="{{ route('payment-methods.create') }}" variant="primary">
+                    Add Payment Method
+                </x-ui.action-link>
+            @endcan
+        </x-slot:actions>
+    </x-ui.page-header>
 
     <div class="mb-6 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
         <div class="flex flex-col gap-3 md:flex-row">
@@ -25,9 +17,9 @@
                 placeholder="Search payment method"
                 class="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             >
-            <button type="button" wire:click="clearSearch" class="rounded-md bg-gray-900 px-4 py-2 text-sm text-white transition hover:bg-gray-700">
+            <x-ui.action-link tag="button" type="button" wire:click="clearSearch" variant="secondary">
                 Clear
-            </button>
+            </x-ui.action-link>
         </div>
     </div>
 

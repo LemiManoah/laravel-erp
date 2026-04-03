@@ -1,19 +1,18 @@
 <div>
-    <div class="mb-6 flex items-center justify-between">
-        <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Expenses</h1>
-        <div class="flex items-center space-x-3">
+    <x-ui.page-header title="Expenses" description="Review operating spend, categories, and voided transactions.">
+        <x-slot:actions>
             @can('expenses.view')
-                <a href="{{ route('expense-categories.index') }}" class="rounded-md border border-gray-300 bg-gray-100 px-4 py-2 text-sm text-gray-700 transition hover:bg-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
+                <x-ui.action-link href="{{ route('expense-categories.index') }}" variant="secondary">
                     <i class="fas fa-tags mr-2"></i> Manage Categories
-                </a>
+                </x-ui.action-link>
             @endcan
             @can('create', \App\Models\Expense::class)
-                <a href="{{ route('expenses.create') }}" class="rounded-md bg-blue-600 px-4 py-2 text-sm text-white transition hover:bg-blue-700">
+                <x-ui.action-link href="{{ route('expenses.create') }}" variant="primary">
                     <i class="fas fa-plus mr-2"></i> Record Expense
-                </a>
+                </x-ui.action-link>
             @endcan
-        </div>
-    </div>
+        </x-slot:actions>
+    </x-ui.page-header>
 
     <div class="mb-6 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
         <div class="grid grid-cols-1 gap-3 md:grid-cols-4">
@@ -34,9 +33,9 @@
                     <option value="{{ $filterCategory->id }}">{{ $filterCategory->name }}</option>
                 @endforeach
             </select>
-            <button type="button" wire:click="clearFilters" class="rounded-md bg-gray-900 px-4 py-2 text-sm text-white transition hover:bg-gray-700">
+            <x-ui.action-link tag="button" type="button" wire:click="clearFilters" variant="secondary">
                 Clear Filters
-            </button>
+            </x-ui.action-link>
         </div>
     </div>
 

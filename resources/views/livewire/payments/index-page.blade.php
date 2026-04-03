@@ -1,15 +1,13 @@
 <div>
-    <div class="mb-6 flex items-center justify-between">
-        <div>
-            <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Payments</h1>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Review recorded payments and their receipts.</p>
-        </div>
-        @can('viewAny', \App\Models\PaymentMethod::class)
-            <a href="{{ route('payment-methods.index') }}" class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700 sm:w-auto">
-                <i class="fas fa-wallet mr-2 text-gray-400"></i> Payment Methods
-            </a>
-        @endcan
-    </div>
+    <x-ui.page-header title="Payments" description="Review recorded payments, receipts, and collection history.">
+        <x-slot:actions>
+            @can('viewAny', \App\Models\PaymentMethod::class)
+                <x-ui.action-link href="{{ route('payment-methods.index') }}" variant="secondary">
+                    <i class="fas fa-wallet mr-2 text-gray-400"></i> Payment Methods
+                </x-ui.action-link>
+            @endcan
+        </x-slot:actions>
+    </x-ui.page-header>
 
     <div class="mb-6 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
         <div class="grid grid-cols-1 gap-3 md:grid-cols-3">
@@ -19,9 +17,9 @@
                 placeholder="Search receipt, invoice, customer, or reference"
                 class="rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white md:col-span-2"
             >
-            <button type="button" wire:click="clearSearch" class="rounded-md bg-gray-900 px-4 py-2 text-sm text-white transition hover:bg-gray-700">
+            <x-ui.action-link tag="button" type="button" wire:click="clearSearch" variant="secondary">
                 Clear
-            </button>
+            </x-ui.action-link>
         </div>
     </div>
 

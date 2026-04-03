@@ -28,7 +28,9 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('tenant_id')->references('id')->on('tenants')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->index(['status', 'payment_date']);
+            $table->index(['tenant_id', 'status', 'payment_date']);
+            $table->index(['tenant_id', 'invoice_id', 'status']);
+            $table->index(['tenant_id', 'created_at']);
         });
     }
 

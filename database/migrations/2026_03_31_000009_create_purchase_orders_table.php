@@ -28,6 +28,8 @@ return new class extends Migration
             $table->unique(['tenant_id', 'order_number']);
             $table->index(['tenant_id', 'order_date']);
             $table->index(['tenant_id', 'status']);
+            $table->index(['tenant_id', 'supplier_id', 'status', 'order_date']);
+            $table->index(['tenant_id', 'stock_location_id', 'order_date']);
         });
     }
 

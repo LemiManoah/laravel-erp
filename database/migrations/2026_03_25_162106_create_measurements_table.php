@@ -38,6 +38,8 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('tenant_id')->references('id')->on('tenants')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->index(['tenant_id', 'customer_id', 'measurement_date']);
+            $table->index(['tenant_id', 'customer_id', 'is_current']);
         });
     }
 

@@ -25,6 +25,7 @@ return new class extends Migration
             $table->unique(['tenant_id', 'product_id', 'location_id', 'batch_number'], 'inventory_stocks_unique_batch');
             $table->index(['tenant_id', 'expiry_date']);
             $table->index(['tenant_id', 'location_id']);
+            $table->index(['tenant_id', 'product_id', 'location_id', 'expiry_date'], 'inv_stocks_prod_loc_expiry_idx');
         });
     }
 

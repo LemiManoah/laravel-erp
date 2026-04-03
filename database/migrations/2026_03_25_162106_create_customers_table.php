@@ -30,6 +30,8 @@ return new class extends Migration
             $table->unique(['tenant_id', 'customer_code']);
             $table->unique(['tenant_id', 'phone']);
             $table->unique(['tenant_id', 'email']);
+            $table->index(['tenant_id', 'full_name']);
+            $table->index(['tenant_id', 'created_at']);
         });
     }
 

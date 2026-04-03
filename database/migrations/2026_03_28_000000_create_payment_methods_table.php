@@ -21,24 +21,29 @@ return new class extends Migration
             $table->foreign('tenant_id')->references('id')->on('tenants')->cascadeOnUpdate()->cascadeOnDelete();
             $table->unique(['tenant_id', 'name']);
             $table->unique(['tenant_id', 'slug']);
+            $table->index(['tenant_id', 'is_active', 'sort_order']);
         });
 
         Schema::table('payments', function (Blueprint $table) {
             $table->foreignId('payment_method_id')->nullable()->after('amount')->constrained('payment_methods')->nullOnDelete();
+            $table->index(['tenant_id', 'payment_method_id']);
         });
 
         Schema::table('expenses', function (Blueprint $table) {
             $table->foreignId('payment_method_id')->nullable()->after('amount')->constrained('payment_methods')->nullOnDelete();
+            $table->index(['tenant_id', 'payment_method_id']);
         });
     }
 
     public function down(): void
     {
         Schema::table('expenses', function (Blueprint $table) {
+            $table->dropIndex(['tenant_id', 'payment_method_id']);
             $table->dropConstrainedForeignId('payment_method_id');
         });
 
         Schema::table('payments', function (Blueprint $table) {
+            $table->dropIndex(['tenant_id', 'payment_method_id']);
             $table->dropConstrainedForeignId('payment_method_id');
         });
 

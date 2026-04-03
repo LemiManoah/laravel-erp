@@ -37,8 +37,11 @@ return new class extends Migration
 
             $table->foreign('tenant_id')->references('id')->on('tenants')->cascadeOnUpdate()->cascadeOnDelete();
             $table->unique(['tenant_id', 'invoice_number']);
-            $table->index(['status', 'due_date']);
-            $table->index('invoice_date');
+            $table->index(['tenant_id', 'status', 'due_date']);
+            $table->index(['tenant_id', 'invoice_date']);
+            $table->index(['tenant_id', 'customer_id', 'status']);
+            $table->index(['tenant_id', 'issued_at']);
+            $table->index(['tenant_id', 'created_at']);
         });
     }
 

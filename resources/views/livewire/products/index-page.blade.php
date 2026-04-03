@@ -1,20 +1,16 @@
 <div>
-    <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-            <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Products</h1>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Manage products and items available for orders and invoices.</p>
-        </div>
-        <div class="flex gap-2">
+    <x-ui.page-header title="Products" description="Manage products and items available for orders, invoices, and stock tracking.">
+        <x-slot:actions>
             @can('products.create')
-                <a href="{{ route('product-categories.index') }}" class="inline-flex w-full items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 sm:w-auto">
+                <x-ui.action-link href="{{ route('product-categories.index') }}" variant="secondary">
                     <i class="fas fa-tags mr-2"></i> Manage Categories
-                </a>
-                <a href="{{ route('products.create') }}" class="inline-flex w-full items-center justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:w-auto">
+                </x-ui.action-link>
+                <x-ui.action-link href="{{ route('products.create') }}" variant="primary">
                     <i class="fas fa-plus mr-2"></i> Add Product
-                </a>
+                </x-ui.action-link>
             @endcan
-        </div>
-    </div>
+        </x-slot:actions>
+    </x-ui.page-header>
 
     <div class="mb-6 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
         <div class="grid grid-cols-1 gap-3 md:grid-cols-4">
@@ -41,13 +37,14 @@
                     <option value="{{ $filterCategory->id }}">{{ $filterCategory->name }}</option>
                 @endforeach
             </select>
-            <button
+            <x-ui.action-link
+                tag="button"
                 type="button"
                 wire:click="clearFilters"
-                class="rounded-md bg-gray-900 px-4 py-2 text-sm text-white transition hover:bg-gray-700"
+                variant="secondary"
             >
                 Clear Filters
-            </button>
+            </x-ui.action-link>
         </div>
     </div>
 
@@ -105,12 +102,12 @@
                             <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
                                 <div class="flex justify-end gap-2">
                                     @can('products.update')
-                                        <a href="{{ route('products.edit', $product) }}" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">
+                                        <x-ui.action-link href="{{ route('products.edit', $product) }}" variant="warning">
                                             Edit
-                                        </a>
-                                        <button type="button" wire:click="confirmDelete({{ $product->id }})" class="ml-2 text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
+                                        </x-ui.action-link>
+                                        <x-ui.action-link tag="button" type="button" wire:click="confirmDelete({{ $product->id }})" variant="danger">
                                             Delete
-                                        </button>
+                                        </x-ui.action-link>
                                     @endcan
                                 </div>
                             </td>

@@ -28,6 +28,8 @@ return new class extends Migration
             $table->unique(['tenant_id', 'receipt_number']);
             $table->index(['tenant_id', 'receipt_date']);
             $table->index(['tenant_id', 'status']);
+            $table->index(['tenant_id', 'supplier_id', 'status', 'receipt_date'], 'purchase_receipts_supplier_status_idx');
+            $table->index(['tenant_id', 'stock_location_id', 'receipt_date'], 'purchase_receipts_location_date_idx');
         });
     }
 

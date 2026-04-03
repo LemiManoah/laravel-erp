@@ -1,24 +1,16 @@
 <div>
-    @if (session('success'))
-        <div class="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700 dark:border-green-900/50 dark:bg-green-900/20 dark:text-green-300">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    <div class="mb-6 flex items-center justify-between">
-        <div>
-            <a href="{{ route('customers.show', $customer) }}" class="mb-2 inline-block text-blue-600 hover:text-blue-900 dark:hover:text-blue-400">
-                <i class="fas fa-arrow-left mr-1"></i> Back to Customer
-            </a>
-            <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Measurement History</h1>
-            <p class="text-sm text-gray-500 dark:text-gray-400">{{ $customer->full_name }}</p>
-        </div>
-        @can('create', \App\Models\Measurement::class)
-            <a href="{{ route('customers.measurements.create', $customer) }}" class="rounded-md bg-blue-600 px-4 py-2 text-sm text-white transition hover:bg-blue-700">
-                <i class="fas fa-plus mr-2"></i> Add Measurement
-            </a>
-        @endcan
-    </div>
+    <x-ui.page-header title="Measurement History" description="{{ $customer->full_name }}">
+        <a href="{{ route('customers.show', $customer) }}" class="inline-block text-blue-600 hover:text-blue-900 dark:hover:text-blue-400">
+            <i class="fas fa-arrow-left mr-1"></i> Back to Customer
+        </a>
+        <x-slot:actions>
+            @can('create', \App\Models\Measurement::class)
+                <x-ui.action-link href="{{ route('customers.measurements.create', $customer) }}" variant="primary">
+                    <i class="fas fa-plus mr-2"></i> Add Measurement
+                </x-ui.action-link>
+            @endcan
+        </x-slot:actions>
+    </x-ui.page-header>
 
     <div class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
         <div class="overflow-x-auto">

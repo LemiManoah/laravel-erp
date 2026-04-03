@@ -1,22 +1,18 @@
 <div>
-    <div class="mb-6 flex items-center justify-between">
-        <div>
-            <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Users</h1>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Manage staff accounts and assigned roles.</p>
-        </div>
-        <div class="flex items-center space-x-3">
+    <x-ui.page-header title="Users" description="Manage staff accounts, roles, and account activity.">
+        <x-slot:actions>
             @can('viewAny', \App\Models\User::class)
-                <a href="{{ route('roles.index') }}" class="rounded-md border border-gray-300 bg-gray-100 px-4 py-2 text-sm text-gray-700 transition hover:bg-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
+                <x-ui.action-link href="{{ route('roles.index') }}" variant="secondary">
                     <i class="fas fa-users-cog mr-2"></i> Manage Roles
-                </a>
+                </x-ui.action-link>
             @endcan
             @can('create', \App\Models\User::class)
-                <a href="{{ route('users.create') }}" class="rounded-md bg-blue-600 px-4 py-2 text-sm text-white transition hover:bg-blue-700">
+                <x-ui.action-link href="{{ route('users.create') }}" variant="primary">
                     <i class="fas fa-user-plus mr-2"></i> Add User
-                </a>
+                </x-ui.action-link>
             @endcan
-        </div>
-    </div>
+        </x-slot:actions>
+    </x-ui.page-header>
 
     <div class="mb-6 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
         <div class="grid grid-cols-1 gap-3 md:grid-cols-4">
@@ -37,9 +33,9 @@
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
             </select>
-            <button type="button" wire:click="clearFilters" class="rounded-md bg-gray-900 px-4 py-2 text-sm text-white transition hover:bg-gray-700">
+            <x-ui.action-link tag="button" type="button" wire:click="clearFilters" variant="secondary">
                 Clear Filters
-            </button>
+            </x-ui.action-link>
         </div>
     </div>
 

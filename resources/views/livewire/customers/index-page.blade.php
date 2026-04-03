@@ -1,12 +1,13 @@
 <div>
-    <div class="mb-6 flex items-center justify-between">
-        <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Customers</h1>
-        @can('create', \App\Models\Customer::class)
-            <a href="{{ route('customers.create') }}" class="rounded-md bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700">
-                <i class="fas fa-plus mr-2"></i> Add Customer
-            </a>
-        @endcan
-    </div>
+    <x-ui.page-header title="Customers" description="Manage customer profiles, contact details, and tailoring history.">
+        <x-slot:actions>
+            @can('create', \App\Models\Customer::class)
+                <x-ui.action-link href="{{ route('customers.create') }}" variant="primary">
+                    <i class="fas fa-plus mr-2"></i> Add Customer
+                </x-ui.action-link>
+            @endcan
+        </x-slot:actions>
+    </x-ui.page-header>
 
     <div class="mb-6 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
         <div class="flex flex-col gap-3 md:flex-row">
@@ -16,13 +17,13 @@
                 placeholder="Search by name, phone, email, or code"
                 class="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             >
-            <button type="button" wire:click="clearSearch" class="rounded-md bg-gray-900 px-4 py-2 text-sm text-white transition hover:bg-gray-700">
+            <x-ui.action-link tag="button" type="button" wire:click="clearSearch" variant="secondary">
                 Clear
-            </button>
+            </x-ui.action-link>
         </div>
     </div>
 
-    <div class="overflow-hidden rounded-lg bg-white shadow-sm dark:bg-gray-800">
+    <div class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead class="bg-gray-50 dark:bg-gray-900">

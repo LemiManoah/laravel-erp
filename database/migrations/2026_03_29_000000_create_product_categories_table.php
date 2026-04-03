@@ -18,6 +18,7 @@ return new class extends Migration
 
             $table->foreign('tenant_id')->references('id')->on('tenants')->cascadeOnUpdate()->cascadeOnDelete();
             $table->unique(['tenant_id', 'name']);
+            $table->index(['tenant_id', 'is_active', 'name']);
         });
     }
 

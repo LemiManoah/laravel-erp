@@ -33,6 +33,8 @@ return new class extends Migration
             $table->index(['tenant_id', 'movement_type']);
             $table->index(['tenant_id', 'movement_date']);
             $table->index(['tenant_id', 'inventory_stock_id']);
+            $table->index(['tenant_id', 'location_id', 'movement_date'], 'inv_movements_tenant_loc_date_idx');
+            $table->index(['tenant_id', 'movement_type', 'direction', 'movement_date'], 'inv_movements_type_dir_date_idx');
             $table->index(['reference_type', 'reference_id']);
         });
     }
