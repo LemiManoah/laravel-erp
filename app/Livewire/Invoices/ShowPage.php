@@ -45,7 +45,7 @@ final class ShowPage extends Component
 
         $syncInvoiceStatuses->handle();
 
-        $this->invoice = $invoice->load(['customer', 'order', 'items', 'payments.receiver', 'payments.receipt', 'payments.voider', 'currency']);
+        $this->invoice = $invoice->load(['customer', 'order', 'items', 'payments.receiver', 'payments.receipt', 'payments.voider', 'payments.paymentMethodDefinition', 'currency']);
         $this->payment_date = now()->toDateString();
         $this->payment_amount = (string) $this->invoice->balance_due;
         $this->payment_currency_id = (string) $this->invoice->currency_id;
@@ -56,7 +56,7 @@ final class ShowPage extends Component
         abort_unless(auth()->user()?->can('issue', $this->invoice), 403);
 
         $action->handle($this->invoice);
-        $this->invoice->refresh()->load(['customer', 'order', 'items', 'payments.receiver', 'payments.receipt', 'payments.voider', 'currency']);
+        $this->invoice->refresh()->load(['customer', 'order', 'items', 'payments.receiver', 'payments.receipt', 'payments.voider', 'payments.paymentMethodDefinition', 'currency']);
         session()->flash('success', 'Invoice issued successfully.');
     }
 
@@ -90,7 +90,7 @@ final class ShowPage extends Component
             return;
         }
 
-        $this->invoice->refresh()->load(['customer', 'order', 'items', 'payments.receiver', 'payments.receipt', 'payments.voider', 'currency']);
+        $this->invoice->refresh()->load(['customer', 'order', 'items', 'payments.receiver', 'payments.receipt', 'payments.voider', 'payments.paymentMethodDefinition', 'currency']);
         $this->showPaymentForm = false;
         $this->payment_amount = (string) $this->invoice->balance_due;
         $this->reset(['payment_method_id', 'payment_reference_number', 'payment_notes']);
@@ -110,7 +110,7 @@ final class ShowPage extends Component
 
         $action->handle($payment, $this->void_reason);
 
-        $this->invoice->refresh()->load(['customer', 'order', 'items', 'payments.receiver', 'payments.receipt', 'payments.voider', 'currency']);
+        $this->invoice->refresh()->load(['customer', 'order', 'items', 'payments.receiver', 'payments.receipt', 'payments.voider', 'payments.paymentMethodDefinition', 'currency']);
         $this->voidingPaymentId = null;
         $this->void_reason = '';
         $this->payment_amount = (string) $this->invoice->balance_due;
@@ -131,7 +131,7 @@ final class ShowPage extends Component
             return;
         }
 
-        $this->invoice->refresh()->load(['customer', 'order', 'items', 'payments.receiver', 'payments.receipt', 'payments.voider', 'currency']);
+        $this->invoice->refresh()->load(['customer', 'order', 'items', 'payments.receiver', 'payments.receipt', 'payments.voider', 'payments.paymentMethodDefinition', 'currency']);
         $this->showCancelForm = false;
         $this->cancellation_reason = '';
         session()->flash('success', 'Invoice cancelled successfully.');

@@ -1,4 +1,15 @@
 <div>
+    @if (session('success'))
+        <div class="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700 dark:border-green-900/50 dark:bg-green-900/20 dark:text-green-300">
+            {{ session('success') }}
+        </div>
+    @endif
+    @if (session('error'))
+        <div class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-300">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
             <a href="{{ route('products.index') }}" class="mb-2 inline-block text-blue-600 hover:text-blue-900 dark:hover:text-blue-400">
@@ -76,7 +87,7 @@
                                         <a href="{{ route('product-categories.edit', $category) }}" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">
                                             Edit
                                         </a>
-                                        <button type="button" @click="$dispatch('open-delete-modal', { url: '{{ route('product-categories.destroy', $category) }}', item: '{{ addslashes($category->name) }}' })" class="ml-2 text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
+                                        <button type="button" wire:click="delete({{ $category->id }})" wire:confirm="Delete category '{{ addslashes($category->name) }}'? This cannot be undone." class="ml-2 text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
                                             Delete
                                         </button>
                                     @endcan

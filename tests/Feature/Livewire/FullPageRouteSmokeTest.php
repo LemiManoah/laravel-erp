@@ -9,10 +9,14 @@ use App\Models\Customer;
 use App\Models\Expense;
 use App\Models\ExpenseCategory;
 use App\Models\Invoice;
+use App\Models\Measurement;
 use App\Models\Order;
+use App\Models\Payment;
 use App\Models\PaymentMethod;
 use App\Models\Permission;
 use App\Models\Product;
+use App\Models\ProductCategory;
+use App\Models\Receipt;
 use App\Models\Role;
 use App\Models\UnitOfMeasure;
 use App\Models\User;
@@ -40,6 +44,10 @@ dataset('full_page_livewire_routes', [
     ['customers.create', ['customers.create'], null],
     ['customers.show', ['customers.view'], 'customer'],
     ['customers.edit', ['customers.update'], 'customer'],
+    ['customers.measurements.index', ['measurements.view'], 'measurement_customer'],
+    ['customers.measurements.create', ['measurements.create'], 'measurement_customer'],
+    ['measurements.show', ['measurements.view'], 'measurement'],
+    ['measurements.edit', ['measurements.update'], 'measurement'],
     ['orders.index', ['orders.view'], null],
     ['orders.create', ['orders.create'], null],
     ['orders.show', ['orders.view'], 'order'],
@@ -55,9 +63,14 @@ dataset('full_page_livewire_routes', [
     ['products.index', ['products.view'], null],
     ['products.create', ['products.create'], null],
     ['products.edit', ['products.update'], 'product'],
+    ['product-categories.index', ['products.view'], null],
+    ['product-categories.create', ['products.create'], null],
+    ['product-categories.edit', ['products.update'], 'product_category'],
     ['payment-methods.index', ['payment-methods.view'], null],
     ['payment-methods.create', ['payment-methods.create'], null],
     ['payment-methods.edit', ['payment-methods.update'], 'payment_method'],
+    ['payments.index', ['payments.view'], null],
+    ['payments.show', ['payments.view'], 'payment'],
     ['currencies.index', ['currencies.view'], null],
     ['currencies.create', ['currencies.create'], null],
     ['currencies.edit', ['currencies.update'], 'currency'],
@@ -81,9 +94,13 @@ it('serves converted livewire full-page routes', function (string $routeName, ar
         'customer' => ['customer' => createCustomerForTests($this->user)],
         'expense' => ['expense' => createExpenseForTests($this->user, $this->currency)],
         'invoice' => ['invoice' => createInvoiceForTests($this->user, $this->currency)],
+        'measurement' => ['measurement' => createMeasurementForTests($this->user)],
+        'measurement_customer' => ['customer' => createCustomerForTests($this->user)],
         'order' => ['order' => createOrderForTests($this->user, $this->currency)],
+        'payment' => ['payment' => createPaymentForTests($this->user, $this->currency)],
         'payment_method' => ['paymentMethod' => createPaymentMethodForTests()],
         'product' => ['product' => createProductForTests('Edit Route Product')],
+        'product_category' => ['productCategory' => createProductCategoryForTests()],
         'role' => ['role' => createRoleForTests()],
         'user' => ['user' => User::factory()->create()],
         default => [],
@@ -144,6 +161,18 @@ function createPaymentMethodForTests(): PaymentMethod
         'slug' => sprintf('payment-method-%d', $counter),
         'is_active' => true,
         'sort_order' => $counter,
+    ]);
+}
+
+function createProductCategoryForTests(): ProductCategory
+{
+    static $counter = 0;
+    $counter++;
+
+    return ProductCategory::query()->create([
+        'name' => sprintf('Category %d', $counter),
+        'description' => 'Product category',
+        'is_active' => true,
     ]);
 }
 
@@ -212,6 +241,50 @@ function createInvoiceForTests(User $user, Currency $currency): Invoice
         'balance_due' => 100,
         'created_by' => $user->id,
     ]);
+}
+
+function createMeasurementForTests(User $user): Measurement
+{
+    $customer = createCustomerForTests($user);
+
+    return Measurement::query()->create([
+        'customer_id' => $customer->id,
+        'measurement_date' => now()->toDateString(),
+        'chest' => 40,
+        'waist' => 32,
+        'is_current' => true,
+        'measured_by' => $user->id,
+    ]);
+}
+
+function createPaymentForTests(User $user, Currency $currency): Payment
+{
+    static $counter = 0;
+    $counter++;
+
+    $invoice = createInvoiceForTests($user, $currency);
+    $paymentMethod = createPaymentMethodForTests();
+
+    $payment = Payment::query()->create([
+        'invoice_id' => $invoice->id,
+        'currency_id' => $currency->id,
+        'payment_date' => now()->toDateString(),
+        'amount' => 50,
+        'payment_method_id' => $paymentMethod->id,
+        'payment_method' => $paymentMethod->name,
+        'reference_number' => sprintf('PAY-%04d', $counter),
+        'notes' => 'Payment note',
+        'status' => 'valid',
+        'received_by' => $user->id,
+    ]);
+
+    Receipt::query()->create([
+        'receipt_number' => sprintf('RCT-%04d', $counter),
+        'payment_id' => $payment->id,
+        'issued_date' => now()->toDateString(),
+    ]);
+
+    return $payment;
 }
 
 function createExpenseForTests(User $user, Currency $currency): Expense

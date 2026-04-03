@@ -269,7 +269,7 @@
                             <div class="flex items-start justify-between gap-4">
                                 <div>
                                     <p class="text-sm font-bold text-gray-900 dark:text-white">{{ $payment->payment_date->format('M d, Y') }}</p>
-                                    <p class="text-xs uppercase tracking-tighter text-gray-500 dark:text-gray-400">{{ $payment->paymentMethod?->name ?? '—' }} &bull; {{ $payment->reference_number ?? 'No Ref' }}</p>
+                                    <p class="text-xs uppercase tracking-tighter text-gray-500 dark:text-gray-400">{{ $payment->paymentMethodDefinition?->name ?? '—' }} &bull; {{ $payment->reference_number ?? 'No Ref' }}</p>
                                     @if($payment->receipt)
                                         @can('view', $payment->receipt)
                                             <a href="{{ route('receipts.show', $payment->receipt) }}" class="text-xs text-blue-600 dark:text-blue-400">{{ $payment->receipt->receipt_number }}</a>

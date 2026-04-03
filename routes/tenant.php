@@ -29,11 +29,20 @@ use App\Livewire\Inventory\Transfers\CreatePage as InventoryTransfersCreatePage;
 use App\Livewire\Inventory\Units\CreatePage as InventoryUnitsCreatePage;
 use App\Livewire\Inventory\Units\EditPage as InventoryUnitsEditPage;
 use App\Livewire\Inventory\Units\IndexPage as InventoryUnitsIndexPage;
+use App\Livewire\Measurements\CreatePage as MeasurementsCreatePage;
+use App\Livewire\Measurements\EditPage as MeasurementsEditPage;
+use App\Livewire\Measurements\IndexPage as MeasurementsIndexPage;
+use App\Livewire\Measurements\ShowPage as MeasurementsShowPage;
 use App\Livewire\Orders\CreatePage as OrdersCreatePage;
 use App\Livewire\Orders\EditPage as OrdersEditPage;
 use App\Livewire\Orders\ShowPage as OrdersShowPage;
 use App\Livewire\PaymentMethods\CreatePage as PaymentMethodsCreatePage;
 use App\Livewire\PaymentMethods\EditPage as PaymentMethodsEditPage;
+use App\Livewire\Payments\IndexPage as PaymentsIndexPage;
+use App\Livewire\Payments\ShowPage as PaymentsShowPage;
+use App\Livewire\ProductCategories\CreatePage as ProductCategoriesCreatePage;
+use App\Livewire\ProductCategories\EditPage as ProductCategoriesEditPage;
+use App\Livewire\ProductCategories\IndexPage as ProductCategoriesIndexPage;
 use App\Livewire\Purchasing\Orders\CreatePage as PurchaseOrdersCreatePage;
 use App\Livewire\Purchasing\Orders\IndexPage as PurchaseOrdersIndexPage;
 use App\Livewire\Purchasing\Orders\ShowPage as PurchaseOrdersShowPage;
@@ -56,9 +65,6 @@ use App\Livewire\Users\CreatePage as UsersCreatePage;
 use App\Livewire\Users\EditPage as UsersEditPage;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\InvoiceController;
-use App\Http\Controllers\MeasurementController;
-use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\Settings\AppearanceController;
@@ -104,7 +110,18 @@ Route::middleware([
         Route::get('customers/{customer}/edit', CustomersEditPage::class)
             ->name('customers.edit')
             ->middleware('permission:customers.update');
-        Route::resource('customers.measurements', MeasurementController::class)->shallow();
+        Route::get('customers/{customer}/measurements', MeasurementsIndexPage::class)
+            ->name('customers.measurements.index')
+            ->middleware('permission:measurements.view');
+        Route::get('customers/{customer}/measurements/create', MeasurementsCreatePage::class)
+            ->name('customers.measurements.create')
+            ->middleware('permission:measurements.create');
+        Route::get('measurements/{measurement}', MeasurementsShowPage::class)
+            ->name('measurements.show')
+            ->middleware('permission:measurements.view');
+        Route::get('measurements/{measurement}/edit', MeasurementsEditPage::class)
+            ->name('measurements.edit')
+            ->middleware('permission:measurements.update');
 
         // Orders
         Route::get('orders', \App\Livewire\Orders\IndexPage::class)
@@ -136,10 +153,12 @@ Route::middleware([
         Route::get('invoices/{invoice}/print', [InvoiceController::class, 'print'])->name('invoices.print');
 
         // Payments & Receipts
-        Route::post('invoices/{invoice}/payments', [PaymentController::class, 'store'])->name('payments.store');
-        Route::get('payments', [PaymentController::class, 'index'])->name('payments.index');
-        Route::get('payments/{payment}', [PaymentController::class, 'show'])->name('payments.show');
-        Route::post('payments/{payment}/void', [PaymentController::class, 'void'])->name('payments.void');
+        Route::get('payments', PaymentsIndexPage::class)
+            ->name('payments.index')
+            ->middleware('permission:payments.view');
+        Route::get('payments/{payment}', PaymentsShowPage::class)
+            ->name('payments.show')
+            ->middleware('permission:payments.view');
         Route::get('receipts/{receipt}', ReceiptsShowPage::class)->name('receipts.show');
         Route::get('receipts/{receipt}/print', [ReceiptController::class, 'print'])->name('receipts.print');
 
@@ -176,7 +195,15 @@ Route::middleware([
         Route::get('products/{product}/edit', \App\Livewire\Products\EditPage::class)
             ->name('products.edit')
             ->middleware('permission:products.update');
-        Route::resource('product-categories', ProductCategoryController::class)->except(['show']);
+        Route::get('product-categories', ProductCategoriesIndexPage::class)
+            ->name('product-categories.index')
+            ->middleware('permission:products.view');
+        Route::get('product-categories/create', ProductCategoriesCreatePage::class)
+            ->name('product-categories.create')
+            ->middleware('permission:products.create');
+        Route::get('product-categories/{productCategory}/edit', ProductCategoriesEditPage::class)
+            ->name('product-categories.edit')
+            ->middleware('permission:products.update');
 
         // Expenses
         Route::get('expenses', \App\Livewire\Expenses\IndexPage::class)

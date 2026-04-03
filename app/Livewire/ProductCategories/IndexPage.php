@@ -42,6 +42,23 @@ final class IndexPage extends Component
         $this->resetPage();
     }
 
+    public function delete(int $categoryId): void
+    {
+        abort_unless(auth()->user()?->can('products.update'), 403);
+
+        $category = ProductCategory::query()->findOrFail($categoryId);
+
+        if ($category->products()->exists()) {
+            session()->flash('error', 'Cannot delete this category because it is currently assigned to one or more products. Consider marking it as inactive instead.');
+
+            return;
+        }
+
+        $category->delete();
+
+        session()->flash('success', 'Product Category deleted successfully.');
+    }
+
     public function render(): View
     {
         $search = trim($this->search);
