@@ -54,15 +54,16 @@ use App\Livewire\Suppliers\EditPage as SuppliersEditPage;
 use App\Livewire\Suppliers\IndexPage as SuppliersIndexPage;
 use App\Livewire\Users\CreatePage as UsersCreatePage;
 use App\Livewire\Users\EditPage as UsersEditPage;
-use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\MeasurementController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductCategoryController;
-use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\Settings\AppearanceController;
+use App\Http\Controllers\Settings\PasswordController;
+use App\Http\Controllers\Settings\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
@@ -166,7 +167,15 @@ Route::middleware([
         Route::post('currencies/{currency}/default', [CurrencyController::class, 'setDefault'])->name('currencies.default');
 
         // Products
-        Route::resource('products', ProductController::class)->except(['show']);
+        Route::get('products', \App\Livewire\Products\IndexPage::class)
+            ->name('products.index')
+            ->middleware('permission:products.view');
+        Route::get('products/create', \App\Livewire\Products\CreatePage::class)
+            ->name('products.create')
+            ->middleware('permission:products.create');
+        Route::get('products/{product}/edit', \App\Livewire\Products\EditPage::class)
+            ->name('products.edit')
+            ->middleware('permission:products.update');
         Route::resource('product-categories', ProductCategoryController::class)->except(['show']);
 
         // Expenses
@@ -296,12 +305,20 @@ Route::middleware([
         Route::get('reports/profit-loss', [ReportController::class, 'profitLoss'])->name('reports.profit-loss');
         Route::get('reports/profit-loss/print', [ReportController::class, 'profitLossPrint'])->name('reports.profit-loss.print');
 
-        Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
+        Route::get('activity-logs', \App\Livewire\ActivityLogs\IndexPage::class)
+            ->name('activity-logs.index')
+            ->middleware('permission:activity-logs.view');
 
         // Roles
-        Route::get('roles', \App\Livewire\Roles\IndexPage::class)->name('roles.index');
-        Route::get('roles/create', RolesCreatePage::class)->name('roles.create');
-        Route::get('roles/{role}/edit', RolesEditPage::class)->name('roles.edit');
+        Route::get('roles', \App\Livewire\Roles\IndexPage::class)
+            ->name('roles.index')
+            ->middleware('permission:users.view');
+        Route::get('roles/create', RolesCreatePage::class)
+            ->name('roles.create')
+            ->middleware('permission:users.create');
+        Route::get('roles/{role}/edit', RolesEditPage::class)
+            ->name('roles.edit')
+            ->middleware('permission:users.update');
 
         // Users
         Route::get('users', \App\Livewire\Users\IndexPage::class)
@@ -315,9 +332,26 @@ Route::middleware([
             ->middleware('permission:users.update');
 
         // Settings
-        Route::get('settings/profile', ProfilePage::class)->name('settings.profile.edit');
-        Route::get('settings/password', PasswordPage::class)->name('settings.password.edit');
-        Route::get('settings/appearance', AppearancePage::class)->name('settings.appearance.edit');
+        Route::get('settings/profile', ProfilePage::class)
+            ->name('settings.profile.edit')
+            ->middleware('permission:settings.profile.update');
+        Route::put('settings/profile', [ProfileController::class, 'update'])
+            ->name('settings.profile.update')
+            ->middleware('permission:settings.profile.update');
+        Route::delete('settings/profile', [ProfileController::class, 'destroy'])
+            ->name('settings.profile.destroy');
+        Route::get('settings/password', PasswordPage::class)
+            ->name('settings.password.edit')
+            ->middleware('permission:settings.password.update');
+        Route::put('settings/password', [PasswordController::class, 'update'])
+            ->name('settings.password.update')
+            ->middleware('permission:settings.password.update');
+        Route::get('settings/appearance', AppearancePage::class)
+            ->name('settings.appearance.edit')
+            ->middleware('permission:settings.appearance.update');
+        Route::put('settings/appearance', [AppearanceController::class, 'update'])
+            ->name('settings.appearance.update')
+            ->middleware('permission:settings.appearance.update');
     });
 
     require __DIR__.'/auth.php';

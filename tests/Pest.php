@@ -23,6 +23,7 @@ pest()->extend(TenantTestCase::class)
         'Feature/Auth',
         'Feature/DashboardTest.php',
         'Feature/ExpenseCategoryTest.php',
+        'Feature/Livewire',
         'Feature/Settings',
     );
 

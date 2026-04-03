@@ -74,14 +74,14 @@ final class ShowPage extends Component
         ]);
 
         try {
-            $action->handle($this->invoice, [
+            $action->handle([
                 'currency_id' => (int) $this->payment_currency_id,
                 'amount' => (float) $this->payment_amount,
                 'payment_date' => $this->payment_date,
                 'payment_method_id' => (int) $this->payment_method_id,
                 'reference_number' => $this->payment_reference_number !== '' ? $this->payment_reference_number : null,
                 'notes' => $this->payment_notes !== '' ? $this->payment_notes : null,
-            ]);
+            ], $this->invoice);
         } catch (ValidationException $e) {
             foreach ($e->errors() as $field => $messages) {
                 $this->addError('payment_'.$field, $messages[0]);

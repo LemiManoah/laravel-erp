@@ -25,9 +25,11 @@ final class ProfilePage extends Component
 
     protected function rules(): array
     {
+        $user = auth()->user();
+
         return [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255'],
+            'email' => ['required', 'email', 'max:255', tenant()->unique('users', 'email')->ignore($user)],
         ];
     }
 
@@ -55,7 +57,7 @@ final class ProfilePage extends Component
         request()->session()->invalidate();
         request()->session()->regenerateToken();
 
-        return $this->redirectRoute('home');
+        return $this->redirectRoute('tenant.home');
     }
 
     public function render(): View
