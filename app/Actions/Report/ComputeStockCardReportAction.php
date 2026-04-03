@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Actions\Report;
 
 use App\Models\InventoryMovement;
-use App\Models\Product;
+use App\Models\InventoryItem;
 use App\Models\StockLocation;
 use Carbon\Carbon;
 
@@ -14,12 +14,12 @@ final readonly class ComputeStockCardReportAction
     /**
      * @return array<string, mixed>
      */
-    public function handle(?int $productId, ?int $locationId, ?string $startDate, ?string $endDate): array
+    public function handle(?int $inventoryItemId, ?int $locationId, ?string $startDate, ?string $endDate): array
     {
         $start = $startDate ? Carbon::parse($startDate)->startOfDay() : Carbon::now()->startOfMonth();
         $end = $endDate ? Carbon::parse($endDate)->endOfDay() : Carbon::now()->endOfMonth();
 
-        $products = Product::query()
+        $inventoryItems = InventoryItem::query()
             ->stockTracked()
             ->active()
             ->orderBy('name')
@@ -30,9 +30,9 @@ final readonly class ComputeStockCardReportAction
             ->ordered()
             ->get();
 
-        $selectedProduct = $productId === null ? null : Product::query()
+        $selectedInventoryItem = $inventoryItemId === null ? null : InventoryItem::query()
             ->with(['baseUnit', 'inventoryStocks', 'defaultPrice'])
-            ->find($productId);
+            ->find($inventoryItemId);
 
         $movements = collect();
         $stockRows = collect();
@@ -42,8 +42,8 @@ final readonly class ComputeStockCardReportAction
             'quantity_out' => 0.0,
         ];
 
-        if ($selectedProduct !== null) {
-            $stockRows = $selectedProduct->inventoryStocks()
+        if ($selectedInventoryItem !== null) {
+            $stockRows = $selectedInventoryItem->inventoryStocks()
                 ->with('location')
                 ->when($locationId !== null, fn ($query) => $query->where('location_id', $locationId))
                 ->orderByRaw('case when expiry_date is null then 1 else 0 end')
@@ -52,8 +52,8 @@ final readonly class ComputeStockCardReportAction
                 ->get();
 
             $movements = InventoryMovement::query()
-                ->with(['inventoryStock', 'location', 'product'])
-                ->where('product_id', $selectedProduct->id)
+                ->with(['inventoryStock', 'location', 'inventoryItem'])
+                ->where('inventory_item_id', $selectedInventoryItem->id)
                 ->when($locationId !== null, fn ($query) => $query->where('location_id', $locationId))
                 ->whereBetween('movement_date', [$start, $end])
                 ->orderBy('movement_date')
@@ -68,9 +68,9 @@ final readonly class ComputeStockCardReportAction
         }
 
         return [
-            'products' => $products,
+            'inventory_items' => $inventoryItems,
             'locations' => $locations,
-            'selected_product' => $selectedProduct,
+            'selected_inventory_item' => $selectedInventoryItem,
             'selected_location_id' => $locationId,
             'stock_rows' => $stockRows,
             'movements' => $movements,

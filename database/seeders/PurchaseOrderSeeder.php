@@ -6,7 +6,7 @@ namespace Database\Seeders;
 
 use App\Actions\Purchasing\CreatePurchaseOrderAction;
 use App\Enums\PurchaseOrderStatus;
-use App\Models\Product;
+use App\Models\InventoryItem;
 use App\Models\PurchaseOrder;
 use App\Models\StockLocation;
 use App\Models\Supplier;
@@ -17,7 +17,7 @@ final class PurchaseOrderSeeder extends Seeder
     public function run(): void
     {
         $suppliers = Supplier::query()->get()->keyBy('code');
-        $products = Product::query()->get()->keyBy('name');
+        $products = InventoryItem::query()->get()->keyBy('name');
         $locations = StockLocation::query()->get()->keyBy('code');
         $action = app(CreatePurchaseOrderAction::class);
 
@@ -45,7 +45,7 @@ final class PurchaseOrderSeeder extends Seeder
                     $unitCost = (float) $item['unit_cost'];
 
                     return [
-                        'product_id' => $product->id,
+                        'inventory_item_id' => $product->id,
                         'quantity' => $quantity,
                         'unit_cost' => $unitCost,
                         'line_total' => round($quantity * $unitCost, 2),

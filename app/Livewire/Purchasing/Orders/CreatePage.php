@@ -6,7 +6,7 @@ namespace App\Livewire\Purchasing\Orders;
 
 use App\Actions\Purchasing\CreatePurchaseOrderAction;
 use App\Enums\PurchaseOrderStatus;
-use App\Models\Product;
+use App\Models\InventoryItem;
 use App\Models\PurchaseOrder;
 use App\Models\StockLocation;
 use App\Models\Supplier;
@@ -52,7 +52,7 @@ final class CreatePage extends Component
             'status' => ['required', Rule::in(array_column(PurchaseOrderStatus::cases(), 'value'))],
             'notes' => ['nullable', 'string'],
             'items' => ['required', 'array', 'min:1'],
-            'items.*.product_id' => ['required', $tenant->exists('products', 'id')],
+            'items.*.inventory_item_id' => ['required', $tenant->exists('inventory_items', 'id')],
             'items.*.quantity' => ['required', 'numeric', 'gt:0'],
             'items.*.unit_cost' => ['required', 'numeric', 'min:0'],
             'items.*.notes' => ['nullable', 'string'],
@@ -83,11 +83,11 @@ final class CreatePage extends Component
         [$index, $field] = explode('.', $key, 2);
         $index = (int) $index;
 
-        if ($field !== 'product_id') {
+        if ($field !== 'inventory_item_id') {
             return;
         }
 
-        $product = Product::query()->with('defaultPrice')->find((int) $value);
+        $product = InventoryItem::query()->with('defaultPrice')->find((int) $value);
 
         if ($product !== null && blank($this->items[$index]['unit_cost'])) {
             $this->items[$index]['unit_cost'] = $product->purchase_price ?? '';
@@ -114,7 +114,7 @@ final class CreatePage extends Component
             $unitCost = (float) $item['unit_cost'];
 
             return [
-                'product_id' => (int) $item['product_id'],
+                'inventory_item_id' => (int) $item['inventory_item_id'],
                 'quantity' => $quantity,
                 'unit_cost' => $unitCost,
                 'line_total' => round($quantity * $unitCost, 2),
@@ -132,7 +132,7 @@ final class CreatePage extends Component
         return view('livewire.purchasing.orders.create-page', [
             'suppliers' => Supplier::query()->where('is_active', true)->orderBy('name')->get(),
             'locations' => StockLocation::query()->active()->ordered()->get(),
-            'products' => Product::query()->purchasable()->active()->with('defaultPrice')->orderBy('name')->get(),
+            'products' => InventoryItem::query()->purchasable()->active()->with('defaultPrice')->orderBy('name')->get(),
             'statuses' => PurchaseOrderStatus::cases(),
             'total' => collect($this->items)->sum(fn (array $item): float => ((float) ($item['quantity'] ?: 0)) * ((float) ($item['unit_cost'] ?: 0))),
         ]);
@@ -143,10 +143,10 @@ final class CreatePage extends Component
         $messages = [];
 
         foreach ($this->items as $index => $item) {
-            $product = Product::query()->find((int) ($item['product_id'] ?? 0));
+            $product = InventoryItem::query()->find((int) ($item['inventory_item_id'] ?? 0));
 
             if ($product !== null && ! $product->is_purchasable) {
-                $messages["items.$index.product_id"] = 'Selected inventory item is not marked as purchasable.';
+                $messages["items.$index.inventory_item_id"] = 'Selected inventory item is not marked as purchasable.';
             }
         }
 
@@ -161,7 +161,7 @@ final class CreatePage extends Component
     private function blankItem(): array
     {
         return [
-            'product_id' => '',
+            'inventory_item_id' => '',
             'quantity' => '',
             'unit_cost' => '',
             'notes' => '',
@@ -175,3 +175,4 @@ final class CreatePage extends Component
         return sprintf('PO-%s-%03d', now()->format('Y'), $count);
     }
 }
+

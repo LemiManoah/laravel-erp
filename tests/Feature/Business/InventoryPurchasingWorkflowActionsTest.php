@@ -9,14 +9,14 @@ use App\Actions\Purchasing\CreatePurchaseReceiptAction;
 use App\Actions\Purchasing\CreatePurchaseReturnAction;
 use App\Enums\InventoryDirection;
 use App\Enums\InventoryMovementType;
-use App\Enums\ProductItemType;
+use App\Enums\InventoryItemType;
 use App\Enums\PurchaseOrderStatus;
 use App\Enums\PurchaseReceiptStatus;
 use App\Enums\StockLocationType;
 use App\Models\Currency;
 use App\Models\InventoryMovement;
 use App\Models\InventoryStock;
-use App\Models\Product;
+use App\Models\InventoryItem;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseReceipt;
 use App\Models\PurchaseReturn;
@@ -49,11 +49,11 @@ beforeEach(function (): void {
 
 it('creates paired transfer movements and moves stock between locations', function (): void {
     $product = inventoryWorkflowProduct($this->unit, [
-        'name' => 'Transfer Product',
+        'name' => 'Transfer InventoryItem',
     ]);
 
     $sourceStock = InventoryStock::query()->create([
-        'product_id' => $product->id,
+        'inventory_item_id' => $product->id,
         'location_id' => $this->sourceLocation->id,
         'quantity_on_hand' => 10,
         'received_at' => now()->subDay()->toDateString(),
@@ -74,7 +74,7 @@ it('creates paired transfer movements and moves stock between locations', functi
 
     $sourceStock->refresh();
     $destinationStock = InventoryStock::query()
-        ->where('product_id', $product->id)
+        ->where('inventory_item_id', $product->id)
         ->where('location_id', $this->destinationLocation->id)
         ->firstOrFail();
 
@@ -93,7 +93,7 @@ it('rejects sale issues from expired stock rows', function (): void {
     ]);
 
     $expiredStock = InventoryStock::query()->create([
-        'product_id' => $product->id,
+        'inventory_item_id' => $product->id,
         'location_id' => $this->sourceLocation->id,
         'batch_number' => 'BATCH-OLD',
         'expiry_date' => now()->subDay()->toDateString(),
@@ -125,7 +125,7 @@ it('rejects sale issues from expired stock rows', function (): void {
 
 it('creates purchase orders and receipts and marks the linked order as received', function (): void {
     $product = inventoryWorkflowProduct($this->unit, [
-        'name' => 'Purchase Receipt Product',
+        'name' => 'Purchase Receipt InventoryItem',
     ]);
 
     $order = app(CreatePurchaseOrderAction::class)->handle([
@@ -135,7 +135,7 @@ it('creates purchase orders and receipts and marks the linked order as received'
         'order_date' => now()->toDateString(),
         'created_by' => $this->user->id,
     ], [[
-        'product_id' => $product->id,
+        'inventory_item_id' => $product->id,
         'quantity' => 3,
         'unit_cost' => 12,
         'line_total' => 36,
@@ -150,7 +150,7 @@ it('creates purchase orders and receipts and marks the linked order as received'
         'receipt_date' => now()->toDateString(),
         'created_by' => $this->user->id,
     ], [[
-        'product_id' => $product->id,
+        'inventory_item_id' => $product->id,
         'quantity' => 3,
         'unit_cost' => 12,
         'line_total' => 36,
@@ -160,7 +160,7 @@ it('creates purchase orders and receipts and marks the linked order as received'
     ]]);
 
     $stock = InventoryStock::query()
-        ->where('product_id', $product->id)
+        ->where('inventory_item_id', $product->id)
         ->where('location_id', $this->sourceLocation->id)
         ->firstOrFail();
 
@@ -175,7 +175,7 @@ it('creates purchase orders and receipts and marks the linked order as received'
 
 it('creates purchase returns and deducts the returned quantity from the stock row', function (): void {
     $product = inventoryWorkflowProduct($this->unit, [
-        'name' => 'Purchase Return Product',
+        'name' => 'Purchase Return InventoryItem',
     ]);
 
     $receipt = app(CreatePurchaseReceiptAction::class)->handle([
@@ -185,7 +185,7 @@ it('creates purchase returns and deducts the returned quantity from the stock ro
         'receipt_date' => now()->toDateString(),
         'created_by' => $this->user->id,
     ], [[
-        'product_id' => $product->id,
+        'inventory_item_id' => $product->id,
         'quantity' => 5,
         'unit_cost' => 10,
         'line_total' => 50,
@@ -195,7 +195,7 @@ it('creates purchase returns and deducts the returned quantity from the stock ro
     ]]);
 
     $stock = InventoryStock::query()
-        ->where('product_id', $product->id)
+        ->where('inventory_item_id', $product->id)
         ->where('location_id', $this->sourceLocation->id)
         ->firstOrFail();
 
@@ -207,7 +207,7 @@ it('creates purchase returns and deducts the returned quantity from the stock ro
         'return_date' => now()->toDateString(),
         'created_by' => $this->user->id,
     ], [[
-        'product_id' => $product->id,
+        'inventory_item_id' => $product->id,
         'inventory_stock_id' => $stock->id,
         'quantity' => 2,
         'unit_cost' => 10,
@@ -256,14 +256,14 @@ function inventoryWorkflowSupplier(): Supplier
     ]);
 }
 
-function inventoryWorkflowProduct(UnitOfMeasure $unit, array $overrides = []): Product
+function inventoryWorkflowProduct(UnitOfMeasure $unit, array $overrides = []): InventoryItem
 {
     static $counter = 0;
     $counter++;
 
-    return Product::query()->create([
-        'name' => sprintf('Inventory Product %d', $counter),
-        'item_type' => ProductItemType::StockItem,
+    return InventoryItem::query()->create([
+        'name' => sprintf('Inventory InventoryItem %d', $counter),
+        'item_type' => InventoryItemType::StockItem,
         'tracks_inventory' => true,
         'is_sellable' => true,
         'is_purchasable' => true,

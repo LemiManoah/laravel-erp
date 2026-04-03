@@ -57,11 +57,11 @@ final class IndexPage extends Component
         $search = trim($this->search);
 
         $stocks = InventoryStock::query()
-            ->with(['location', 'product'])
+            ->with(['location', 'inventoryItem'])
             ->when($search !== '', function ($query) use ($search): void {
                 $query->where(function ($stockQuery) use ($search): void {
                     $stockQuery->where('batch_number', 'like', sprintf('%%%s%%', $search))
-                        ->orWhereHas('product', fn ($productQuery) => $productQuery->where('name', 'like', sprintf('%%%s%%', $search)))
+                        ->orWhereHas('inventoryItem', fn ($inventoryItemQuery) => $inventoryItemQuery->where('name', 'like', sprintf('%%%s%%', $search)))
                         ->orWhereHas('location', fn ($locationQuery) => $locationQuery->where('name', 'like', sprintf('%%%s%%', $search)));
                 });
             })

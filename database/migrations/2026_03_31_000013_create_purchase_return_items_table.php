@@ -14,7 +14,7 @@ return new class extends Migration
             $table->id();
             $table->string('tenant_id');
             $table->foreignId('purchase_return_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('product_id')->constrained()->restrictOnDelete();
+            $table->foreignId('inventory_item_id')->constrained()->restrictOnDelete();
             $table->foreignId('inventory_stock_id')->nullable()->constrained('inventory_stocks')->nullOnDelete();
             $table->decimal('quantity', 12, 2);
             $table->decimal('unit_cost', 12, 2);

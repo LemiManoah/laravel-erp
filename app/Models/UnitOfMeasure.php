@@ -41,9 +41,9 @@ final class UnitOfMeasure extends Model
         ];
     }
 
-    public function products(): HasMany
+    public function inventoryItems(): HasMany
     {
-        return $this->hasMany(Product::class, 'base_unit_id');
+        return $this->hasMany(InventoryItem::class, 'base_unit_id');
     }
 
     public function inventoryMovements(): HasMany
@@ -61,3 +61,4 @@ final class UnitOfMeasure extends Model
         return $query->orderBy('name');
     }
 }
+

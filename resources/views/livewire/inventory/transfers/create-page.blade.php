@@ -11,14 +11,14 @@
         <form wire:submit="save">
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div>
-                    <label for="product_id" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Inventory Item <span class="text-red-500">*</span></label>
-                    <select id="product_id" wire:model.live="product_id" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                    <label for="inventory_item_id" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Inventory Item <span class="text-red-500">*</span></label>
+                    <select id="inventory_item_id" wire:model.live="inventory_item_id" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
                         <option value="">Select inventory item</option>
                         @foreach($products as $product)
                             <option value="{{ $product->id }}">{{ $product->name }}</option>
                         @endforeach
                     </select>
-                    @error('product_id') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                    @error('inventory_item_id') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                 </div>
 
                 <div>

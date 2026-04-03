@@ -51,8 +51,8 @@
                         @foreach($order->items as $item)
                             <tr>
                                 <td class="px-6 py-4">
-                                    <div class="font-medium text-gray-900 dark:text-white">{{ $item->product?->name }}</div>
-                                    <div class="text-sm text-gray-500 dark:text-gray-400">{{ $item->product?->baseUnit?->abbreviation ?: 'No unit' }}</div>
+                                    <div class="font-medium text-gray-900 dark:text-white">{{ $item->inventoryItem?->name }}</div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">{{ $item->inventoryItem?->baseUnit?->abbreviation ?: 'No unit' }}</div>
                                 </td>
                                 <td class="px-6 py-4 text-right text-sm text-gray-900 dark:text-white">{{ number_format((float) $item->quantity, 2) }}</td>
                                 <td class="px-6 py-4 text-right text-sm text-gray-900 dark:text-white">{{ $currencyFormatter->formatValue($item->unit_cost, 2) }}</td>
@@ -65,3 +65,4 @@
         </div>
     </div>
 </div>
+

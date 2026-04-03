@@ -70,14 +70,14 @@ abstract class ReportPage extends Component
         }
 
         $validated = validator(request()->query(), [
-            'product_id' => ['nullable', $tenant->exists('products', 'id')],
+            'inventory_item_id' => ['nullable', $tenant->exists('inventory_items', 'id')],
             'location_id' => ['nullable', $tenant->exists('stock_locations', 'id')],
             'start_date' => ['nullable', 'date'],
             'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
         ])->validate();
 
         return [
-            'product_id' => $this->optionalInteger($validated, 'product_id'),
+            'inventory_item_id' => $this->optionalInteger($validated, 'inventory_item_id'),
             'location_id' => $this->optionalInteger($validated, 'location_id'),
             'start_date' => $validated['start_date'] ?? null,
             'end_date' => $validated['end_date'] ?? null,
@@ -118,3 +118,4 @@ abstract class ReportPage extends Component
         return (int) $validated[$key];
     }
 }
+

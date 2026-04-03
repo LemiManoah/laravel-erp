@@ -24,7 +24,7 @@ class UpdateInvoiceRequest extends FormRequest
             'due_date' => 'nullable|date|after_or_equal:invoice_date',
             'notes' => 'nullable|string',
             'items' => 'required|array|min:1',
-            'items.*.product_id' => ['nullable', $tenant->exists('products', 'id')],
+            'items.*.inventory_item_id' => ['nullable', $tenant->exists('inventory_items', 'id')],
             'items.*.item_name' => 'required|string|max:255',
             'items.*.description' => 'nullable|string',
             'items.*.quantity' => 'required|integer|min:1',
@@ -34,3 +34,4 @@ class UpdateInvoiceRequest extends FormRequest
         ];
     }
 }
+

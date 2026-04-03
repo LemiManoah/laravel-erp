@@ -49,10 +49,10 @@ final class RoleAndPermissionSeeder extends Seeder
             'orders.create',
             'orders.update',
             'orders.delete',
-            'products.view',
-            'products.create',
-            'products.update',
-            'products.delete',
+            'inventory-items.view',
+            'inventory-items.create',
+            'inventory-items.update',
+            'inventory-items.delete',
             'measurements.view',
             'measurements.create',
             'measurements.update',
@@ -122,9 +122,9 @@ final class RoleAndPermissionSeeder extends Seeder
             'orders.view',
             'orders.create',
             'orders.update',
-            'products.view',
-            'products.create',
-            'products.update',
+            'inventory-items.view',
+            'inventory-items.create',
+            'inventory-items.update',
             'measurements.view',
             'measurements.create',
             'measurements.update',
@@ -205,3 +205,4 @@ final class RoleAndPermissionSeeder extends Seeder
         ]);
     }
 }
+

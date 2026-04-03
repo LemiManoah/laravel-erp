@@ -8,7 +8,7 @@
                         :active="request()->routeIs('dashboard*')">Dashboard</x-layouts.sidebar-link>
                 @endif
 
-                @if(auth()->user()?->canAny(['customers.view', 'orders.view', 'products.view']))
+                @if(auth()->user()?->canAny(['customers.view', 'orders.view', 'inventory-items.view']))
                     <li class="mt-4">
                         <div class="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                             Catalog & CRM
@@ -22,9 +22,9 @@
                         <x-layouts.sidebar-link href="{{ route('orders.index') }}" icon='fas-shopping-bag'
                             :active="request()->routeIs('orders*')">Orders</x-layouts.sidebar-link>
                     @endcan
-                    @if(auth()->user()?->can('products.view'))
-                        <x-layouts.sidebar-link href="{{ route('products.index') }}" icon='fas-box'
-                            :active="request()->routeIs('products*') || request()->routeIs('product-categories*')">Inventory Items</x-layouts.sidebar-link>
+                    @if(auth()->user()?->can('inventory-items.view'))
+                        <x-layouts.sidebar-link href="{{ route('inventory-items.index') }}" icon='fas-box'
+                            :active="request()->routeIs('inventory-items*') || request()->routeIs('item-categories*')">Inventory Items</x-layouts.sidebar-link>
                     @endif
                 @endif
 
@@ -135,3 +135,4 @@
         </nav>
     </div>
 </aside>
+

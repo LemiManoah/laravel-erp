@@ -29,7 +29,7 @@
                             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                                 <div>
                                     <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Inventory Item</label>
-                                    <select wire:model.live="items.{{ $index }}.product_id" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                                    <select wire:model.live="items.{{ $index }}.inventory_item_id" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
                                         <option value="">Custom Item</option>
                                         @foreach($products as $product)
                                             <option value="{{ $product->id }}">{{ $product->name }}</option>

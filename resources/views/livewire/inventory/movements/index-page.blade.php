@@ -64,7 +64,7 @@
                     @forelse($movements as $movement)
                         <tr wire:key="movement-row-{{ $movement->id }}">
                             <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $movement->movement_date->format('d M Y H:i') }}</td>
-                            <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">{{ $movement->product->name }}</td>
+                            <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">{{ $movement->inventoryItem->name }}</td>
                             <td class="px-6 py-4">
                                 <div class="space-y-1">
                                     <span class="text-sm text-gray-900 dark:text-white">{{ $movement->movement_type->label() }}</span>
@@ -95,3 +95,4 @@
         @endif
     </div>
 </div>
+

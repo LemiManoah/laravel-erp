@@ -71,7 +71,7 @@
                                         <option value="">Select stock row</option>
                                         @foreach($stocks as $stock)
                                             <option value="{{ $stock->id }}">
-                                                {{ $stock->product?->name }} - {{ $stock->batch_number ?: 'Standard stock row' }} ({{ number_format((float) $stock->quantity_on_hand, 2) }})
+                                                {{ $stock->inventoryItem?->name }} - {{ $stock->batch_number ?: 'Standard stock row' }} ({{ number_format((float) $stock->quantity_on_hand, 2) }})
                                             </option>
                                         @endforeach
                                     </select>
@@ -118,3 +118,4 @@
         </form>
     </div>
 </div>
+

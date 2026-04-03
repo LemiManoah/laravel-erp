@@ -95,7 +95,7 @@
                             @foreach($items as $index => $item)
                                 <tr>
                                     <td class="px-4 py-2">
-                                        <select wire:model.live="items.{{ $index }}.product_id" class="w-full rounded-md border border-gray-300 px-3 py-1 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                                        <select wire:model.live="items.{{ $index }}.inventory_item_id" class="w-full rounded-md border border-gray-300 px-3 py-1 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
                                             <option value="">Select inventory item</option>
                                             @foreach($products as $productOption)
                                                 <option value="{{ $productOption->id }}">
@@ -103,7 +103,7 @@
                                                 </option>
                                             @endforeach
                                         </select>
-                                        @error("items.$index.product_id") <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p> @enderror
+                                        @error("items.$index.inventory_item_id") <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p> @enderror
                                     </td>
                                     <td class="px-4 py-2">
                                         <input type="text" wire:model.live.debounce.300ms="items.{{ $index }}.notes" class="w-full rounded-md border border-gray-300 px-3 py-1 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">

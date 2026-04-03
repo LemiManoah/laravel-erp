@@ -63,18 +63,18 @@
                 </div>
                 <div class="space-y-4">
                     @foreach($items as $index => $item)
-                        @php $product = $products->firstWhere('id', (int) ($item['product_id'] ?? 0)); @endphp
+                        @php $product = $products->firstWhere('id', (int) ($item['inventory_item_id'] ?? 0)); @endphp
                         <div class="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
                             <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
                                 <div class="md:col-span-2">
                                     <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Inventory Item <span class="text-red-500">*</span></label>
-                                    <select wire:model.live="items.{{ $index }}.product_id" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                                    <select wire:model.live="items.{{ $index }}.inventory_item_id" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
                                         <option value="">Select inventory item</option>
                                         @foreach($products as $productOption)
                                             <option value="{{ $productOption->id }}">{{ $productOption->name }}</option>
                                         @endforeach
                                     </select>
-                                    @error("items.$index.product_id") <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                                    @error("items.$index.inventory_item_id") <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                                 </div>
                                 <div>
                                     <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Quantity <span class="text-red-500">*</span></label>

@@ -7,7 +7,7 @@ namespace App\Actions\Inventory;
 use App\Enums\InventoryMovementType;
 use App\Models\Invoice;
 use App\Models\InventoryStock;
-use App\Models\Product;
+use App\Models\InventoryItem;
 use App\Models\StockLocation;
 use Illuminate\Validation\ValidationException;
 
@@ -21,14 +21,14 @@ final readonly class IssueInvoiceInventoryAction
     {
         $invoice->loadMissing(['items.product', 'stockLocation']);
 
-        if ($invoice->items->every(fn ($item): bool => $item->product === null || ! $item->product->tracks_inventory)) {
+        if ($invoice->items->every(fn ($item): bool => $item->inventoryItem === null || ! $item->inventoryItem->tracks_inventory)) {
             return;
         }
 
         $location = $this->resolveLocation($invoice);
 
         foreach ($invoice->items as $item) {
-            $product = $item->product;
+            $product = $item->inventoryItem;
 
             if ($product === null || ! $product->tracks_inventory) {
                 continue;
@@ -75,11 +75,11 @@ final readonly class IssueInvoiceInventoryAction
         return $location;
     }
 
-    private function issueFromStockRows(Invoice $invoice, Product $product, StockLocation $location, float $quantity): void
+    private function issueFromStockRows(Invoice $invoice, InventoryItem $product, StockLocation $location, float $quantity): void
     {
         $remaining = $quantity;
         $stocks = InventoryStock::query()
-            ->where('product_id', $product->id)
+            ->where('inventory_item_id', $product->id)
             ->where('location_id', $location->id)
             ->available()
             ->where(function ($query): void {
@@ -124,3 +124,4 @@ final readonly class IssueInvoiceInventoryAction
         }
     }
 }
+

@@ -7,7 +7,7 @@ namespace App\Actions\Purchasing;
 use App\Actions\Inventory\RecordInventoryMovementAction;
 use App\Enums\InventoryMovementType;
 use App\Models\InventoryStock;
-use App\Models\Product;
+use App\Models\InventoryItem;
 use App\Models\PurchaseReturn;
 use Illuminate\Support\Facades\DB;
 
@@ -36,12 +36,12 @@ final readonly class CreatePurchaseReturnAction
             ]);
 
             foreach ($items as $item) {
-                $product = Product::query()->findOrFail((int) $item['product_id']);
+                $product = InventoryItem::query()->findOrFail((int) $item['inventory_item_id']);
                 $stock = InventoryStock::query()->findOrFail((int) $item['inventory_stock_id']);
 
                 $return->items()->create([
                     'tenant_id' => tenant('id'),
-                    'product_id' => $product->id,
+                    'inventory_item_id' => $product->id,
                     'inventory_stock_id' => $stock->id,
                     'quantity' => $item['quantity'],
                     'unit_cost' => $item['unit_cost'],

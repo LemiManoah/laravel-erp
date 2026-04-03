@@ -51,7 +51,7 @@
                     @forelse($stocks as $stock)
                         <tr wire:key="stock-row-{{ $stock->id }}">
                             <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">{{ $stock->batch_number ?? 'Standard stock row' }}</td>
-                            <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $stock->product->name }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $stock->inventoryItem->name }}</td>
                             <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $stock->location?->name ?? 'Unassigned' }}</td>
                             <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $stock->expiry_date?->format('d M Y') ?? 'N/A' }}</td>
                             <td class="px-6 py-4 text-sm text-gray-900 dark:text-white">{{ number_format((float) $stock->quantity_on_hand, 2) }}</td>
@@ -72,3 +72,4 @@
         @endif
     </div>
 </div>
+

@@ -6,7 +6,7 @@ namespace App\Livewire\Inventory\Receipts;
 
 use App\Actions\Inventory\RecordInventoryMovementAction;
 use App\Enums\InventoryMovementType;
-use App\Models\Product;
+use App\Models\InventoryItem;
 use App\Models\StockLocation;
 use Illuminate\Contracts\View\View;
 use Illuminate\Validation\Rule;
@@ -16,7 +16,7 @@ final class CreatePage extends Component
 {
     public string $receipt_type = 'opening_stock';
 
-    public string $product_id = '';
+    public string $inventory_item_id = '';
 
     public string $location_id = '';
 
@@ -47,7 +47,7 @@ final class CreatePage extends Component
 
         return [
             'receipt_type' => ['required', Rule::in($this->allowedReceiptTypes()->pluck('value')->all())],
-            'product_id' => ['required', $tenant->exists('products', 'id')],
+            'inventory_item_id' => ['required', $tenant->exists('inventory_items', 'id')],
             'location_id' => ['required', $tenant->exists('stock_locations', 'id')],
             'quantity' => ['required', 'numeric', 'gt:0'],
             'unit_cost' => ['nullable', 'numeric', 'min:0'],
@@ -64,7 +64,7 @@ final class CreatePage extends Component
 
         $this->validate();
 
-        $product = Product::query()->findOrFail((int) $this->product_id);
+        $product = InventoryItem::query()->findOrFail((int) $this->inventory_item_id);
         $movementType = InventoryMovementType::from($this->receipt_type);
 
         $recordInventoryMovement->handle($product, $movementType, (float) $this->quantity, [
@@ -85,20 +85,20 @@ final class CreatePage extends Component
     public function render(): View
     {
         return view('livewire.inventory.receipts.create-page', [
-            'products' => Product::query()->stockTracked()->active()->orderBy('name')->get(),
+            'products' => InventoryItem::query()->stockTracked()->active()->orderBy('name')->get(),
             'locations' => StockLocation::query()->active()->ordered()->get(),
             'receiptTypes' => $this->allowedReceiptTypes(),
             'selectedProduct' => $this->selectedProduct(),
         ]);
     }
 
-    private function selectedProduct(): ?Product
+    private function selectedProduct(): ?InventoryItem
     {
-        if (! filled($this->product_id)) {
+        if (! filled($this->inventory_item_id)) {
             return null;
         }
 
-        return Product::query()->find((int) $this->product_id);
+        return InventoryItem::query()->find((int) $this->inventory_item_id);
     }
 
     private function allowedReceiptTypes()
@@ -113,3 +113,4 @@ final class CreatePage extends Component
         ]);
     }
 }
+

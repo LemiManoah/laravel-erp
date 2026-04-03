@@ -34,7 +34,7 @@ final readonly class CreateInvoiceAction
 
             foreach ($data['items'] as $item) {
                 $invoice->items()->create([
-                    'product_id' => $item['product_id'] ?? null,
+                    'inventory_item_id' => $item['inventory_item_id'] ?? null,
                     'item_name' => $item['item_name'],
                     'description' => $item['description'] ?? null,
                     'quantity' => $item['quantity'],

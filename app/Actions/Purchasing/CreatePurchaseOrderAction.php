@@ -32,7 +32,7 @@ final readonly class CreatePurchaseOrderAction
             foreach ($items as $item) {
                 $order->items()->create([
                     'tenant_id' => tenant('id'),
-                    'product_id' => $item['product_id'],
+                    'inventory_item_id' => $item['inventory_item_id'],
                     'quantity' => $item['quantity'],
                     'unit_cost' => $item['unit_cost'],
                     'line_total' => $item['line_total'],

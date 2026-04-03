@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-use App\Enums\ProductItemType;
+use App\Enums\InventoryItemType;
 use App\Livewire\Currencies\IndexPage as CurrencyIndexPage;
 use App\Livewire\Measurements\CreatePage as MeasurementCreatePage;
 use App\Livewire\Payments\ShowPage as PaymentShowPage;
 use App\Livewire\PaymentMethods\IndexPage as PaymentMethodIndexPage;
-use App\Livewire\ProductCategories\IndexPage as ProductCategoryIndexPage;
+use App\Livewire\ItemCategories\IndexPage as ItemCategoryIndexPage;
 use App\Models\Currency;
 use App\Models\Customer;
 use App\Models\Invoice;
@@ -15,8 +15,8 @@ use App\Models\Measurement;
 use App\Models\Payment;
 use App\Models\PaymentMethod;
 use App\Models\Permission;
-use App\Models\Product;
-use App\Models\ProductCategory;
+use App\Models\InventoryItem;
+use App\Models\ItemCategory;
 use App\Models\Receipt;
 use App\Models\UnitOfMeasure;
 use App\Models\User;
@@ -32,9 +32,9 @@ beforeEach(function () {
         'currencies.delete',
         'payment-methods.view',
         'payment-methods.delete',
-        'products.view',
-        'products.create',
-        'products.update',
+        'inventory-items.view',
+        'inventory-items.create',
+        'inventory-items.update',
         'measurements.create',
         'payments.view',
         'payments.void',
@@ -74,19 +74,19 @@ it('does not allow deleting a payment method that is used in a payment', functio
     ]);
 });
 
-it('does not allow deleting a product category with products attached', function () {
-    $category = ProductCategory::query()->create([
+it('does not allow deleting an item category with inventory items attached', function () {
+    $category = ItemCategory::query()->create([
         'name' => 'Tailoring',
-        'description' => 'Apparel products',
+        'description' => 'Apparel inventory items',
         'is_active' => true,
     ]);
 
-    createModuleBehaviorProduct($category);
+    createModuleBehaviorInventoryItem($category);
 
-    Livewire::test(ProductCategoryIndexPage::class)
+    Livewire::test(ItemCategoryIndexPage::class)
         ->call('delete', $category->id);
 
-    $this->assertDatabaseHas('product_categories', [
+    $this->assertDatabaseHas('item_categories', [
         'id' => $category->id,
     ]);
 });
@@ -212,7 +212,7 @@ function createModuleBehaviorPayment(User $user, Currency $currency): Payment
     return $payment->refresh();
 }
 
-function createModuleBehaviorProduct(ProductCategory $category): Product
+function createModuleBehaviorInventoryItem(ItemCategory $category): InventoryItem
 {
     static $counter = 0;
     $counter++;
@@ -225,10 +225,10 @@ function createModuleBehaviorProduct(ProductCategory $category): Product
         ],
     );
 
-    return Product::query()->create([
-        'name' => sprintf('Behavior Product %d', $counter),
-        'product_category_id' => $category->id,
-        'item_type' => ProductItemType::StockItem,
+    return InventoryItem::query()->create([
+        'name' => sprintf('Behavior InventoryItem %d', $counter),
+        'item_category_id' => $category->id,
+        'item_type' => InventoryItemType::StockItem,
         'tracks_inventory' => true,
         'is_sellable' => true,
         'is_purchasable' => true,
@@ -239,3 +239,4 @@ function createModuleBehaviorProduct(ProductCategory $category): Product
         'is_active' => true,
     ]);
 }
+

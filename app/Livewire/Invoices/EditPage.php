@@ -9,7 +9,7 @@ use App\Models\Currency;
 use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\Order;
-use App\Models\Product;
+use App\Models\InventoryItem;
 use App\Models\StockLocation;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
@@ -56,7 +56,7 @@ final class EditPage extends Component
         $this->discount_amount = (string) $invoice->discount_amount;
         $this->tax_amount = (string) $invoice->tax_amount;
         $this->items = $invoice->items->map(fn ($item): array => [
-            'product_id' => $item->product_id ? (string) $item->product_id : '',
+            'inventory_item_id' => $item->inventory_item_id ? (string) $item->inventory_item_id : '',
             'item_name' => $item->item_name,
             'description' => $item->description ?? '',
             'quantity' => $item->quantity,
@@ -79,7 +79,7 @@ final class EditPage extends Component
             'discount_amount' => ['nullable', 'numeric', 'min:0'],
             'tax_amount' => ['nullable', 'numeric', 'min:0'],
             'items' => ['required', 'array', 'min:1'],
-            'items.*.product_id' => ['nullable', 'integer', $tenant->exists('products', 'id')],
+            'items.*.inventory_item_id' => ['nullable', 'integer', $tenant->exists('inventory_items', 'id')],
             'items.*.item_name' => ['required', 'string', 'max:255'],
             'items.*.description' => ['nullable', 'string'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
@@ -95,8 +95,8 @@ final class EditPage extends Component
 
         [$index, $field] = explode('.', $key, 2);
 
-        if ($field === 'product_id' && $value !== '') {
-            $product = Product::query()->find((int) $value);
+        if ($field === 'inventory_item_id' && $value !== '') {
+            $product = InventoryItem::query()->find((int) $value);
             if ($product !== null) {
                 $this->items[(int) $index]['item_name'] = $product->name;
                 if (empty($this->items[(int) $index]['unit_price'])) {
@@ -109,7 +109,7 @@ final class EditPage extends Component
     public function addItem(): void
     {
         $this->items[] = [
-            'product_id' => '',
+            'inventory_item_id' => '',
             'item_name' => '',
             'description' => '',
             'quantity' => 1,
@@ -123,7 +123,7 @@ final class EditPage extends Component
         $this->items = array_values($this->items);
 
         if ($this->items === []) {
-            $this->items[] = ['product_id' => '', 'item_name' => '', 'description' => '', 'quantity' => 1, 'unit_price' => 0];
+            $this->items[] = ['inventory_item_id' => '', 'item_name' => '', 'description' => '', 'quantity' => 1, 'unit_price' => 0];
         }
     }
 
@@ -152,7 +152,7 @@ final class EditPage extends Component
             'discount_amount' => (float) $this->discount_amount,
             'tax_amount' => (float) $this->tax_amount,
             'items' => collect($this->items)->map(fn ($item): array => [
-                'product_id' => isset($item['product_id']) && $item['product_id'] !== '' ? (int) $item['product_id'] : null,
+                'inventory_item_id' => isset($item['inventory_item_id']) && $item['inventory_item_id'] !== '' ? (int) $item['inventory_item_id'] : null,
                 'item_name' => $item['item_name'],
                 'description' => $item['description'] !== '' ? $item['description'] : null,
                 'quantity' => (int) $item['quantity'],
@@ -197,8 +197,9 @@ final class EditPage extends Component
                     ->get()
                 : collect(),
             'currencies' => Currency::active()->ordered()->get(),
-            'products' => Product::query()->active()->orderBy('name')->get(),
+            'products' => InventoryItem::query()->active()->orderBy('name')->get(),
             'stockLocations' => StockLocation::query()->active()->ordered()->get(),
         ]);
     }
 }
+

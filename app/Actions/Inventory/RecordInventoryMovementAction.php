@@ -8,7 +8,7 @@ use App\Enums\InventoryDirection;
 use App\Enums\InventoryMovementType;
 use App\Models\InventoryMovement;
 use App\Models\InventoryStock;
-use App\Models\Product;
+use App\Models\InventoryItem;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -17,11 +17,11 @@ final readonly class RecordInventoryMovementAction
     /**
      * @param  array<string, mixed>  $attributes
      */
-    public function handle(Product $product, InventoryMovementType $movementType, float $quantity, array $attributes = []): InventoryMovement
+    public function handle(InventoryItem $product, InventoryMovementType $movementType, float $quantity, array $attributes = []): InventoryMovement
     {
         if (! $product->tracks_inventory) {
             throw ValidationException::withMessages([
-                'product_id' => 'The selected inventory item does not track inventory.',
+                'inventory_item_id' => 'The selected inventory item does not track inventory.',
             ]);
         }
 
@@ -32,7 +32,7 @@ final readonly class RecordInventoryMovementAction
         }
 
         return DB::transaction(function () use ($product, $movementType, $quantity, $attributes): InventoryMovement {
-            $product = Product::query()->lockForUpdate()->findOrFail($product->id);
+            $product = InventoryItem::query()->lockForUpdate()->findOrFail($product->id);
             $direction = $movementType->direction();
             $conversionRate = max(0.0001, (float) ($attributes['unit_conversion_rate'] ?? 1));
             $baseQuantity = round($quantity * $conversionRate, 2);
@@ -53,7 +53,7 @@ final readonly class RecordInventoryMovementAction
 
             return InventoryMovement::query()->create([
                 'tenant_id' => tenant('id'),
-                'product_id' => $product->id,
+                'inventory_item_id' => $product->id,
                 'location_id' => $attributes['location_id'] ?? $stock->location_id,
                 'inventory_stock_id' => $stock->id,
                 'movement_type' => $movementType,
@@ -75,7 +75,7 @@ final readonly class RecordInventoryMovementAction
     /**
      * @param  array<string, mixed>  $attributes
      */
-    private function resolveInventoryStock(Product $product, InventoryMovementType $movementType, InventoryDirection $direction, array $attributes): InventoryStock
+    private function resolveInventoryStock(InventoryItem $product, InventoryMovementType $movementType, InventoryDirection $direction, array $attributes): InventoryStock
     {
         $stock = $attributes['inventory_stock'] ?? null;
 
@@ -111,7 +111,7 @@ final readonly class RecordInventoryMovementAction
                 return InventoryStock::query()->lockForUpdate()->firstOrCreate(
                     [
                         'tenant_id' => tenant('id'),
-                        'product_id' => $product->id,
+                        'inventory_item_id' => $product->id,
                         'location_id' => $locationId,
                         'batch_number' => $batchNumber,
                     ],
@@ -128,7 +128,7 @@ final readonly class RecordInventoryMovementAction
             return InventoryStock::query()->lockForUpdate()->firstOrCreate(
                 [
                     'tenant_id' => tenant('id'),
-                    'product_id' => $product->id,
+                    'inventory_item_id' => $product->id,
                     'location_id' => $locationId,
                     'batch_number' => null,
                 ],
@@ -148,7 +148,7 @@ final readonly class RecordInventoryMovementAction
         }
 
         $existingStock = InventoryStock::query()->lockForUpdate()
-            ->where('product_id', $product->id)
+            ->where('inventory_item_id', $product->id)
             ->when($locationId !== null, fn ($query) => $query->where('location_id', $locationId))
             ->whereNull('batch_number')
             ->first();
@@ -165,9 +165,9 @@ final readonly class RecordInventoryMovementAction
     /**
      * @param  array<string, mixed>  $attributes
      */
-    private function validateStockUsage(Product $product, InventoryStock $stock, InventoryMovementType $movementType, InventoryDirection $direction, float $baseQuantity, array $attributes): void
+    private function validateStockUsage(InventoryItem $product, InventoryStock $stock, InventoryMovementType $movementType, InventoryDirection $direction, float $baseQuantity, array $attributes): void
     {
-        if ((int) $stock->product_id !== $product->id) {
+        if ((int) $stock->inventory_item_id !== $product->id) {
             throw ValidationException::withMessages([
                 'inventory_stock_id' => 'The selected stock record does not belong to the selected inventory item.',
             ]);

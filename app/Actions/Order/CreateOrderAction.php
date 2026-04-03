@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Actions\Order;
 
 use App\Models\Order;
-use App\Models\Product;
+use App\Models\InventoryItem;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -38,16 +38,16 @@ final readonly class CreateOrderAction
      */
     private function processItem(array $item): array
     {
-        $productId = $item['product_id'] ?? null;
+        $inventoryItemId = $item['inventory_item_id'] ?? null;
 
-        if ($productId === 'custom') {
+        if ($inventoryItemId === 'custom') {
             $item['garment_type'] = $item['garment_type'] ?? '';
-            $item['product_id'] = null;
-        } elseif ($productId) {
-            $product = Product::find($productId);
-            if ($product) {
-                $item['garment_type'] = $product->name;
-                $item['product_id'] = (int) $productId;
+            $item['inventory_item_id'] = null;
+        } elseif ($inventoryItemId) {
+            $inventoryItem = InventoryItem::find($inventoryItemId);
+            if ($inventoryItem) {
+                $item['garment_type'] = $inventoryItem->name;
+                $item['inventory_item_id'] = (int) $inventoryItemId;
             }
         }
 

@@ -7,7 +7,7 @@ use App\Actions\Inventory\IssueInvoiceInventoryAction;
 use App\Actions\Invoice\CancelInvoiceAction;
 use App\Actions\Measurement\CreateMeasurementAction;
 use App\Enums\InventoryMovementType;
-use App\Enums\ProductItemType;
+use App\Enums\InventoryItemType;
 use App\Enums\StockLocationType;
 use App\Models\Currency;
 use App\Models\Customer;
@@ -19,7 +19,7 @@ use App\Models\Measurement;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\PaymentMethod;
-use App\Models\Product;
+use App\Models\InventoryItem;
 use App\Models\StockLocation;
 use App\Models\UnitOfMeasure;
 use App\Models\User;
@@ -65,7 +65,7 @@ it('issues invoice inventory from the default stock location when the invoice ha
     ]);
 
     $stock = InventoryStock::query()->create([
-        'product_id' => $product->id,
+        'inventory_item_id' => $product->id,
         'location_id' => $this->location->id,
         'quantity_on_hand' => 5,
         'received_at' => now()->subDay()->toDateString(),
@@ -80,7 +80,7 @@ it('issues invoice inventory from the default stock location when the invoice ha
 
     InvoiceItem::query()->create([
         'invoice_id' => $invoice->id,
-        'product_id' => $product->id,
+        'inventory_item_id' => $product->id,
         'item_name' => 'Waistcoat',
         'quantity' => 2,
         'unit_price' => 30,
@@ -100,7 +100,7 @@ it('cancels an invoice and restores previously issued inventory', function (): v
     ]);
 
     $stock = InventoryStock::query()->create([
-        'product_id' => $product->id,
+        'inventory_item_id' => $product->id,
         'location_id' => $this->location->id,
         'quantity_on_hand' => 6,
         'received_at' => now()->subDay()->toDateString(),
@@ -117,7 +117,7 @@ it('cancels an invoice and restores previously issued inventory', function (): v
 
     InvoiceItem::query()->create([
         'invoice_id' => $invoice->id,
-        'product_id' => $product->id,
+        'inventory_item_id' => $product->id,
         'item_name' => 'Three-piece suit',
         'quantity' => 2,
         'unit_price' => 60,
@@ -228,14 +228,14 @@ function invoiceMaintenanceCustomer(User $user): Customer
     ]);
 }
 
-function invoiceMaintenanceProduct(UnitOfMeasure $unit, array $overrides = []): Product
+function invoiceMaintenanceProduct(UnitOfMeasure $unit, array $overrides = []): InventoryItem
 {
     static $counter = 0;
     $counter++;
 
-    return Product::query()->create([
-        'name' => sprintf('Invoice Product %d', $counter),
-        'item_type' => ProductItemType::StockItem,
+    return InventoryItem::query()->create([
+        'name' => sprintf('Invoice InventoryItem %d', $counter),
+        'item_type' => InventoryItemType::StockItem,
         'tracks_inventory' => true,
         'is_sellable' => true,
         'is_purchasable' => true,

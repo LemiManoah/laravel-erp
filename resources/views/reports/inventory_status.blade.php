@@ -19,11 +19,11 @@
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
         <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm">
             <p class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Tracked Items</p>
-            <p class="text-xl font-bold text-gray-900 dark:text-white">{{ $summary['tracked_products'] }}</p>
+            <p class="text-xl font-bold text-gray-900 dark:text-white">{{ $summary['tracked_inventory_items'] }}</p>
         </div>
         <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-amber-200 dark:border-amber-800 shadow-sm">
             <p class="text-xs font-bold text-amber-600 uppercase tracking-wider mb-1">Low Stock</p>
-            <p class="text-xl font-bold text-amber-700 dark:text-amber-300">{{ $summary['low_stock_products'] }}</p>
+            <p class="text-xl font-bold text-amber-700 dark:text-amber-300">{{ $summary['low_stock_inventory_items'] }}</p>
         </div>
         <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-yellow-200 dark:border-yellow-800 shadow-sm">
             <p class="text-xs font-bold text-yellow-600 uppercase tracking-wider mb-1">Near Expiry</p>
@@ -50,11 +50,11 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                        @forelse($low_stock_products as $product)
+                        @forelse($low_stock_inventory_items as $inventoryItem)
                             <tr>
-                                <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">{{ $product->name }}</td>
-                                <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ number_format((float) $product->quantity_on_hand, 2) }} {{ $product->baseUnit?->abbreviation }}</td>
-                                <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ number_format((float) $product->reorder_level, 2) }}</td>
+                                <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">{{ $inventoryItem->name }}</td>
+                                <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ number_format((float) $inventoryItem->quantity_on_hand, 2) }} {{ $inventoryItem->baseUnit?->abbreviation }}</td>
+                                <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ number_format((float) $inventoryItem->reorder_level, 2) }}</td>
                             </tr>
                         @empty
                             <tr><td colspan="3" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">No low stock inventory items.</td></tr>
@@ -82,7 +82,7 @@
                         @forelse($stock_by_location as $row)
                             <tr>
                                 <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">{{ $row['location']->name }}</td>
-                                <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $row['tracked_products'] }}</td>
+                                <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $row['tracked_inventory_items'] }}</td>
                                 <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $row['stock_rows'] }}</td>
                                 <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ number_format((float) $row['total_quantity'], 2) }}</td>
                             </tr>
@@ -112,7 +112,7 @@
                     <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                         @forelse($near_expiry_stocks as $stock)
                             <tr>
-                                <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">{{ $stock->product->name }}</td>
+                                <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">{{ $stock->inventoryItem->name }}</td>
                                 <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $stock->batch_number ?? 'Standard stock row' }} @if($stock->location) ({{ $stock->location->name }}) @endif</td>
                                 <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $stock->expiry_date?->format('M d, Y') }}</td>
                             </tr>
@@ -141,7 +141,7 @@
                     <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                         @forelse($expired_stocks as $stock)
                             <tr>
-                                <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">{{ $stock->product->name }}</td>
+                                <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">{{ $stock->inventoryItem->name }}</td>
                                 <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $stock->batch_number ?? 'Standard stock row' }} @if($stock->location) ({{ $stock->location->name }}) @endif</td>
                                 <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ number_format((float) $stock->quantity_on_hand, 2) }}</td>
                                 <td class="px-6 py-4 text-sm text-red-600 dark:text-red-300">{{ $stock->expiry_date?->format('M d, Y') }}</td>
@@ -155,3 +155,4 @@
         </div>
     </div>
 </div>
+

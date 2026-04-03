@@ -6,7 +6,7 @@ namespace App\Actions\Inventory;
 
 use App\Enums\InventoryMovementType;
 use App\Models\InventoryStock;
-use App\Models\Product;
+use App\Models\InventoryItem;
 use App\Models\StockLocation;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -21,7 +21,7 @@ final readonly class TransferInventoryAction
      * @param  array<string, mixed>  $attributes
      * @return array{out: \App\Models\InventoryMovement, in: \App\Models\InventoryMovement}
      */
-    public function handle(Product $product, StockLocation $fromLocation, StockLocation $toLocation, float $quantity, array $attributes = []): array
+    public function handle(InventoryItem $product, StockLocation $fromLocation, StockLocation $toLocation, float $quantity, array $attributes = []): array
     {
         if ($fromLocation->is($toLocation)) {
             throw ValidationException::withMessages([
@@ -45,7 +45,7 @@ final readonly class TransferInventoryAction
                 $destinationStock = InventoryStock::query()->firstOrCreate(
                     [
                         'tenant_id' => tenant('id'),
-                        'product_id' => $product->id,
+                        'inventory_item_id' => $product->id,
                         'location_id' => $toLocation->id,
                         'batch_number' => $stock->batch_number,
                     ],

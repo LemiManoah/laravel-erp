@@ -6,7 +6,7 @@ use App\Actions\Dashboard\ComputeDashboardDataAction;
 use App\Actions\Report\ComputeInventoryStatusReportAction;
 use App\Actions\Report\ComputeProfitLossReportAction;
 use App\Actions\Report\ComputeSalesReportAction;
-use App\Enums\ProductItemType;
+use App\Enums\InventoryItemType;
 use App\Enums\StockLocationType;
 use App\Models\Currency;
 use App\Models\Customer;
@@ -17,7 +17,7 @@ use App\Models\Invoice;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\PaymentMethod;
-use App\Models\Product;
+use App\Models\InventoryItem;
 use App\Models\StockLocation;
 use App\Models\UnitOfMeasure;
 use App\Models\User;
@@ -109,32 +109,32 @@ it('computes sales report totals excluding draft and cancelled invoices', functi
 });
 
 it('computes inventory status counts for low stock and expiry buckets', function (): void {
-    $lowStockProduct = reportingWorkflowProduct($this->unit, [
-        'name' => 'Low Stock Product',
+    $lowStockInventoryItem = reportingWorkflowInventoryItem($this->unit, [
+        'name' => 'Low Stock InventoryItem',
         'reorder_level' => 5,
     ]);
 
-    $healthyProduct = reportingWorkflowProduct($this->unit, [
-        'name' => 'Healthy Product',
+    $healthyInventoryItem = reportingWorkflowInventoryItem($this->unit, [
+        'name' => 'Healthy InventoryItem',
         'reorder_level' => 2,
     ]);
 
     InventoryStock::query()->create([
-        'product_id' => $lowStockProduct->id,
+        'inventory_item_id' => $lowStockInventoryItem->id,
         'location_id' => $this->location->id,
         'quantity_on_hand' => 3,
         'received_at' => now()->subDay()->toDateString(),
     ]);
 
     InventoryStock::query()->create([
-        'product_id' => $healthyProduct->id,
+        'inventory_item_id' => $healthyInventoryItem->id,
         'location_id' => $this->location->id,
         'quantity_on_hand' => 9,
         'received_at' => now()->subDay()->toDateString(),
     ]);
 
     InventoryStock::query()->create([
-        'product_id' => $healthyProduct->id,
+        'inventory_item_id' => $healthyInventoryItem->id,
         'location_id' => $this->location->id,
         'batch_number' => 'BATCH-NEAR',
         'expiry_date' => now()->addDays(5)->toDateString(),
@@ -143,7 +143,7 @@ it('computes inventory status counts for low stock and expiry buckets', function
     ]);
 
     InventoryStock::query()->create([
-        'product_id' => $healthyProduct->id,
+        'inventory_item_id' => $healthyInventoryItem->id,
         'location_id' => $this->location->id,
         'batch_number' => 'BATCH-EXPIRED',
         'expiry_date' => now()->subDay()->toDateString(),
@@ -153,8 +153,8 @@ it('computes inventory status counts for low stock and expiry buckets', function
 
     $report = app(ComputeInventoryStatusReportAction::class)->handle();
 
-    expect($report['summary']['tracked_products'])->toBe(2);
-    expect($report['summary']['low_stock_products'])->toBe(1);
+    expect($report['summary']['tracked_inventory_items'])->toBe(2);
+    expect($report['summary']['low_stock_inventory_items'])->toBe(1);
     expect($report['summary']['near_expiry_rows'])->toBe(1);
     expect($report['summary']['expired_rows'])->toBe(1);
     expect($report['stock_by_location'])->toHaveCount(1);
@@ -371,14 +371,14 @@ function reportingWorkflowUnit(): UnitOfMeasure
     ]);
 }
 
-function reportingWorkflowProduct(UnitOfMeasure $unit, array $overrides = []): Product
+function reportingWorkflowInventoryItem(UnitOfMeasure $unit, array $overrides = []): InventoryItem
 {
     static $counter = 0;
     $counter++;
 
-    return Product::query()->create([
-        'name' => sprintf('Report Product %d', $counter),
-        'item_type' => ProductItemType::StockItem,
+    return InventoryItem::query()->create([
+        'name' => sprintf('Report InventoryItem %d', $counter),
+        'item_type' => InventoryItemType::StockItem,
         'tracks_inventory' => true,
         'is_sellable' => true,
         'is_purchasable' => true,

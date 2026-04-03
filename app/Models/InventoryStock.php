@@ -15,7 +15,7 @@ use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 /**
  * @property int $id
  * @property string $tenant_id
- * @property int $product_id
+ * @property int $inventory_item_id
  * @property int|null $location_id
  * @property string|null $batch_number
  * @property Carbon|null $expiry_date
@@ -31,7 +31,7 @@ final class InventoryStock extends Model
 
     protected $fillable = [
         'tenant_id',
-        'product_id',
+        'inventory_item_id',
         'location_id',
         'batch_number',
         'expiry_date',
@@ -51,9 +51,9 @@ final class InventoryStock extends Model
         ];
     }
 
-    public function product(): BelongsTo
+    public function inventoryItem(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(InventoryItem::class);
     }
 
     public function location(): BelongsTo
@@ -89,3 +89,4 @@ final class InventoryStock extends Model
         return $this->expiry_date !== null && $this->expiry_date->lt(today());
     }
 }
+

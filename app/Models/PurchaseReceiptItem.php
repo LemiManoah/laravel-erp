@@ -17,7 +17,7 @@ final class PurchaseReceiptItem extends Model
     protected $fillable = [
         'tenant_id',
         'purchase_receipt_id',
-        'product_id',
+        'inventory_item_id',
         'quantity',
         'unit_cost',
         'line_total',
@@ -41,8 +41,9 @@ final class PurchaseReceiptItem extends Model
         return $this->belongsTo(PurchaseReceipt::class);
     }
 
-    public function product(): BelongsTo
+    public function inventoryItem(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(InventoryItem::class);
     }
 }
+

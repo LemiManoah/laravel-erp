@@ -6,9 +6,9 @@
         </div>
     </div>
 
-    @if($selected_product)
+    @if($selected_inventory_item)
         <div class="cards">
-            <div class="card"><div class="label">Inventory Item</div><div class="value">{{ $selected_product->name }}</div></div>
+            <div class="card"><div class="label">Inventory Item</div><div class="value">{{ $selected_inventory_item->name }}</div></div>
             <div class="card"><div class="label">Current Qty</div><div class="value">{{ number_format((float) $summary['current_quantity'], 2) }}</div></div>
             <div class="card"><div class="label">Qty In</div><div class="value">{{ number_format((float) $summary['quantity_in'], 2) }}</div></div>
             <div class="card"><div class="label">Qty Out</div><div class="value">{{ number_format((float) $summary['quantity_out'], 2) }}</div></div>

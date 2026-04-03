@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Actions\Purchasing\CreatePurchaseReceiptAction;
-use App\Models\Product;
+use App\Models\InventoryItem;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseReceipt;
 use App\Models\StockLocation;
@@ -17,7 +17,7 @@ final class PurchaseReceiptSeeder extends Seeder
     public function run(): void
     {
         $suppliers = Supplier::query()->get()->keyBy('code');
-        $products = Product::query()->get()->keyBy('name');
+        $products = InventoryItem::query()->get()->keyBy('name');
         $locations = StockLocation::query()->get()->keyBy('code');
         $orders = PurchaseOrder::query()->get()->keyBy('order_number');
         $action = app(CreatePurchaseReceiptAction::class);
@@ -47,7 +47,7 @@ final class PurchaseReceiptSeeder extends Seeder
                     $unitCost = (float) $item['unit_cost'];
 
                     return [
-                        'product_id' => $product->id,
+                        'inventory_item_id' => $product->id,
                         'quantity' => $quantity,
                         'unit_cost' => $unitCost,
                         'line_total' => round($quantity * $unitCost, 2),

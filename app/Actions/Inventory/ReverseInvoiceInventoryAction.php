@@ -16,16 +16,16 @@ final readonly class ReverseInvoiceInventoryAction
     public function handle(Invoice $invoice): void
     {
         $issueMovements = $invoice->inventoryMovements()
-            ->with(['product', 'inventoryStock'])
+            ->with(['inventoryItem', 'inventoryStock'])
             ->where('movement_type', InventoryMovementType::SaleIssue)
             ->get();
 
         foreach ($issueMovements as $movement) {
-            if ($movement->product === null) {
+            if ($movement->inventoryItem === null) {
                 continue;
             }
 
-            $this->recordInventoryMovement->handle($movement->product, InventoryMovementType::SalesReturn, (float) $movement->quantity, [
+            $this->recordInventoryMovement->handle($movement->inventoryItem, InventoryMovementType::SalesReturn, (float) $movement->quantity, [
                 'location_id' => $movement->location_id,
                 'inventory_stock' => $movement->inventoryStock,
                 'unit_id' => $movement->unit_id,
@@ -39,3 +39,4 @@ final readonly class ReverseInvoiceInventoryAction
         }
     }
 }
+

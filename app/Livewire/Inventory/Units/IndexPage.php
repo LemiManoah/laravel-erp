@@ -47,8 +47,8 @@ final class IndexPage extends Component
 
         $unit = UnitOfMeasure::query()->findOrFail($unitId);
 
-        if ($unit->products()->exists()) {
-            session()->flash('error', 'Cannot delete this unit because it is currently assigned to one or more products. Consider marking it as inactive instead.');
+        if ($unit->inventoryItems()->exists()) {
+            session()->flash('error', 'Cannot delete this unit because it is currently assigned to one or more inventory items. Consider marking it as inactive instead.');
 
             return;
         }
@@ -95,3 +95,5 @@ final class IndexPage extends Component
         ]);
     }
 }
+
+

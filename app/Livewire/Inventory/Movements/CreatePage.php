@@ -7,7 +7,7 @@ namespace App\Livewire\Inventory\Movements;
 use App\Actions\Inventory\RecordInventoryMovementAction;
 use App\Enums\InventoryMovementType;
 use App\Models\InventoryStock;
-use App\Models\Product;
+use App\Models\InventoryItem;
 use App\Models\StockLocation;
 use Illuminate\Contracts\View\View;
 use Illuminate\Validation\Rule;
@@ -17,7 +17,7 @@ final class CreatePage extends Component
 {
     public string $movement_type = 'purchase_receipt';
 
-    public string $product_id = '';
+    public string $inventory_item_id = '';
 
     public string $location_id = '';
 
@@ -52,7 +52,7 @@ final class CreatePage extends Component
 
         return [
             'movement_type' => ['required', Rule::enum(InventoryMovementType::class), Rule::notIn([InventoryMovementType::SaleIssue->value, InventoryMovementType::TransferIn->value, InventoryMovementType::TransferOut->value])],
-            'product_id' => ['required', $tenant->exists('products', 'id')],
+            'inventory_item_id' => ['required', $tenant->exists('inventory_items', 'id')],
             'location_id' => ['required', $tenant->exists('stock_locations', 'id')],
             'inventory_stock_id' => ['nullable', Rule::requiredIf($requiresExistingStock), $tenant->exists('inventory_stocks', 'id')],
             'quantity' => ['required', 'numeric', 'gt:0'],
@@ -70,7 +70,7 @@ final class CreatePage extends Component
 
         $this->validate();
 
-        $product = Product::query()->findOrFail((int) $this->product_id);
+        $product = InventoryItem::query()->findOrFail((int) $this->inventory_item_id);
         $movementType = $this->selectedMovementType();
 
         $recordInventoryMovement->handle($product, $movementType, (float) $this->quantity, [
@@ -92,7 +92,7 @@ final class CreatePage extends Component
     public function render(): View
     {
         return view('livewire.inventory.movements.create-page', [
-            'products' => Product::query()->stockTracked()->active()->orderBy('name')->get(),
+            'products' => InventoryItem::query()->stockTracked()->active()->orderBy('name')->get(),
             'locations' => StockLocation::query()->active()->ordered()->get(),
             'stocks' => $this->availableStocks(),
             'movementTypes' => collect(InventoryMovementType::cases())
@@ -103,23 +103,23 @@ final class CreatePage extends Component
         ]);
     }
 
-    private function selectedProduct(): ?Product
+    private function selectedProduct(): ?InventoryItem
     {
-        if (! filled($this->product_id)) {
+        if (! filled($this->inventory_item_id)) {
             return null;
         }
 
-        return Product::query()->find((int) $this->product_id);
+        return InventoryItem::query()->find((int) $this->inventory_item_id);
     }
 
     private function availableStocks()
     {
-        if (! filled($this->product_id) || ! filled($this->location_id)) {
+        if (! filled($this->inventory_item_id) || ! filled($this->location_id)) {
             return collect();
         }
 
         return InventoryStock::query()
-            ->where('product_id', (int) $this->product_id)
+            ->where('inventory_item_id', (int) $this->inventory_item_id)
             ->where('location_id', (int) $this->location_id)
             ->available()
             ->orderByRaw('CASE WHEN expiry_date IS NULL THEN 1 ELSE 0 END')
@@ -132,3 +132,4 @@ final class CreatePage extends Component
         return InventoryMovementType::tryFrom($this->movement_type) ?? InventoryMovementType::PurchaseReceipt;
     }
 }
+

@@ -6,14 +6,14 @@ namespace App\Livewire\Inventory\Transfers;
 
 use App\Actions\Inventory\TransferInventoryAction;
 use App\Models\InventoryStock;
-use App\Models\Product;
+use App\Models\InventoryItem;
 use App\Models\StockLocation;
 use Illuminate\Contracts\View\View;
 use Livewire\Component;
 
 final class CreatePage extends Component
 {
-    public string $product_id = '';
+    public string $inventory_item_id = '';
 
     public string $from_location_id = '';
 
@@ -41,7 +41,7 @@ final class CreatePage extends Component
         $requiresStockSelection = $product?->has_expiry;
 
         return [
-            'product_id' => ['required', $tenant->exists('products', 'id')],
+            'inventory_item_id' => ['required', $tenant->exists('inventory_items', 'id')],
             'from_location_id' => ['required', $tenant->exists('stock_locations', 'id')],
             'to_location_id' => ['required', 'different:from_location_id', $tenant->exists('stock_locations', 'id')],
             'inventory_stock_id' => ['nullable', \Illuminate\Validation\Rule::requiredIf($requiresStockSelection), $tenant->exists('inventory_stocks', 'id')],
@@ -58,7 +58,7 @@ final class CreatePage extends Component
         $this->validate();
 
         $transferInventory->handle(
-            Product::query()->findOrFail((int) $this->product_id),
+            InventoryItem::query()->findOrFail((int) $this->inventory_item_id),
             StockLocation::query()->findOrFail((int) $this->from_location_id),
             StockLocation::query()->findOrFail((int) $this->to_location_id),
             (float) $this->quantity,
@@ -78,30 +78,30 @@ final class CreatePage extends Component
     public function render(): View
     {
         return view('livewire.inventory.transfers.create-page', [
-            'products' => Product::query()->stockTracked()->active()->orderBy('name')->get(),
+            'products' => InventoryItem::query()->stockTracked()->active()->orderBy('name')->get(),
             'locations' => StockLocation::query()->active()->ordered()->get(),
             'stocks' => $this->availableStocks(),
             'selectedProduct' => $this->selectedProduct(),
         ]);
     }
 
-    private function selectedProduct(): ?Product
+    private function selectedProduct(): ?InventoryItem
     {
-        if (! filled($this->product_id)) {
+        if (! filled($this->inventory_item_id)) {
             return null;
         }
 
-        return Product::query()->find((int) $this->product_id);
+        return InventoryItem::query()->find((int) $this->inventory_item_id);
     }
 
     private function availableStocks()
     {
-        if (! filled($this->product_id) || ! filled($this->from_location_id)) {
+        if (! filled($this->inventory_item_id) || ! filled($this->from_location_id)) {
             return collect();
         }
 
         return InventoryStock::query()
-            ->where('product_id', (int) $this->product_id)
+            ->where('inventory_item_id', (int) $this->inventory_item_id)
             ->where('location_id', (int) $this->from_location_id)
             ->available()
             ->orderByRaw('CASE WHEN expiry_date IS NULL THEN 1 ELSE 0 END')
@@ -109,3 +109,4 @@ final class CreatePage extends Component
             ->get();
     }
 }
+

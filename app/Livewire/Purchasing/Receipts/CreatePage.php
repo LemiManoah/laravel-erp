@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Purchasing\Receipts;
 
 use App\Actions\Purchasing\CreatePurchaseReceiptAction;
-use App\Models\Product;
+use App\Models\InventoryItem;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseReceipt;
 use App\Models\StockLocation;
@@ -54,7 +54,7 @@ final class CreatePage extends Component
             'receipt_date' => ['required', 'date'],
             'notes' => ['nullable', 'string'],
             'items' => ['required', 'array', 'min:1'],
-            'items.*.product_id' => ['required', $tenant->exists('products', 'id')],
+            'items.*.inventory_item_id' => ['required', $tenant->exists('inventory_items', 'id')],
             'items.*.quantity' => ['required', 'numeric', 'gt:0'],
             'items.*.unit_cost' => ['required', 'numeric', 'min:0'],
             'items.*.batch_number' => ['nullable', 'string', 'max:255'],
@@ -87,11 +87,11 @@ final class CreatePage extends Component
         [$index, $field] = explode('.', $key, 2);
         $index = (int) $index;
 
-        if ($field !== 'product_id') {
+        if ($field !== 'inventory_item_id') {
             return;
         }
 
-        $product = Product::query()->with('defaultPrice')->find((int) $value);
+        $product = InventoryItem::query()->with('defaultPrice')->find((int) $value);
 
         if ($product !== null && blank($this->items[$index]['unit_cost'])) {
             $this->items[$index]['unit_cost'] = $product->purchase_price ?? '';
@@ -122,7 +122,7 @@ final class CreatePage extends Component
             $unitCost = (float) $item['unit_cost'];
 
             return [
-                'product_id' => (int) $item['product_id'],
+                'inventory_item_id' => (int) $item['inventory_item_id'],
                 'quantity' => $quantity,
                 'unit_cost' => $unitCost,
                 'line_total' => round($quantity * $unitCost, 2),
@@ -143,7 +143,7 @@ final class CreatePage extends Component
             'selectedOrder' => $this->selectedOrder(),
             'suppliers' => Supplier::query()->where('is_active', true)->orderBy('name')->get(),
             'locations' => StockLocation::query()->active()->ordered()->get(),
-            'products' => Product::query()->stockTracked()->purchasable()->active()->with('defaultPrice')->orderBy('name')->get(),
+            'products' => InventoryItem::query()->stockTracked()->purchasable()->active()->with('defaultPrice')->orderBy('name')->get(),
             'total' => collect($this->items)->sum(fn (array $item): float => ((float) ($item['quantity'] ?: 0)) * ((float) ($item['unit_cost'] ?: 0))),
         ]);
     }
@@ -153,14 +153,14 @@ final class CreatePage extends Component
         $messages = [];
 
         foreach ($this->items as $index => $item) {
-            $product = Product::query()->find((int) ($item['product_id'] ?? 0));
+            $product = InventoryItem::query()->find((int) ($item['inventory_item_id'] ?? 0));
 
             if ($product === null) {
                 continue;
             }
 
             if (! $product->tracks_inventory) {
-                $messages["items.$index.product_id"] = 'Selected inventory item does not track inventory.';
+                $messages["items.$index.inventory_item_id"] = 'Selected inventory item does not track inventory.';
             }
 
             if ($product->has_expiry) {
@@ -185,7 +185,7 @@ final class CreatePage extends Component
     private function blankItem(): array
     {
         return [
-            'product_id' => '',
+            'inventory_item_id' => '',
             'quantity' => '',
             'unit_cost' => '',
             'batch_number' => '',
@@ -227,7 +227,7 @@ final class CreatePage extends Component
         $this->notes = $order->notes ?? '';
         $this->items = $order->items->map(function ($item): array {
             return [
-                'product_id' => (string) $item->product_id,
+                'inventory_item_id' => (string) $item->inventory_item_id,
                 'quantity' => (string) ((float) $item->quantity),
                 'unit_cost' => (string) ((float) $item->unit_cost),
                 'batch_number' => '',
@@ -241,3 +241,4 @@ final class CreatePage extends Component
         }
     }
 }
+

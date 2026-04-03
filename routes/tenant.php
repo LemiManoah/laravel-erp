@@ -40,9 +40,9 @@ use App\Livewire\PaymentMethods\CreatePage as PaymentMethodsCreatePage;
 use App\Livewire\PaymentMethods\EditPage as PaymentMethodsEditPage;
 use App\Livewire\Payments\IndexPage as PaymentsIndexPage;
 use App\Livewire\Payments\ShowPage as PaymentsShowPage;
-use App\Livewire\ProductCategories\CreatePage as ProductCategoriesCreatePage;
-use App\Livewire\ProductCategories\EditPage as ProductCategoriesEditPage;
-use App\Livewire\ProductCategories\IndexPage as ProductCategoriesIndexPage;
+use App\Livewire\ItemCategories\CreatePage as ItemCategoriesCreatePage;
+use App\Livewire\ItemCategories\EditPage as ItemCategoriesEditPage;
+use App\Livewire\ItemCategories\IndexPage as ItemCategoriesIndexPage;
 use App\Livewire\Purchasing\Orders\CreatePage as PurchaseOrdersCreatePage;
 use App\Livewire\Purchasing\Orders\IndexPage as PurchaseOrdersIndexPage;
 use App\Livewire\Purchasing\Orders\ShowPage as PurchaseOrdersShowPage;
@@ -194,25 +194,25 @@ Route::middleware([
             ->middleware('permission:currencies.update');
         Route::post('currencies/{currency}/default', [CurrencyController::class, 'setDefault'])->name('currencies.default');
 
-        // Products
-        Route::get('products', \App\Livewire\Products\IndexPage::class)
-            ->name('products.index')
-            ->middleware('permission:products.view');
-        Route::get('products/create', \App\Livewire\Products\CreatePage::class)
-            ->name('products.create')
-            ->middleware('permission:products.create');
-        Route::get('products/{product}/edit', \App\Livewire\Products\EditPage::class)
-            ->name('products.edit')
-            ->middleware('permission:products.update');
-        Route::get('product-categories', ProductCategoriesIndexPage::class)
-            ->name('product-categories.index')
-            ->middleware('permission:products.view');
-        Route::get('product-categories/create', ProductCategoriesCreatePage::class)
-            ->name('product-categories.create')
-            ->middleware('permission:products.create');
-        Route::get('product-categories/{productCategory}/edit', ProductCategoriesEditPage::class)
-            ->name('product-categories.edit')
-            ->middleware('permission:products.update');
+        // Inventory Items
+        Route::get('inventory-items', \App\Livewire\InventoryItems\IndexPage::class)
+            ->name('inventory-items.index')
+            ->middleware('permission:inventory-items.view');
+        Route::get('inventory-items/create', \App\Livewire\InventoryItems\CreatePage::class)
+            ->name('inventory-items.create')
+            ->middleware('permission:inventory-items.create');
+        Route::get('inventory-items/{inventoryItem}/edit', \App\Livewire\InventoryItems\EditPage::class)
+            ->name('inventory-items.edit')
+            ->middleware('permission:inventory-items.update');
+        Route::get('item-categories', ItemCategoriesIndexPage::class)
+            ->name('item-categories.index')
+            ->middleware('permission:inventory-items.view');
+        Route::get('item-categories/create', ItemCategoriesCreatePage::class)
+            ->name('item-categories.create')
+            ->middleware('permission:inventory-items.create');
+        Route::get('item-categories/{itemCategory}/edit', ItemCategoriesEditPage::class)
+            ->name('item-categories.edit')
+            ->middleware('permission:inventory-items.update');
 
         // Expenses
         Route::get('expenses', \App\Livewire\Expenses\IndexPage::class)
@@ -430,3 +430,4 @@ Route::middleware([
 
     require __DIR__.'/auth.php';
 });
+

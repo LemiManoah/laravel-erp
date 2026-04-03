@@ -21,7 +21,7 @@ final class PurchaseReturnSeeder extends Seeder
         }
 
         $stock = InventoryStock::query()
-            ->where('product_id', $receipt->items()->first()?->product_id)
+            ->where('inventory_item_id', $receipt->items()->first()?->inventory_item_id)
             ->where('location_id', $receipt->stock_location_id)
             ->first();
 
@@ -37,7 +37,7 @@ final class PurchaseReturnSeeder extends Seeder
             'return_date' => '2026-03-31',
             'notes' => 'Damaged cartons returned to supplier.',
         ], [[
-            'product_id' => $stock->product_id,
+            'inventory_item_id' => $stock->inventory_item_id,
             'inventory_stock_id' => $stock->id,
             'quantity' => 2,
             'unit_cost' => (float) ($stock->unit_cost ?? 0),

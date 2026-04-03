@@ -14,7 +14,7 @@ return new class extends Migration
             $table->id();
             $table->string('tenant_id');
             $table->foreignId('purchase_receipt_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('product_id')->constrained()->restrictOnDelete();
+            $table->foreignId('inventory_item_id')->constrained()->restrictOnDelete();
             $table->decimal('quantity', 12, 2);
             $table->decimal('unit_cost', 12, 2);
             $table->decimal('line_total', 14, 2);
@@ -24,7 +24,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('tenant_id')->references('id')->on('tenants')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->index(['tenant_id', 'product_id']);
+            $table->index(['tenant_id', 'inventory_item_id']);
         });
     }
 

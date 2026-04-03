@@ -17,7 +17,7 @@ final class StockCardPage extends ReportPage
             'stock_card',
             'Stock Card Report',
             app(ComputeStockCardReportAction::class)->handle(
-                $filters['product_id'],
+                $filters['inventory_item_id'],
                 $filters['location_id'],
                 $filters['start_date'],
                 $filters['end_date'],

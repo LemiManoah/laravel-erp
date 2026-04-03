@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Models\InventoryStock;
-use App\Models\Product;
+use App\Models\InventoryItem;
 use App\Models\StockLocation;
 use Illuminate\Database\Seeder;
 
@@ -13,7 +13,7 @@ final class InventoryStockSeeder extends Seeder
 {
     public function run(): void
     {
-        $products = Product::query()->get()->keyBy('name');
+        $products = InventoryItem::query()->get()->keyBy('name');
         $locations = StockLocation::query()->get()->keyBy('code');
 
         foreach ($this->stocks() as $stockData) {
@@ -27,7 +27,7 @@ final class InventoryStockSeeder extends Seeder
             InventoryStock::query()->updateOrCreate(
                 [
                     'tenant_id' => tenant('id'),
-                    'product_id' => $product->id,
+                    'inventory_item_id' => $product->id,
                     'location_id' => $location->id,
                     'batch_number' => $stockData['batch_number'],
                 ],

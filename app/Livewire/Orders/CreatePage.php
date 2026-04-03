@@ -7,7 +7,7 @@ namespace App\Livewire\Orders;
 use App\Actions\Order\CreateOrderAction;
 use App\Models\Currency;
 use App\Models\Customer;
-use App\Models\Product;
+use App\Models\InventoryItem;
 use Illuminate\Contracts\View\View;
 use Livewire\Component;
 
@@ -48,7 +48,7 @@ final class CreatePage extends Component
             'priority' => ['required', 'string', 'in:low,medium,high,urgent'],
             'notes' => ['nullable', 'string'],
             'items' => ['required', 'array', 'min:1'],
-            'items.*.product_id' => ['nullable', 'integer', $tenant->exists('products', 'id')],
+            'items.*.inventory_item_id' => ['nullable', 'integer', $tenant->exists('inventory_items', 'id')],
             'items.*.garment_type' => ['required', 'string', 'max:255'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
             'items.*.unit_price' => ['nullable', 'numeric', 'min:0'],
@@ -65,8 +65,8 @@ final class CreatePage extends Component
 
         [$index, $field] = explode('.', $key, 2);
 
-        if ($field === 'product_id' && $value !== '') {
-            $product = Product::query()->find((int) $value);
+        if ($field === 'inventory_item_id' && $value !== '') {
+            $product = InventoryItem::query()->find((int) $value);
             if ($product !== null) {
                 $this->items[(int) $index]['garment_type'] = $product->name;
             }
@@ -102,7 +102,7 @@ final class CreatePage extends Component
             'priority' => $this->priority,
             'notes' => $this->notes !== '' ? $this->notes : null,
             'items' => collect($this->items)->map(fn ($item): array => [
-                'product_id' => isset($item['product_id']) && $item['product_id'] !== '' ? (int) $item['product_id'] : null,
+                'inventory_item_id' => isset($item['inventory_item_id']) && $item['inventory_item_id'] !== '' ? (int) $item['inventory_item_id'] : null,
                 'garment_type' => $item['garment_type'],
                 'quantity' => (int) $item['quantity'],
                 'unit_price' => isset($item['unit_price']) && $item['unit_price'] !== '' ? (float) $item['unit_price'] : 0,
@@ -121,14 +121,14 @@ final class CreatePage extends Component
         return view('livewire.orders.create-page', [
             'customers' => Customer::query()->orderBy('full_name')->get(),
             'currencies' => Currency::active()->ordered()->get(),
-            'products' => Product::query()->active()->orderBy('name')->get(),
+            'products' => InventoryItem::query()->active()->orderBy('name')->get(),
         ]);
     }
 
     private function blankItem(): array
     {
         return [
-            'product_id' => '',
+            'inventory_item_id' => '',
             'garment_type' => '',
             'quantity' => 1,
             'unit_price' => '',
@@ -137,3 +137,4 @@ final class CreatePage extends Component
         ];
     }
 }
+

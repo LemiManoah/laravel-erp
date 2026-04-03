@@ -17,7 +17,7 @@ final class PurchaseOrderItem extends Model
     protected $fillable = [
         'tenant_id',
         'purchase_order_id',
-        'product_id',
+        'inventory_item_id',
         'quantity',
         'unit_cost',
         'line_total',
@@ -38,8 +38,9 @@ final class PurchaseOrderItem extends Model
         return $this->belongsTo(PurchaseOrder::class);
     }
 
-    public function product(): BelongsTo
+    public function inventoryItem(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(InventoryItem::class);
     }
 }
+

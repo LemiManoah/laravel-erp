@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Enums\ProductItemType;
+use App\Enums\InventoryItemType;
 use App\Livewire\Settings\ProfilePage;
 use App\Models\Currency;
 use App\Models\Customer;
@@ -14,8 +14,8 @@ use App\Models\Order;
 use App\Models\Payment;
 use App\Models\PaymentMethod;
 use App\Models\Permission;
-use App\Models\Product;
-use App\Models\ProductCategory;
+use App\Models\InventoryItem;
+use App\Models\ItemCategory;
 use App\Models\Receipt;
 use App\Models\Role;
 use App\Models\UnitOfMeasure;
@@ -60,12 +60,12 @@ dataset('full_page_livewire_routes', [
     ['expenses.create', ['expenses.create'], null],
     ['expenses.show', ['expenses.view'], 'expense'],
     ['expenses.edit', ['expenses.update'], 'expense'],
-    ['products.index', ['products.view'], null],
-    ['products.create', ['products.create'], null],
-    ['products.edit', ['products.update'], 'product'],
-    ['product-categories.index', ['products.view'], null],
-    ['product-categories.create', ['products.create'], null],
-    ['product-categories.edit', ['products.update'], 'product_category'],
+    ['inventory-items.index', ['inventory-items.view'], null],
+    ['inventory-items.create', ['inventory-items.create'], null],
+    ['inventory-items.edit', ['inventory-items.update'], 'inventory_item'],
+    ['item-categories.index', ['inventory-items.view'], null],
+    ['item-categories.create', ['inventory-items.create'], null],
+    ['item-categories.edit', ['inventory-items.update'], 'item_category'],
     ['payment-methods.index', ['payment-methods.view'], null],
     ['payment-methods.create', ['payment-methods.create'], null],
     ['payment-methods.edit', ['payment-methods.update'], 'payment_method'],
@@ -121,8 +121,8 @@ it('serves converted livewire full-page routes', function (string $routeName, ar
         'order' => ['order' => createOrderForTests($this->user, $this->currency)],
         'payment' => ['payment' => createPaymentForTests($this->user, $this->currency)],
         'payment_method' => ['paymentMethod' => createPaymentMethodForTests()],
-        'product' => ['product' => createProductForTests('Edit Route Product')],
-        'product_category' => ['productCategory' => createProductCategoryForTests()],
+        'inventory_item' => ['inventoryItem' => createInventoryItemForTests('Edit Route InventoryItem')],
+        'item_category' => ['itemCategory' => createItemCategoryForTests()],
         'role' => ['role' => createRoleForTests()],
         'user' => ['user' => User::factory()->create()],
         default => [],
@@ -192,19 +192,19 @@ function createPaymentMethodForTests(): PaymentMethod
     ]);
 }
 
-function createProductCategoryForTests(): ProductCategory
+function createItemCategoryForTests(): ItemCategory
 {
     static $counter = 0;
     $counter++;
 
-    return ProductCategory::query()->create([
+    return ItemCategory::query()->create([
         'name' => sprintf('Category %d', $counter),
         'description' => 'Inventory item category',
         'is_active' => true,
     ]);
 }
 
-function createProductForTests(string $name, array $overrides = []): Product
+function createInventoryItemForTests(string $name, array $overrides = []): InventoryItem
 {
     static $counter = 0;
     $counter++;
@@ -217,9 +217,9 @@ function createProductForTests(string $name, array $overrides = []): Product
         ],
     );
 
-    return Product::query()->create([
+    return InventoryItem::query()->create([
         'name' => sprintf('%s %d', $name, $counter),
-        'item_type' => ProductItemType::StockItem,
+        'item_type' => InventoryItemType::StockItem,
         'tracks_inventory' => true,
         'is_sellable' => true,
         'is_purchasable' => true,
@@ -349,3 +349,4 @@ function createRoleForTests(): Role
 
     return Role::findOrCreate(sprintf('Role %d', $counter), 'web');
 }
+

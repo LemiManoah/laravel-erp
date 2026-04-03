@@ -23,7 +23,7 @@ class StoreOrderRequest extends FormRequest
             'priority' => 'required|string',
             'notes' => 'nullable|string',
             'items' => 'required|array|min:1',
-            'items.*.product_id' => ['required', $tenant->exists('products', 'id')],
+            'items.*.inventory_item_id' => ['required', $tenant->exists('inventory_items', 'id')],
             'items.*.garment_type' => 'nullable|string',
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.unit_price' => 'nullable|numeric|min:0',
@@ -32,3 +32,4 @@ class StoreOrderRequest extends FormRequest
         ];
     }
 }
+

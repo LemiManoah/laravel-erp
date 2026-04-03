@@ -7,8 +7,8 @@
     </div>
 
     <div class="cards">
-        <div class="card"><div class="label">Tracked Items</div><div class="value">{{ $summary['tracked_products'] }}</div></div>
-        <div class="card"><div class="label">Low Stock</div><div class="value">{{ $summary['low_stock_products'] }}</div></div>
+        <div class="card"><div class="label">Tracked Items</div><div class="value">{{ $summary['tracked_inventory_items'] }}</div></div>
+        <div class="card"><div class="label">Low Stock</div><div class="value">{{ $summary['low_stock_inventory_items'] }}</div></div>
         <div class="card"><div class="label">Near Expiry</div><div class="value">{{ $summary['near_expiry_rows'] }}</div></div>
         <div class="card"><div class="label">Expired Rows</div><div class="value">{{ $summary['expired_rows'] }}</div></div>
     </div>
@@ -23,11 +23,11 @@
             </tr>
         </thead>
         <tbody>
-            @forelse($low_stock_products as $product)
+            @forelse($low_stock_inventory_items as $inventoryItem)
                 <tr>
-                    <td>{{ $product->name }}</td>
-                    <td class="text-right">{{ number_format((float) $product->quantity_on_hand, 2) }}</td>
-                    <td class="text-right">{{ number_format((float) $product->reorder_level, 2) }}</td>
+                    <td>{{ $inventoryItem->name }}</td>
+                    <td class="text-right">{{ number_format((float) $inventoryItem->quantity_on_hand, 2) }}</td>
+                    <td class="text-right">{{ number_format((float) $inventoryItem->reorder_level, 2) }}</td>
                 </tr>
             @empty
                 <tr><td colspan="3" class="muted">No low stock inventory items.</td></tr>
@@ -49,7 +49,7 @@
             @forelse($stock_by_location as $row)
                 <tr>
                     <td>{{ $row['location']->name }}</td>
-                    <td class="text-right">{{ $row['tracked_products'] }}</td>
+                    <td class="text-right">{{ $row['tracked_inventory_items'] }}</td>
                     <td class="text-right">{{ $row['stock_rows'] }}</td>
                     <td class="text-right">{{ number_format((float) $row['total_quantity'], 2) }}</td>
                 </tr>
@@ -74,7 +74,7 @@
             @forelse($near_expiry_stocks as $stock)
                 <tr>
                     <td>Near expiry</td>
-                    <td>{{ $stock->product->name }}</td>
+                    <td>{{ $stock->inventoryItem->name }}</td>
                     <td>{{ $stock->batch_number ?? 'Standard stock row' }}{{ $stock->location ? ' ('.$stock->location->name.')' : '' }}</td>
                     <td class="text-right">{{ number_format((float) $stock->quantity_on_hand, 2) }}</td>
                     <td>{{ $stock->expiry_date?->format('M d, Y') }}</td>
@@ -85,7 +85,7 @@
             @forelse($expired_stocks as $stock)
                 <tr>
                     <td>Expired</td>
-                    <td>{{ $stock->product->name }}</td>
+                    <td>{{ $stock->inventoryItem->name }}</td>
                     <td>{{ $stock->batch_number ?? 'Standard stock row' }}{{ $stock->location ? ' ('.$stock->location->name.')' : '' }}</td>
                     <td class="text-right">{{ number_format((float) $stock->quantity_on_hand, 2) }}</td>
                     <td>{{ $stock->expiry_date?->format('M d, Y') }}</td>
@@ -98,3 +98,4 @@
         </tbody>
     </table>
 </div>
+

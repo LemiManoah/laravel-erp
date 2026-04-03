@@ -10,10 +10,10 @@
         <form action="{{ route('reports.stock-card') }}" method="GET" class="flex flex-wrap items-end gap-3">
             <div>
                 <label class="block text-[10px] uppercase font-bold text-gray-500 mb-1">Inventory Item</label>
-                <select name="product_id" class="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700 dark:text-white">
+                <select name="inventory_item_id" class="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700 dark:text-white">
                     <option value="">Select inventory item</option>
-                    @foreach($products as $product)
-                        <option value="{{ $product->id }}" @selected($selected_product?->id === $product->id)>{{ $product->name }}</option>
+                    @foreach($inventory_items as $inventoryItem)
+                        <option value="{{ $inventoryItem->id }}" @selected($selected_inventory_item?->id === $inventoryItem->id)>{{ $inventoryItem->name }}</option>
                     @endforeach
                 </select>
             </div>
@@ -35,27 +35,27 @@
                 <input type="date" name="end_date" value="{{ $end_date }}" class="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700 dark:text-white">
             </div>
             <button type="submit" class="px-4 py-1.5 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition">Filter</button>
-            <a href="{{ route('reports.stock-card.print', request()->only('product_id', 'location_id', 'start_date', 'end_date')) }}" class="px-4 py-1.5 bg-gray-700 text-white rounded text-sm hover:bg-gray-800 transition" target="_blank">Print</a>
+            <a href="{{ route('reports.stock-card.print', request()->only('inventory_item_id', 'location_id', 'start_date', 'end_date')) }}" class="px-4 py-1.5 bg-gray-700 text-white rounded text-sm hover:bg-gray-800 transition" target="_blank">Print</a>
         </form>
     </div>
 
-    @if($selected_product)
+    @if($selected_inventory_item)
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
             <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm">
                 <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Inventory Item</p>
-                <p class="text-lg font-bold text-gray-900 dark:text-white">{{ $selected_product->name }}</p>
+                <p class="text-lg font-bold text-gray-900 dark:text-white">{{ $selected_inventory_item->name }}</p>
             </div>
             <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm">
                 <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">On Hand</p>
-                <p class="text-lg font-bold text-gray-900 dark:text-white">{{ number_format((float) $summary['current_quantity'], 2) }} {{ $selected_product->baseUnit?->abbreviation }}</p>
+                <p class="text-lg font-bold text-gray-900 dark:text-white">{{ number_format((float) $summary['current_quantity'], 2) }} {{ $selected_inventory_item->baseUnit?->abbreviation }}</p>
             </div>
             <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm">
                 <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Default Sale Price</p>
-                <p class="text-lg font-bold text-gray-900 dark:text-white">{{ $selected_product->sale_price === null ? 'N/A' : $currencyFormatter->formatValue($selected_product->sale_price, 2) }}</p>
+                <p class="text-lg font-bold text-gray-900 dark:text-white">{{ $selected_inventory_item->sale_price === null ? 'N/A' : $currencyFormatter->formatValue($selected_inventory_item->sale_price, 2) }}</p>
             </div>
             <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm">
                 <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Default Purchase Price</p>
-                <p class="text-lg font-bold text-gray-900 dark:text-white">{{ $selected_product->purchase_price === null ? 'N/A' : $currencyFormatter->formatValue($selected_product->purchase_price, 2) }}</p>
+                <p class="text-lg font-bold text-gray-900 dark:text-white">{{ $selected_inventory_item->purchase_price === null ? 'N/A' : $currencyFormatter->formatValue($selected_inventory_item->purchase_price, 2) }}</p>
             </div>
         </div>
 

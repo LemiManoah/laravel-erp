@@ -16,7 +16,7 @@ use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 /**
  * @property int $id
  * @property string $tenant_id
- * @property int $product_id
+ * @property int $inventory_item_id
  * @property int|null $location_id
  * @property int|null $inventory_stock_id
  * @property InventoryMovementType $movement_type
@@ -41,7 +41,7 @@ final class InventoryMovement extends Model
 
     protected $fillable = [
         'tenant_id',
-        'product_id',
+        'inventory_item_id',
         'location_id',
         'inventory_stock_id',
         'movement_type',
@@ -71,9 +71,9 @@ final class InventoryMovement extends Model
         ];
     }
 
-    public function product(): BelongsTo
+    public function inventoryItem(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(InventoryItem::class);
     }
 
     public function location(): BelongsTo
@@ -96,9 +96,9 @@ final class InventoryMovement extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function scopeForProduct(Builder $query, int $productId): Builder
+    public function scopeForInventoryItem(Builder $query, int $inventoryItemId): Builder
     {
-        return $query->where('product_id', $productId);
+        return $query->where('inventory_item_id', $inventoryItemId);
     }
 
     public function scopeForLocation(Builder $query, int $locationId): Builder
@@ -126,3 +126,4 @@ final class InventoryMovement extends Model
         return $query->whereBetween('movement_date', [$from, $to]);
     }
 }
+

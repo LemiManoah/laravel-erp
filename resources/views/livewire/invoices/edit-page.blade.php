@@ -92,7 +92,7 @@
                         @foreach($items as $index => $item)
                             <tr wire:key="item-{{ $index }}">
                                 <td class="px-3 py-2">
-                                    <select wire:model.live="items.{{ $index }}.product_id" class="w-full rounded-md border border-gray-300 px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                                    <select wire:model.live="items.{{ $index }}.inventory_item_id" class="w-full rounded-md border border-gray-300 px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
                                         <option value="">Custom item</option>
                                         @foreach($products as $product)
                                             <option value="{{ $product->id }}">{{ $product->name }}{{ $product->sku ? ' ('.$product->sku.')' : '' }}</option>

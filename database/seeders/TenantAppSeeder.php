@@ -18,8 +18,8 @@ final class TenantAppSeeder extends Seeder
             StockLocationSeeder::class,
             SupplierSeeder::class,
             ExpenseCategorySeeder::class,
-            ProductCategorySeeder::class,
-            ProductSeeder::class,
+            ItemCategorySeeder::class,
+            InventoryItemSeeder::class,
             InventoryStockSeeder::class,
             PurchaseOrderSeeder::class,
             PurchaseReceiptSeeder::class,
@@ -34,3 +34,4 @@ final class TenantAppSeeder extends Seeder
         ]);
     }
 }
+

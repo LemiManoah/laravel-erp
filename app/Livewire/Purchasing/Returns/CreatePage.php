@@ -54,7 +54,7 @@ final class CreatePage extends Component
             'return_date' => ['required', 'date'],
             'notes' => ['nullable', 'string'],
             'items' => ['required', 'array', 'min:1'],
-            'items.*.product_id' => ['required', $tenant->exists('products', 'id')],
+            'items.*.inventory_item_id' => ['required', $tenant->exists('inventory_items', 'id')],
             'items.*.inventory_stock_id' => ['required', $tenant->exists('inventory_stocks', 'id')],
             'items.*.quantity' => ['required', 'numeric', 'gt:0'],
             'items.*.unit_cost' => ['required', 'numeric', 'min:0'],
@@ -96,7 +96,7 @@ final class CreatePage extends Component
             return;
         }
 
-        $this->items[$index]['product_id'] = (string) $stock->product_id;
+        $this->items[$index]['inventory_item_id'] = (string) $stock->inventory_item_id;
         $this->items[$index]['unit_cost'] = $stock->unit_cost === null ? '' : (string) ((float) $stock->unit_cost);
     }
 
@@ -118,7 +118,7 @@ final class CreatePage extends Component
             $unitCost = (float) $item['unit_cost'];
 
             return [
-                'product_id' => (int) $item['product_id'],
+                'inventory_item_id' => (int) $item['inventory_item_id'],
                 'inventory_stock_id' => (int) $item['inventory_stock_id'],
                 'quantity' => $quantity,
                 'unit_cost' => $unitCost,
@@ -169,13 +169,13 @@ final class CreatePage extends Component
         $this->notes = $receipt->notes ?? '';
         $this->items = $receipt->items->map(function ($item): array {
             $stock = InventoryStock::query()
-                ->where('product_id', $item->product_id)
+                ->where('inventory_item_id', $item->inventory_item_id)
                 ->where('location_id', $this->stock_location_id)
                 ->when($item->batch_number !== null, fn ($query) => $query->where('batch_number', $item->batch_number))
                 ->first();
 
             return [
-                'product_id' => (string) $item->product_id,
+                'inventory_item_id' => (string) $item->inventory_item_id,
                 'inventory_stock_id' => $stock?->id ? (string) $stock->id : '',
                 'quantity' => '',
                 'unit_cost' => $item->unit_cost === null ? '' : (string) ((float) $item->unit_cost),
@@ -209,7 +209,7 @@ final class CreatePage extends Component
     private function blankItem(): array
     {
         return [
-            'product_id' => '',
+            'inventory_item_id' => '',
             'inventory_stock_id' => '',
             'quantity' => '',
             'unit_cost' => '',
@@ -224,3 +224,4 @@ final class CreatePage extends Component
         return sprintf('PRN-%s-%03d', now()->format('Y'), $count);
     }
 }
+

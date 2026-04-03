@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('inventory_movements', function (Blueprint $table) {
             $table->id();
             $table->string('tenant_id');
-            $table->foreignId('product_id')->constrained()->onDelete('restrict');
+            $table->foreignId('inventory_item_id')->constrained()->onDelete('restrict');
             $table->foreignId('location_id')->nullable()->constrained('stock_locations')->onDelete('restrict');
             $table->unsignedBigInteger('inventory_stock_id')->nullable();
             $table->string('movement_type');
@@ -29,7 +29,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('tenant_id')->references('id')->on('tenants')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->index(['tenant_id', 'product_id']);
+            $table->index(['tenant_id', 'inventory_item_id']);
             $table->index(['tenant_id', 'movement_type']);
             $table->index(['tenant_id', 'movement_date']);
             $table->index(['tenant_id', 'inventory_stock_id']);

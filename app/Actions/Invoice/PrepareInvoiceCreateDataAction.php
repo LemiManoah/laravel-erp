@@ -18,7 +18,7 @@ final readonly class PrepareInvoiceCreateDataAction
      *     selectedOrderId: int|null,
      *     selectedOrder: Order|null,
      *     invoiceDefaults: array{
-     *         items: array<int, array{product_id: int|null, item_name: string, description: string, quantity: int, unit_price: float}>,
+     *         items: array<int, array{inventory_item_id: int|null, item_name: string, description: string, quantity: int, unit_price: float}>,
      *         notes: string|null,
      *         invoice_date: string,
      *         due_date: string|null,
@@ -86,13 +86,13 @@ final readonly class PrepareInvoiceCreateDataAction
     }
 
     /**
-     * @return array<int, array{product_id: int|null, item_name: string, description: string, quantity: int, unit_price: float}>
+     * @return array<int, array{inventory_item_id: int|null, item_name: string, description: string, quantity: int, unit_price: float}>
      */
     private function defaultItems(?Order $order): array
     {
         if ($order === null || $order->items->isEmpty()) {
             return [[
-                'product_id' => null,
+                'inventory_item_id' => null,
                 'item_name' => '',
                 'description' => '',
                 'quantity' => 1,
@@ -102,7 +102,7 @@ final readonly class PrepareInvoiceCreateDataAction
 
         return $order->items
             ->map(fn ($item): array => [
-                'product_id' => null,
+                'inventory_item_id' => null,
                 'item_name' => (string) $item->garment_type,
                 'description' => $this->buildItemDescription($item),
                 'quantity' => (int) $item->quantity,
