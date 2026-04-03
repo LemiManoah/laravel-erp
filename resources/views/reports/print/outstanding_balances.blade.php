@@ -1,8 +1,4 @@
-@extends('reports.print.layout')
-
-@section('title', 'Outstanding Balances Report')
-
-@section('content')
+<div>
     <div class="header">
         <div>
             <h1>Outstanding Balances</h1>
@@ -42,4 +38,4 @@
             @endforelse
         </tbody>
     </table>
-@endsection
+</div>

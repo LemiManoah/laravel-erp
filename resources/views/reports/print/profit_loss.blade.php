@@ -1,8 +1,4 @@
-@extends('reports.print.layout')
-
-@section('title', 'Profit & Loss Report')
-
-@section('content')
+<div>
     <div class="header">
         <div>
             <h1>Profit & Loss Summary</h1>
@@ -38,4 +34,4 @@
             </tr>
         </tbody>
     </table>
-@endsection
+</div>

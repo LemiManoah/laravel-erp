@@ -1,8 +1,4 @@
-@extends('reports.print.layout')
-
-@section('title', 'Supplier Purchasing Report')
-
-@section('content')
+<div>
     <div class="header">
         <div>
             <h1>Supplier Purchasing Report</h1>
@@ -105,4 +101,4 @@
             </tbody>
         </table>
     </div>
-@endsection
+</div>

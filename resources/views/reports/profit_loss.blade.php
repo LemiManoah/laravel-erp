@@ -1,4 +1,4 @@
-<x-layouts.app title="Profit & Loss Report">
+<div>
     <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
             <a href="{{ route('reports.index') }}" class="text-blue-600 hover:text-blue-900 dark:hover:text-blue-400 mb-2 inline-block">
@@ -74,4 +74,4 @@
             </div>
         </div>
     </div>
-</x-layouts.app>
+</div>

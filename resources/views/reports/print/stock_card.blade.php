@@ -1,8 +1,4 @@
-@extends('reports.print.layout')
-
-@section('title', 'Stock Card Report')
-
-@section('content')
+<div>
     <div class="header">
         <div>
             <h1>Stock Card</h1>
@@ -80,4 +76,4 @@
             </tbody>
         </table>
     @endif
-@endsection
+</div>

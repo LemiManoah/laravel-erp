@@ -1,8 +1,4 @@
-@extends('reports.print.layout')
-
-@section('title', 'Inventory Status Report')
-
-@section('content')
+<div>
     <div class="header">
         <div>
             <h1>Inventory Status Report</h1>
@@ -101,4 +97,4 @@
             @endforelse
         </tbody>
     </table>
-@endsection
+</div>

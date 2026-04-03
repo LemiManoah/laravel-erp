@@ -1,8 +1,4 @@
-@extends('reports.print.layout')
-
-@section('title', 'Expense Report')
-
-@section('content')
+<div>
     <div class="header">
         <div>
             <h1>Expense Report</h1>
@@ -62,4 +58,4 @@
             </tbody>
         </table>
     </div>
-@endsection
+</div>

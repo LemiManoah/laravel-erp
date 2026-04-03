@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', config('app.name'))</title>
+    <title>{{ $title ?? config('app.name') }}</title>
     <style>
         body { font-family: Arial, sans-serif; color: #111827; margin: 24px; }
         h1, h2, h3, p { margin: 0; }
@@ -34,6 +34,6 @@
         <a href="javascript:window.close()">Close</a>
     </div>
 
-    @yield('content')
+    {{ $slot }}
 </body>
 </html>

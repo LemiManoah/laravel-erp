@@ -53,6 +53,16 @@ use App\Livewire\Purchasing\Returns\CreatePage as PurchaseReturnsCreatePage;
 use App\Livewire\Purchasing\Returns\IndexPage as PurchaseReturnsIndexPage;
 use App\Livewire\Purchasing\Returns\ShowPage as PurchaseReturnsShowPage;
 use App\Livewire\Receipts\ShowPage as ReceiptsShowPage;
+use App\Livewire\Reports\CustomerStatementPage as ReportsCustomerStatementPage;
+use App\Livewire\Reports\ExpensesPage as ReportsExpensesPage;
+use App\Livewire\Reports\IndexPage as ReportsIndexPage;
+use App\Livewire\Reports\InventoryStatusPage as ReportsInventoryStatusPage;
+use App\Livewire\Reports\OutstandingBalancesPage as ReportsOutstandingBalancesPage;
+use App\Livewire\Reports\PaymentsPage as ReportsPaymentsPage;
+use App\Livewire\Reports\ProfitLossPage as ReportsProfitLossPage;
+use App\Livewire\Reports\SalesPage as ReportsSalesPage;
+use App\Livewire\Reports\StockCardPage as ReportsStockCardPage;
+use App\Livewire\Reports\SupplierPurchasingPage as ReportsSupplierPurchasingPage;
 use App\Livewire\Roles\CreatePage as RolesCreatePage;
 use App\Livewire\Roles\EditPage as RolesEditPage;
 use App\Livewire\Settings\AppearancePage;
@@ -66,7 +76,6 @@ use App\Livewire\Users\EditPage as UsersEditPage;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ReceiptController;
-use App\Http\Controllers\ReportController;
 use App\Http\Controllers\Settings\AppearanceController;
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
@@ -312,25 +321,63 @@ Route::middleware([
             ->middleware('permission:inventory-transfers.create');
 
         // Reports
-        Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
-        Route::get('reports/inventory-status', [ReportController::class, 'inventoryStatus'])->name('reports.inventory-status');
-        Route::get('reports/inventory-status/print', [ReportController::class, 'inventoryStatusPrint'])->name('reports.inventory-status.print');
-        Route::get('reports/stock-card', [ReportController::class, 'stockCard'])->name('reports.stock-card');
-        Route::get('reports/stock-card/print', [ReportController::class, 'stockCardPrint'])->name('reports.stock-card.print');
-        Route::get('reports/supplier-purchasing', [ReportController::class, 'supplierPurchasing'])->name('reports.supplier-purchasing');
-        Route::get('reports/supplier-purchasing/print', [ReportController::class, 'supplierPurchasingPrint'])->name('reports.supplier-purchasing.print');
-        Route::get('reports/sales', [ReportController::class, 'sales'])->name('reports.sales');
-        Route::get('reports/sales/print', [ReportController::class, 'salesPrint'])->name('reports.sales.print');
-        Route::get('reports/payments', [ReportController::class, 'payments'])->name('reports.payments');
-        Route::get('reports/payments/print', [ReportController::class, 'paymentsPrint'])->name('reports.payments.print');
-        Route::get('reports/expenses', [ReportController::class, 'expenses'])->name('reports.expenses');
-        Route::get('reports/expenses/print', [ReportController::class, 'expensesPrint'])->name('reports.expenses.print');
-        Route::get('reports/outstanding-balances', [ReportController::class, 'outstandingBalances'])->name('reports.outstanding-balances');
-        Route::get('reports/outstanding-balances/print', [ReportController::class, 'outstandingBalancesPrint'])->name('reports.outstanding-balances.print');
-        Route::get('reports/customer-statement', [ReportController::class, 'customerStatement'])->name('reports.customer-statement');
-        Route::get('reports/customer-statement/print', [ReportController::class, 'customerStatementPrint'])->name('reports.customer-statement.print');
-        Route::get('reports/profit-loss', [ReportController::class, 'profitLoss'])->name('reports.profit-loss');
-        Route::get('reports/profit-loss/print', [ReportController::class, 'profitLossPrint'])->name('reports.profit-loss.print');
+        Route::get('reports', ReportsIndexPage::class)
+            ->name('reports.index')
+            ->middleware('permission:reports.view');
+        Route::get('reports/inventory-status', ReportsInventoryStatusPage::class)
+            ->name('reports.inventory-status')
+            ->middleware('permission:reports.view');
+        Route::get('reports/inventory-status/print', ReportsInventoryStatusPage::class)
+            ->name('reports.inventory-status.print')
+            ->middleware('permission:reports.view');
+        Route::get('reports/stock-card', ReportsStockCardPage::class)
+            ->name('reports.stock-card')
+            ->middleware('permission:reports.view');
+        Route::get('reports/stock-card/print', ReportsStockCardPage::class)
+            ->name('reports.stock-card.print')
+            ->middleware('permission:reports.view');
+        Route::get('reports/supplier-purchasing', ReportsSupplierPurchasingPage::class)
+            ->name('reports.supplier-purchasing')
+            ->middleware('permission:reports.view');
+        Route::get('reports/supplier-purchasing/print', ReportsSupplierPurchasingPage::class)
+            ->name('reports.supplier-purchasing.print')
+            ->middleware('permission:reports.view');
+        Route::get('reports/sales', ReportsSalesPage::class)
+            ->name('reports.sales')
+            ->middleware('permission:reports.view');
+        Route::get('reports/sales/print', ReportsSalesPage::class)
+            ->name('reports.sales.print')
+            ->middleware('permission:reports.view');
+        Route::get('reports/payments', ReportsPaymentsPage::class)
+            ->name('reports.payments')
+            ->middleware('permission:reports.view');
+        Route::get('reports/payments/print', ReportsPaymentsPage::class)
+            ->name('reports.payments.print')
+            ->middleware('permission:reports.view');
+        Route::get('reports/expenses', ReportsExpensesPage::class)
+            ->name('reports.expenses')
+            ->middleware('permission:reports.view');
+        Route::get('reports/expenses/print', ReportsExpensesPage::class)
+            ->name('reports.expenses.print')
+            ->middleware('permission:reports.view');
+        Route::get('reports/outstanding-balances', ReportsOutstandingBalancesPage::class)
+            ->name('reports.outstanding-balances')
+            ->middleware('permission:reports.view');
+        Route::get('reports/outstanding-balances/print', ReportsOutstandingBalancesPage::class)
+            ->name('reports.outstanding-balances.print')
+            ->middleware('permission:reports.view');
+        Route::get('reports/customer-statement', ReportsCustomerStatementPage::class)
+            ->name('reports.customer-statement')
+            ->middleware('permission:reports.view');
+        Route::get('reports/customer-statement/print', ReportsCustomerStatementPage::class)
+            ->name('reports.customer-statement.print')
+            ->middleware('permission:reports.view');
+        Route::get('reports/profit-loss', ReportsProfitLossPage::class)
+            ->name('reports.profit-loss')
+            ->middleware('permission:reports.view');
+        Route::get('reports/profit-loss/print', ReportsProfitLossPage::class)
+            ->name('reports.profit-loss.print')
+            ->middleware('permission:reports.view');
 
         Route::get('activity-logs', \App\Livewire\ActivityLogs\IndexPage::class)
             ->name('activity-logs.index')

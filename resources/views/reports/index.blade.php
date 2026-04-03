@@ -1,4 +1,4 @@
-<x-layouts.app title="Reports">
+<div>
     <div class="mb-6">
         <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Business Reports</h1>
         <p class="text-gray-500 dark:text-gray-400">Select a report to view business performance</p>
@@ -92,4 +92,4 @@
             <span class="inline-flex mt-4 px-3 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded text-sm group-hover:bg-gray-200 dark:group-hover:bg-gray-600 transition">Open report</span>
         </a>
     </div>
-</x-layouts.app>
+</div>

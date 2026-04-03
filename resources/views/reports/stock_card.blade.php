@@ -1,4 +1,4 @@
-<x-layouts.app title="Stock Card Report">
+<div>
     <div class="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
             <a href="{{ route('reports.index') }}" class="text-blue-600 hover:text-blue-900 dark:hover:text-blue-400 mb-2 inline-block">
@@ -150,4 +150,4 @@
             Choose a stock-tracked product to view its stock card.
         </div>
     @endif
-</x-layouts.app>
+</div>

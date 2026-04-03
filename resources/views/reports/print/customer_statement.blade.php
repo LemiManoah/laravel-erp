@@ -1,8 +1,4 @@
-@extends('reports.print.layout')
-
-@section('title', 'Customer Statement')
-
-@section('content')
+<div>
     <div class="header">
         <div>
             <h1>Customer Statement</h1>
@@ -76,4 +72,4 @@
     @else
         <p class="muted">No customer selected.</p>
     @endif
-@endsection
+</div>

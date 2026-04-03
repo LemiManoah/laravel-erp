@@ -86,6 +86,28 @@ dataset('full_page_livewire_routes', [
     ['settings.appearance.edit', ['settings.appearance.update'], null],
 ]);
 
+dataset('report_livewire_routes', [
+    'reports.index',
+    'reports.inventory-status',
+    'reports.inventory-status.print',
+    'reports.stock-card',
+    'reports.stock-card.print',
+    'reports.supplier-purchasing',
+    'reports.supplier-purchasing.print',
+    'reports.sales',
+    'reports.sales.print',
+    'reports.payments',
+    'reports.payments.print',
+    'reports.expenses',
+    'reports.expenses.print',
+    'reports.outstanding-balances',
+    'reports.outstanding-balances.print',
+    'reports.customer-statement',
+    'reports.customer-statement.print',
+    'reports.profit-loss',
+    'reports.profit-loss.print',
+]);
+
 it('serves converted livewire full-page routes', function (string $routeName, array $permissions, ?string $parameterType) {
     grantPermissions($this->user, $permissions);
 
@@ -108,6 +130,12 @@ it('serves converted livewire full-page routes', function (string $routeName, ar
 
     $this->get(route($routeName, $parameters))->assertOk();
 })->with('full_page_livewire_routes');
+
+it('serves report livewire routes', function (string $routeName) {
+    grantPermissions($this->user, ['reports.view']);
+
+    $this->get(route($routeName))->assertOk();
+})->with('report_livewire_routes');
 
 it('validates unique profile email in the livewire settings page', function () {
     grantPermissions($this->user, ['settings.profile.update']);
