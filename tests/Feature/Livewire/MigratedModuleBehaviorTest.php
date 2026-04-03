@@ -233,7 +233,6 @@ function createModuleBehaviorProduct(ProductCategory $category): Product
         'is_sellable' => true,
         'is_purchasable' => true,
         'base_unit_id' => $unit->id,
-        'allow_negative_stock' => false,
         'has_expiry' => false,
         'is_serialized' => false,
         'has_variants' => false,

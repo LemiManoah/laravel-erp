@@ -1,25 +1,34 @@
 <div>
-    <x-ui.page-header title="Products" description="Manage products and items available for orders, invoices, and stock tracking.">
+    <x-ui.page-header title="Inventory Items" description="Manage inventory items available for orders, invoices, purchasing, and stock tracking.">
         <x-slot:actions>
             @can('products.create')
                 <x-ui.action-link href="{{ route('product-categories.index') }}" variant="secondary">
-                    <i class="fas fa-tags mr-2"></i> Manage Categories
+                    <i class="fas fa-tags mr-2"></i> Manage Item Categories
                 </x-ui.action-link>
                 <x-ui.action-link href="{{ route('products.create') }}" variant="primary">
-                    <i class="fas fa-plus mr-2"></i> Add Product
+                    <i class="fas fa-plus mr-2"></i> Add Inventory Item
                 </x-ui.action-link>
             @endcan
         </x-slot:actions>
     </x-ui.page-header>
 
     <div class="mb-6 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-        <div class="grid grid-cols-1 gap-3 md:grid-cols-4">
+        <div class="grid grid-cols-1 gap-3 md:grid-cols-5">
             <input
                 type="text"
                 wire:model.live.debounce.300ms="search"
-                placeholder="Search name, SKU, barcode, or description"
+                placeholder="Search item name, SKU, barcode, or description"
                 class="rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             >
+            <select
+                wire:model.live="itemType"
+                class="rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+            >
+                <option value="">All item types</option>
+                @foreach($itemTypes as $filterItemType)
+                    <option value="{{ $filterItemType->value }}">{{ $filterItemType->label() }}</option>
+                @endforeach
+            </select>
             <select
                 wire:model.live="status"
                 class="rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
@@ -32,7 +41,7 @@
                 wire:model.live="category"
                 class="rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             >
-                <option value="">All categories</option>
+                <option value="">All item categories</option>
                 @foreach($categories as $filterCategory)
                     <option value="{{ $filterCategory->id }}">{{ $filterCategory->name }}</option>
                 @endforeach
@@ -53,10 +62,10 @@
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead class="bg-gray-50 dark:bg-gray-900">
                     <tr>
-                        <th class="w-1/4 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Name</th>
-                        <th class="w-1/4 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Category</th>
+                        <th class="w-1/4 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Inventory Item</th>
+                        <th class="w-1/4 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Item Category</th>
                         <th class="w-1/4 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Description</th>
-                        <th class="w-1/6 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Selling Price</th>
+                        <th class="w-1/6 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Sale Price</th>
                         <th class="w-1/12 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Status</th>
                         <th class="w-1/6 px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Actions</th>
                     </tr>
@@ -88,7 +97,7 @@
                                 <span class="line-clamp-2 max-w-sm text-sm text-gray-500 dark:text-gray-400">{{ $product->description ?? 'N/A' }}</span>
                             </td>
                             <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
-                                {{ $product->base_price === null ? 'N/A' : number_format((float) $product->base_price, 2) }}
+                                {{ $product->sale_price === null ? 'N/A' : number_format((float) $product->sale_price, 2) }}
                             </td>
                             <td class="whitespace-nowrap px-6 py-4">
                                 <span @class([
@@ -115,7 +124,7 @@
                     @empty
                         <tr>
                             <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
-                                No products found.
+                                No inventory items found.
                             </td>
                         </tr>
                     @endforelse
@@ -142,7 +151,7 @@
                                     Delete Confirmation
                                 </h3>
                                 <div class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                                    <p>Are you sure you want to delete <strong class="break-words">{{ $deletingProductName }}</strong>? This action cannot be undone.</p>
+                                    <p>Are you sure you want to delete <strong class="break-words">{{ $deletingProductName }}</strong>? This inventory item will be removed permanently.</p>
                                 </div>
                             </div>
                         </div>

@@ -25,6 +25,9 @@ final class IndexPage extends Component
     #[Url(except: '')]
     public string $category = '';
 
+    #[Url(except: '')]
+    public string $itemType = '';
+
     public bool $confirmingDeletion = false;
 
     #[Locked]
@@ -52,11 +55,17 @@ final class IndexPage extends Component
         $this->resetPage();
     }
 
+    public function updatedItemType(): void
+    {
+        $this->resetPage();
+    }
+
     public function clearFilters(): void
     {
         $this->search = '';
         $this->status = '';
         $this->category = '';
+        $this->itemType = '';
         $this->resetPage();
     }
 
@@ -86,7 +95,7 @@ final class IndexPage extends Component
         $product->delete();
 
         $this->cancelDelete();
-        session()->flash('success', 'Product deleted successfully.');
+        session()->flash('success', 'Inventory item deleted successfully.');
     }
 
     public function render(): View
@@ -114,11 +123,15 @@ final class IndexPage extends Component
             ->when($this->category !== '', function ($query): void {
                 $query->where('product_category_id', $this->category);
             })
+            ->when($this->itemType !== '', function ($query): void {
+                $query->where('item_type', $this->itemType);
+            })
             ->orderBy('name')
             ->paginate(10);
 
         return view('livewire.products.index-page', [
             'categories' => $categories,
+            'itemTypes' => \App\Enums\ProductItemType::cases(),
             'products' => $products,
         ]);
     }

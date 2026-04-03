@@ -29,13 +29,9 @@ trait InteractsWithProductForm
 
     public ?string $reorder_level = null;
 
-    public ?string $reorder_quantity = null;
-
     public bool $has_variants = false;
 
     public ?string $parent_item_id = null;
-
-    public bool $allow_negative_stock = false;
 
     public bool $has_expiry = false;
 
@@ -45,9 +41,9 @@ trait InteractsWithProductForm
 
     public ?string $description = null;
 
-    public ?string $buying_price = null;
+    public ?string $purchase_price = null;
 
-    public ?string $base_price = null;
+    public ?string $sale_price = null;
 
     public bool $is_active = true;
 
@@ -57,43 +53,31 @@ trait InteractsWithProductForm
     protected function productRules(): array
     {
         $tenant = tenant();
-        $product = $this->currentProduct();
-        $skuRule = $tenant->unique('products', 'sku');
-        $barcodeRule = $tenant->unique('products', 'barcode');
-
-        if ($product !== null) {
-            $skuRule->ignore($product);
-            $barcodeRule->ignore($product);
-        }
 
         return [
             'product_category_id' => ['nullable', $tenant->exists('product_categories', 'id')],
-            'sku' => ['nullable', 'string', 'max:255', $skuRule],
-            'barcode' => ['nullable', 'string', 'max:255', $barcodeRule],
             'item_type' => ['required', Rule::enum(ProductItemType::class)],
             'tracks_inventory' => ['boolean'],
             'is_sellable' => ['boolean'],
             'is_purchasable' => ['boolean'],
             'base_unit_id' => ['nullable', Rule::requiredIf($this->tracks_inventory), $tenant->exists('units_of_measure', 'id')],
             'reorder_level' => ['nullable', 'numeric', 'min:0'],
-            'reorder_quantity' => ['nullable', 'numeric', 'min:0'],
             'has_variants' => ['boolean'],
             'parent_item_id' => [
                 'nullable',
                 $tenant->exists('products', 'id'),
                 function (string $attribute, mixed $value, Closure $fail): void {
                     if ($value !== null && $value !== '' && (int) $value === $this->currentProductId()) {
-                        $fail('A product cannot be its own parent item.');
+                        $fail('An inventory item cannot be its own parent item.');
                     }
                 },
             ],
-            'allow_negative_stock' => ['boolean'],
             'has_expiry' => ['boolean'],
             'is_serialized' => ['boolean'],
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:1000'],
-            'buying_price' => ['nullable', 'numeric', 'min:0'],
-            'base_price' => ['nullable', Rule::requiredIf($this->is_sellable), 'numeric', 'min:0'],
+            'purchase_price' => ['nullable', 'numeric', 'min:0'],
+            'sale_price' => ['nullable', Rule::requiredIf($this->is_sellable), 'numeric', 'min:0'],
             'is_active' => ['boolean'],
         ];
     }
@@ -109,16 +93,14 @@ trait InteractsWithProductForm
         $this->is_purchasable = $product->is_purchasable;
         $this->base_unit_id = $product->base_unit_id === null ? null : (string) $product->base_unit_id;
         $this->reorder_level = $product->reorder_level === null ? null : (string) $product->reorder_level;
-        $this->reorder_quantity = $product->reorder_quantity === null ? null : (string) $product->reorder_quantity;
         $this->has_variants = $product->has_variants;
         $this->parent_item_id = $product->parent_item_id === null ? null : (string) $product->parent_item_id;
-        $this->allow_negative_stock = $product->allow_negative_stock;
         $this->has_expiry = $product->has_expiry;
         $this->is_serialized = $product->is_serialized;
         $this->name = $product->name;
         $this->description = $product->description;
-        $this->buying_price = $product->buying_price === null ? null : (string) $product->buying_price;
-        $this->base_price = $product->base_price === null ? null : (string) $product->base_price;
+        $this->purchase_price = $product->purchase_price === null ? null : (string) $product->purchase_price;
+        $this->sale_price = $product->sale_price === null ? null : (string) $product->sale_price;
         $this->is_active = $product->is_active;
     }
 
@@ -139,8 +121,6 @@ trait InteractsWithProductForm
 
         $this->base_unit_id = null;
         $this->reorder_level = null;
-        $this->reorder_quantity = null;
-        $this->allow_negative_stock = false;
         $this->has_expiry = false;
         $this->is_serialized = false;
     }
@@ -151,7 +131,8 @@ trait InteractsWithProductForm
             return;
         }
 
-        $this->base_price = null;
+        $this->sale_price = null;
+        $this->barcode = null;
     }
 
     public function updatedHasExpiry(bool $value): void
@@ -166,25 +147,19 @@ trait InteractsWithProductForm
      */
     protected function productPayload(): array
     {
-        $sku = $this->trimOrNull($this->sku);
-        $barcode = $this->trimOrNull($this->barcode);
         $description = $this->description === null ? null : trim($this->description);
         $tracksInventory = $this->tracks_inventory;
 
         return [
             'product_category_id' => filled($this->product_category_id) ? (int) $this->product_category_id : null,
-            'sku' => $sku,
-            'barcode' => $barcode,
             'item_type' => $this->item_type,
             'tracks_inventory' => $tracksInventory,
             'is_sellable' => $this->is_sellable,
             'is_purchasable' => $this->is_purchasable,
             'base_unit_id' => $tracksInventory && filled($this->base_unit_id) ? (int) $this->base_unit_id : null,
             'reorder_level' => $tracksInventory ? $this->trimOrNull($this->reorder_level) : null,
-            'reorder_quantity' => $tracksInventory ? $this->trimOrNull($this->reorder_quantity) : null,
             'has_variants' => $this->has_variants,
             'parent_item_id' => filled($this->parent_item_id) ? (int) $this->parent_item_id : null,
-            'allow_negative_stock' => $tracksInventory ? $this->allow_negative_stock : false,
             'has_expiry' => $tracksInventory && $this->has_expiry,
             'is_serialized' => $tracksInventory ? $this->is_serialized : false,
             'name' => trim($this->name),
@@ -198,12 +173,12 @@ trait InteractsWithProductForm
      */
     protected function pricePayload(): array
     {
-        $buyingPrice = $this->buying_price === null ? null : trim($this->buying_price);
-        $basePrice = $this->base_price === null ? null : trim($this->base_price);
+        $purchasePrice = $this->purchase_price === null ? null : trim($this->purchase_price);
+        $salePrice = $this->sale_price === null ? null : trim($this->sale_price);
 
         return [
-            'buying_price' => $buyingPrice === '' ? null : $buyingPrice,
-            'selling_price' => $basePrice === '' ? null : $basePrice,
+            'purchase_price' => $purchasePrice === '' ? null : $purchasePrice,
+            'sale_price' => $salePrice === '' ? null : $salePrice,
         ];
     }
 

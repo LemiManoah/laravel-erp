@@ -1,14 +1,14 @@
 <div>
     <div class="header">
         <div>
-            <h1>Stock Card</h1>
+            <h1>Inventory Item Stock Card</h1>
             <p class="meta">{{ $start_date }} to {{ $end_date }}</p>
         </div>
     </div>
 
     @if($selected_product)
         <div class="cards">
-            <div class="card"><div class="label">Product</div><div class="value">{{ $selected_product->name }}</div></div>
+            <div class="card"><div class="label">Inventory Item</div><div class="value">{{ $selected_product->name }}</div></div>
             <div class="card"><div class="label">Current Qty</div><div class="value">{{ number_format((float) $summary['current_quantity'], 2) }}</div></div>
             <div class="card"><div class="label">Qty In</div><div class="value">{{ number_format((float) $summary['quantity_in'], 2) }}</div></div>
             <div class="card"><div class="label">Qty Out</div><div class="value">{{ number_format((float) $summary['quantity_out'], 2) }}</div></div>
@@ -72,7 +72,7 @@
     @else
         <table>
             <tbody>
-                <tr><td class="muted">Choose a stock-tracked product to print its stock card.</td></tr>
+                <tr><td class="muted">Choose a stock-tracked inventory item to print its stock card.</td></tr>
             </tbody>
         </table>
     @endif

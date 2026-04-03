@@ -90,7 +90,7 @@ final class CreatePage extends Component
         $product = Product::query()->with('defaultPrice')->find((int) $value);
 
         if ($product !== null && blank($this->items[$index]['unit_cost'])) {
-            $this->items[$index]['unit_cost'] = $product->buying_price ?? '';
+            $this->items[$index]['unit_cost'] = $product->purchase_price ?? '';
         }
     }
 
@@ -146,7 +146,7 @@ final class CreatePage extends Component
             $product = Product::query()->find((int) ($item['product_id'] ?? 0));
 
             if ($product !== null && ! $product->is_purchasable) {
-                $messages["items.$index.product_id"] = 'Selected product is not marked as purchasable.';
+                $messages["items.$index.product_id"] = 'Selected inventory item is not marked as purchasable.';
             }
         }
 

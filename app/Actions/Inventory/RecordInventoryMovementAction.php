@@ -21,7 +21,7 @@ final readonly class RecordInventoryMovementAction
     {
         if (! $product->tracks_inventory) {
             throw ValidationException::withMessages([
-                'product_id' => 'The selected product does not track inventory.',
+                'product_id' => 'The selected inventory item does not track inventory.',
             ]);
         }
 
@@ -157,19 +157,8 @@ final readonly class RecordInventoryMovementAction
             return $existingStock;
         }
 
-        if (! $product->allow_negative_stock) {
-            throw ValidationException::withMessages([
-                'quantity' => sprintf('No available stock record exists for %s in the selected location.', $product->name),
-            ]);
-        }
-
-        return InventoryStock::query()->create([
-            'tenant_id' => tenant('id'),
-            'product_id' => $product->id,
-            'location_id' => $locationId,
-            'batch_number' => null,
-            'received_at' => $attributes['received_at'] ?? ($attributes['movement_date'] ?? now()),
-            'quantity_on_hand' => 0,
+        throw ValidationException::withMessages([
+            'quantity' => sprintf('No available stock record exists for %s in the selected location.', $product->name),
         ]);
     }
 
@@ -180,7 +169,7 @@ final readonly class RecordInventoryMovementAction
     {
         if ((int) $stock->product_id !== $product->id) {
             throw ValidationException::withMessages([
-                'inventory_stock_id' => 'The selected stock record does not belong to the selected product.',
+                'inventory_stock_id' => 'The selected stock record does not belong to the selected inventory item.',
             ]);
         }
 
@@ -204,7 +193,7 @@ final readonly class RecordInventoryMovementAction
             }
         }
 
-        if ($direction === InventoryDirection::Out && ! $product->allow_negative_stock && ((float) $stock->quantity_on_hand - $baseQuantity) < 0) {
+        if ($direction === InventoryDirection::Out && ((float) $stock->quantity_on_hand - $baseQuantity) < 0) {
             throw ValidationException::withMessages([
                 'inventory_stock_id' => sprintf('The selected stock record does not have enough quantity for %s.', $product->name),
             ]);

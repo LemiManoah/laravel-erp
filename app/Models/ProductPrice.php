@@ -17,15 +17,15 @@ final class ProductPrice extends Model
     protected $fillable = [
         'tenant_id',
         'product_id',
-        'selling_price',
-        'buying_price',
+        'sale_price',
+        'purchase_price',
     ];
 
     protected function casts(): array
     {
         return [
-            'selling_price' => 'decimal:2',
-            'buying_price' => 'decimal:2',
+            'sale_price' => 'decimal:2',
+            'purchase_price' => 'decimal:2',
         ];
     }
 

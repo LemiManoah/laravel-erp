@@ -103,7 +103,7 @@ final class CreatePage extends Component
             if ($product !== null) {
                 $this->items[(int) $index]['item_name'] = $product->name;
                 if (empty($this->items[(int) $index]['unit_price'])) {
-                    $this->items[(int) $index]['unit_price'] = (float) ($product->base_price ?? 0);
+                    $this->items[(int) $index]['unit_price'] = (float) ($product->sale_price ?? 0);
                 }
             }
         }

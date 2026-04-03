@@ -1,10 +1,10 @@
 <div>
     <div class="mb-6">
         <a href="{{ route('products.index') }}" class="mb-2 inline-block text-blue-600 hover:text-blue-900 dark:hover:text-blue-400">
-            <i class="fas fa-arrow-left mr-1"></i> Back to Products
+            <i class="fas fa-arrow-left mr-1"></i> Back to Inventory Items
         </a>
-        <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Create Product</h1>
-        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Add a new product or item to your catalog.</p>
+        <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Create Inventory Item</h1>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Add a new inventory item with item type, category, pricing, and stock behavior.</p>
     </div>
 
     @if($errors->any())
@@ -34,7 +34,7 @@
                     Cancel
                 </a>
                 <button type="submit" wire:loading.attr="disabled" class="rounded-md bg-blue-600 px-6 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70">
-                    Create Product
+                    Create Inventory Item
                 </button>
             </div>
         </form>

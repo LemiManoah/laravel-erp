@@ -42,7 +42,7 @@ final class EditPage extends Component
         );
 
         return redirect()->route('products.index')
-            ->with('success', 'Product updated successfully.');
+            ->with('success', 'Inventory item updated successfully.');
     }
 
     public function render(): View

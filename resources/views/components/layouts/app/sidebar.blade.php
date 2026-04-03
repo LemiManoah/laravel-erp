@@ -24,7 +24,7 @@
                     @endcan
                     @if(auth()->user()?->can('products.view'))
                         <x-layouts.sidebar-link href="{{ route('products.index') }}" icon='fas-box'
-                            :active="request()->routeIs('products*') || request()->routeIs('product-categories*')">Products</x-layouts.sidebar-link>
+                            :active="request()->routeIs('products*') || request()->routeIs('product-categories*')">Inventory Items</x-layouts.sidebar-link>
                     @endif
                 @endif
 

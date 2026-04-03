@@ -12,8 +12,8 @@ return new class extends Migration
             $table->id();
             $table->string('tenant_id');
             $table->foreignId('product_id')->constrained()->onDelete('cascade');
-            $table->decimal('selling_price', 10, 2)->nullable();
-            $table->decimal('buying_price', 10, 2)->nullable();
+            $table->decimal('sale_price', 10, 2)->nullable();
+            $table->decimal('purchase_price', 10, 2)->nullable();
             $table->timestamps();
 
             $table->foreign('tenant_id')->references('id')->on('tenants')->cascadeOnUpdate()->cascadeOnDelete();

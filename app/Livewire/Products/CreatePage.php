@@ -34,7 +34,7 @@ final class CreatePage extends Component
         );
 
         return redirect()->route('products.index')
-            ->with('success', 'Product created successfully.');
+            ->with('success', 'Inventory item created successfully.');
     }
 
     public function render(): View

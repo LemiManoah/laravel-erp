@@ -1,17 +1,17 @@
 <div class="mb-8">
     <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Basic Details</h2>
-    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Define how this item appears in the catalog and how it behaves in operations.</p>
+    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Define how this inventory item appears in your catalog and how it behaves in sales, purchasing, and stock operations.</p>
 </div>
 
 <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
     <div>
-        <label for="product_category_id" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Category</label>
+        <label for="product_category_id" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Item Category</label>
         <select
             id="product_category_id"
             wire:model="product_category_id"
             class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
         >
-            <option value="">Select category (optional)</option>
+            <option value="">Select item category (optional)</option>
             @foreach($categories as $category)
                 <option value="{{ $category->id }}">{{ $category->name }}</option>
             @endforeach
@@ -38,7 +38,7 @@
     </div>
 
     <div class="md:col-span-2">
-        <label for="name" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Product Name <span class="text-red-500">*</span></label>
+        <label for="name" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Inventory Item Name <span class="text-red-500">*</span></label>
         <input
             id="name"
             type="text"
@@ -51,64 +51,55 @@
         @enderror
     </div>
 
-    <div>
-        <label for="sku" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">SKU</label>
-        <input
-            id="sku"
-            type="text"
-            wire:model.blur="sku"
-            placeholder="Internal stock code"
-            class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-        >
-        @error('sku')
-            <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
-        @enderror
+    <div class="rounded-lg border border-dashed border-gray-300 p-4 dark:border-gray-600 md:col-span-2">
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+                <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">SKU</p>
+                <p class="mt-1 text-sm text-gray-900 dark:text-white">{{ $sku ?: 'Will be generated automatically after the item is created.' }}</p>
+            </div>
+            <div>
+                <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Barcode</p>
+                <p class="mt-1 text-sm text-gray-900 dark:text-white">
+                    @if($is_sellable)
+                        {{ $barcode ?: 'Will be generated automatically for sellable items after save.' }}
+                    @else
+                        Not generated because this item is not marked for sale.
+                    @endif
+                </p>
+            </div>
+        </div>
     </div>
 
     <div>
-        <label for="barcode" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Barcode</label>
+        <label for="purchase_price" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Purchase Price</label>
         <input
-            id="barcode"
-            type="text"
-            wire:model.blur="barcode"
-            placeholder="Scanner or POS code"
-            class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-        >
-        @error('barcode')
-            <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
-        @enderror
-    </div>
-
-    <div>
-        <label for="buying_price" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Buying Price</label>
-        <input
-            id="buying_price"
+            id="purchase_price"
             type="number"
-            wire:model.blur="buying_price"
+            wire:model.blur="purchase_price"
             step="0.01"
             min="0"
             placeholder="0.00"
             class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
         >
-        <p class="mt-1 text-xs text-gray-400">Optional. Use this as the default buying or cost price.</p>
-        @error('buying_price')
+        <p class="mt-1 text-xs text-gray-400">Optional. Use this as the default purchase or cost price.</p>
+        @error('purchase_price')
             <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
         @enderror
     </div>
 
     <div>
-        <label for="base_price" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Selling Price @if($is_sellable)<span class="text-red-500">*</span>@endif</label>
+        <label for="sale_price" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Sale Price @if($is_sellable)<span class="text-red-500">*</span>@endif</label>
         <input
-            id="base_price"
+            id="sale_price"
             type="number"
-            wire:model.blur="base_price"
+            wire:model.blur="sale_price"
             step="0.01"
             min="0"
             placeholder="0.00"
             class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
         >
         <p class="mt-1 text-xs text-gray-400">Required when the item can be sold.</p>
-        @error('base_price')
+        @error('sale_price')
             <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
         @enderror
     </div>
@@ -139,7 +130,7 @@
             rows="3"
             class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
         ></textarea>
-        <p class="mt-1 text-xs text-gray-400">Optional. Describe the product details.</p>
+        <p class="mt-1 text-xs text-gray-400">Optional. Describe the inventory item.</p>
         @error('description')
             <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
         @enderror
@@ -148,7 +139,7 @@
 
 <div class="my-8 border-t border-gray-200 pt-6 dark:border-gray-700">
     <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Inventory Settings</h2>
-    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Define whether this item tracks stock and the rules inventory records should follow later.</p>
+    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Define whether this inventory item tracks stock and how future stock receipts, sales, and adjustments should behave.</p>
 </div>
 
 <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
@@ -238,33 +229,8 @@
             @enderror
         </div>
 
-        <div>
-            <label for="reorder_quantity" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Reorder Quantity</label>
-            <input
-                id="reorder_quantity"
-                type="number"
-                wire:model.blur="reorder_quantity"
-                step="0.01"
-                min="0"
-                placeholder="0.00"
-                class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-            >
-            @error('reorder_quantity')
-                <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
-            @enderror
-        </div>
-
         <div class="rounded-lg border border-dashed border-gray-300 p-4 dark:border-gray-600 md:col-span-2">
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <label class="flex cursor-pointer items-center">
-                    <input
-                        type="checkbox"
-                        wire:model="allow_negative_stock"
-                        class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:border-gray-600 dark:bg-gray-700"
-                    >
-                    <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Allow negative stock</span>
-                </label>
-
                 <label class="flex cursor-pointer items-center">
                     <input
                         type="checkbox"
@@ -286,6 +252,8 @@
 
             @if($has_expiry)
                 <p class="mt-3 text-xs text-amber-600 dark:text-amber-300">Expiry-controlled items will require batch number and expiry date when you later receive or open stock in the inventory module.</p>
+            @else
+                <p class="mt-3 text-xs text-gray-500 dark:text-gray-400">Inventory issues now always require available stock on hand. Negative stock is no longer allowed for inventory items.</p>
             @endif
         </div>
     @else

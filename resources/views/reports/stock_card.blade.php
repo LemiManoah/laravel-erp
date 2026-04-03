@@ -4,14 +4,14 @@
             <a href="{{ route('reports.index') }}" class="text-blue-600 hover:text-blue-900 dark:hover:text-blue-400 mb-2 inline-block">
                 <i class="fas fa-arrow-left mr-1"></i> Back to Reports
             </a>
-            <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Stock Card</h1>
+            <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Inventory Item Stock Card</h1>
         </div>
 
         <form action="{{ route('reports.stock-card') }}" method="GET" class="flex flex-wrap items-end gap-3">
             <div>
-                <label class="block text-[10px] uppercase font-bold text-gray-500 mb-1">Product</label>
+                <label class="block text-[10px] uppercase font-bold text-gray-500 mb-1">Inventory Item</label>
                 <select name="product_id" class="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700 dark:text-white">
-                    <option value="">Select product</option>
+                    <option value="">Select inventory item</option>
                     @foreach($products as $product)
                         <option value="{{ $product->id }}" @selected($selected_product?->id === $product->id)>{{ $product->name }}</option>
                     @endforeach
@@ -42,7 +42,7 @@
     @if($selected_product)
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
             <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm">
-                <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Product</p>
+                <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Inventory Item</p>
                 <p class="text-lg font-bold text-gray-900 dark:text-white">{{ $selected_product->name }}</p>
             </div>
             <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm">
@@ -50,12 +50,12 @@
                 <p class="text-lg font-bold text-gray-900 dark:text-white">{{ number_format((float) $summary['current_quantity'], 2) }} {{ $selected_product->baseUnit?->abbreviation }}</p>
             </div>
             <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm">
-                <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Default Selling Price</p>
-                <p class="text-lg font-bold text-gray-900 dark:text-white">{{ $selected_product->base_price === null ? 'N/A' : $currencyFormatter->formatValue($selected_product->base_price, 2) }}</p>
+                <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Default Sale Price</p>
+                <p class="text-lg font-bold text-gray-900 dark:text-white">{{ $selected_product->sale_price === null ? 'N/A' : $currencyFormatter->formatValue($selected_product->sale_price, 2) }}</p>
             </div>
             <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm">
-                <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Default Buying Price</p>
-                <p class="text-lg font-bold text-gray-900 dark:text-white">{{ $selected_product->buying_price === null ? 'N/A' : $currencyFormatter->formatValue($selected_product->buying_price, 2) }}</p>
+                <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Default Purchase Price</p>
+                <p class="text-lg font-bold text-gray-900 dark:text-white">{{ $selected_product->purchase_price === null ? 'N/A' : $currencyFormatter->formatValue($selected_product->purchase_price, 2) }}</p>
             </div>
         </div>
 
@@ -147,7 +147,7 @@
         </div>
     @else
         <div class="rounded-lg border border-dashed border-gray-300 bg-white p-8 text-center text-sm text-gray-500 shadow-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400">
-            Choose a stock-tracked product to view its stock card.
+            Choose a stock-tracked inventory item to view its stock card.
         </div>
     @endif
 </div>

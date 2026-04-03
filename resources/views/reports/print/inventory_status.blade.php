@@ -7,17 +7,17 @@
     </div>
 
     <div class="cards">
-        <div class="card"><div class="label">Tracked Products</div><div class="value">{{ $summary['tracked_products'] }}</div></div>
+        <div class="card"><div class="label">Tracked Items</div><div class="value">{{ $summary['tracked_products'] }}</div></div>
         <div class="card"><div class="label">Low Stock</div><div class="value">{{ $summary['low_stock_products'] }}</div></div>
         <div class="card"><div class="label">Near Expiry</div><div class="value">{{ $summary['near_expiry_rows'] }}</div></div>
         <div class="card"><div class="label">Expired Rows</div><div class="value">{{ $summary['expired_rows'] }}</div></div>
     </div>
 
-    <h2>Low Stock Products</h2>
+    <h2>Low Stock Inventory Items</h2>
     <table>
         <thead>
             <tr>
-                <th>Product</th>
+                <th>Inventory Item</th>
                 <th class="text-right">On Hand</th>
                 <th class="text-right">Reorder Level</th>
             </tr>
@@ -30,7 +30,7 @@
                     <td class="text-right">{{ number_format((float) $product->reorder_level, 2) }}</td>
                 </tr>
             @empty
-                <tr><td colspan="3" class="muted">No low stock products.</td></tr>
+                <tr><td colspan="3" class="muted">No low stock inventory items.</td></tr>
             @endforelse
         </tbody>
     </table>
@@ -40,7 +40,7 @@
         <thead>
             <tr>
                 <th>Location</th>
-                <th class="text-right">Products</th>
+                <th class="text-right">Items</th>
                 <th class="text-right">Stock Rows</th>
                 <th class="text-right">Quantity</th>
             </tr>
@@ -64,7 +64,7 @@
         <thead>
             <tr>
                 <th>Status</th>
-                <th>Product</th>
+                <th>Inventory Item</th>
                 <th>Stock Row</th>
                 <th class="text-right">Qty</th>
                 <th>Expiry</th>

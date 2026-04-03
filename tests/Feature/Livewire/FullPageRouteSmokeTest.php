@@ -199,7 +199,7 @@ function createProductCategoryForTests(): ProductCategory
 
     return ProductCategory::query()->create([
         'name' => sprintf('Category %d', $counter),
-        'description' => 'Product category',
+        'description' => 'Inventory item category',
         'is_active' => true,
     ]);
 }
@@ -224,7 +224,6 @@ function createProductForTests(string $name, array $overrides = []): Product
         'is_sellable' => true,
         'is_purchasable' => true,
         'base_unit_id' => $unit->id,
-        'allow_negative_stock' => false,
         'has_expiry' => false,
         'is_serialized' => false,
         'has_variants' => false,

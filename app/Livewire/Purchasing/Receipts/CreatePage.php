@@ -94,7 +94,7 @@ final class CreatePage extends Component
         $product = Product::query()->with('defaultPrice')->find((int) $value);
 
         if ($product !== null && blank($this->items[$index]['unit_cost'])) {
-            $this->items[$index]['unit_cost'] = $product->buying_price ?? '';
+            $this->items[$index]['unit_cost'] = $product->purchase_price ?? '';
         }
 
         if ($product !== null && ! $product->has_expiry) {
@@ -160,7 +160,7 @@ final class CreatePage extends Component
             }
 
             if (! $product->tracks_inventory) {
-                $messages["items.$index.product_id"] = 'Selected product does not track inventory.';
+                $messages["items.$index.product_id"] = 'Selected inventory item does not track inventory.';
             }
 
             if ($product->has_expiry) {

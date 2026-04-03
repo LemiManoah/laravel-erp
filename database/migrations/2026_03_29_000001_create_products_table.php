@@ -20,10 +20,8 @@ return new class extends Migration
             $table->boolean('is_purchasable')->default(true);
             $table->unsignedBigInteger('base_unit_id')->nullable();
             $table->decimal('reorder_level', 12, 2)->nullable();
-            $table->decimal('reorder_quantity', 12, 2)->nullable();
             $table->boolean('has_variants')->default(false);
             $table->foreignId('parent_item_id')->nullable()->constrained('products')->onDelete('restrict');
-            $table->boolean('allow_negative_stock')->default(false);
             $table->boolean('has_expiry')->default(false);
             $table->boolean('is_serialized')->default(false);
             $table->string('name');
@@ -32,14 +30,14 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('tenant_id')->references('id')->on('tenants')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->index(['tenant_id', 'sku']);
-            $table->index(['tenant_id', 'barcode']);
+            $table->unique(['tenant_id', 'sku']);
+            $table->unique(['tenant_id', 'barcode']);
             $table->index(['tenant_id', 'item_type']);
-            $table->index(['tenant_id', 'tracks_inventory']);
             $table->index(['tenant_id', 'is_active', 'name']);
             $table->index(['tenant_id', 'product_category_id', 'is_active']);
             $table->index(['tenant_id', 'tracks_inventory', 'is_active']);
             $table->index(['tenant_id', 'is_purchasable', 'is_active']);
+            $table->index(['tenant_id', 'is_sellable', 'is_active']);
         });
     }
 

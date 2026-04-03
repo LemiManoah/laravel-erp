@@ -21,8 +21,8 @@ class UpdateProductRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:1000'],
             'is_sellable' => ['sometimes', 'boolean'],
-            'buying_price' => ['nullable', 'numeric', 'min:0'],
-            'base_price' => ['nullable', Rule::requiredIf($this->boolean('is_sellable', true)), 'numeric', 'min:0'],
+            'purchase_price' => ['nullable', 'numeric', 'min:0'],
+            'sale_price' => ['nullable', Rule::requiredIf($this->boolean('is_sellable', true)), 'numeric', 'min:0'],
         ];
     }
 }

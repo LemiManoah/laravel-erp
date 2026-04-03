@@ -79,7 +79,7 @@
                 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead>
                         <tr>
-                            <th class="w-44 px-3 py-2 text-left text-xs font-medium uppercase text-gray-500">Product</th>
+                            <th class="w-44 px-3 py-2 text-left text-xs font-medium uppercase text-gray-500">Inventory Item</th>
                             <th class="px-3 py-2 text-left text-xs font-medium uppercase text-gray-500">Item Name <span class="text-red-500">*</span></th>
                             <th class="px-3 py-2 text-left text-xs font-medium uppercase text-gray-500">Description</th>
                             <th class="w-20 px-3 py-2 text-left text-xs font-medium uppercase text-gray-500">Qty</th>

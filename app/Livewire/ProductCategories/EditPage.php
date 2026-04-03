@@ -51,7 +51,7 @@ final class EditPage extends Component
             'is_active' => $this->is_active,
         ]);
 
-        session()->flash('success', 'Product Category updated successfully.');
+        session()->flash('success', 'Item category updated successfully.');
 
         return $this->redirectRoute('product-categories.index');
     }

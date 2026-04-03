@@ -49,14 +49,14 @@ final class IndexPage extends Component
         $category = ProductCategory::query()->findOrFail($categoryId);
 
         if ($category->products()->exists()) {
-            session()->flash('error', 'Cannot delete this category because it is currently assigned to one or more products. Consider marking it as inactive instead.');
+            session()->flash('error', 'Cannot delete this item category because it is currently assigned to one or more inventory items. Consider marking it as inactive instead.');
 
             return;
         }
 
         $category->delete();
 
-        session()->flash('success', 'Product Category deleted successfully.');
+        session()->flash('success', 'Item category deleted successfully.');
     }
 
     public function render(): View

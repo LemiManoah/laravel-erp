@@ -25,16 +25,16 @@ final class ProductCategorySeeder extends Seeder
     private function categories(): array
     {
         return [
-            ['name' => 'Grocery Staples', 'description' => 'Shelf-stable staple foods and household pantry items.', 'is_active' => true],
-            ['name' => 'Fresh Produce', 'description' => 'Perishable fruits, vegetables, and farm-fresh produce.', 'is_active' => true],
-            ['name' => 'Beverages', 'description' => 'Packaged drinks, water, and liquid refreshment products.', 'is_active' => true],
-            ['name' => 'Farm Inputs', 'description' => 'Seeds, fertilizers, feeds, and other agricultural inputs.', 'is_active' => true],
-            ['name' => 'Animal Feed & Vet', 'description' => 'Feeds, supplements, and veterinary consumables for livestock operations.', 'is_active' => true],
-            ['name' => 'Household Goods', 'description' => 'Cleaning, daily-use, and home-care products.', 'is_active' => true],
-            ['name' => 'Office Supplies', 'description' => 'Stationery and routine business consumables.', 'is_active' => true],
-            ['name' => 'Hardware & Utilities', 'description' => 'Tools, fittings, and practical maintenance supplies.', 'is_active' => true],
-            ['name' => 'Services', 'description' => 'Non-stock services billed through the ERP.', 'is_active' => true],
-            ['name' => 'Health & Personal Care', 'description' => 'Personal hygiene products and other quick-moving care items.', 'is_active' => true],
+            ['name' => 'Grocery Staples', 'description' => 'Shelf-stable inventory items such as grains, flour, sugar, and packaged pantry stock.', 'is_active' => true],
+            ['name' => 'Fresh Produce', 'description' => 'Perishable inventory items including vegetables, fruits, and other fresh produce.', 'is_active' => true],
+            ['name' => 'Beverages', 'description' => 'Packaged drinks, juices, bottled water, and related sellable stock items.', 'is_active' => true],
+            ['name' => 'Farm Inputs', 'description' => 'Agricultural inventory items such as fertilizers, seeds, and crop care supplies.', 'is_active' => true],
+            ['name' => 'Animal Feed & Vet', 'description' => 'Feed, supplements, and veterinary inventory items for livestock operations.', 'is_active' => true],
+            ['name' => 'Household Goods', 'description' => 'Cleaning and daily-use inventory items for household and retail use.', 'is_active' => true],
+            ['name' => 'Office Supplies', 'description' => 'Stationery, printer stock, and other routine office inventory items.', 'is_active' => true],
+            ['name' => 'Hardware & Utilities', 'description' => 'Tools, fittings, electricals, and general maintenance inventory items.', 'is_active' => true],
+            ['name' => 'Services', 'description' => 'Non-stock service items billed through the ERP without inventory tracking.', 'is_active' => true],
+            ['name' => 'Health & Personal Care', 'description' => 'Hygiene and personal-care inventory items with strong retail movement.', 'is_active' => true],
         ];
     }
 }

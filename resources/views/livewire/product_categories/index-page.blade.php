@@ -1,12 +1,12 @@
 <div>
-    <x-ui.page-header title="Product Categories" description="Manage categories used to classify products.">
+    <x-ui.page-header title="Item Categories" description="Manage categories used to classify inventory items.">
         <a href="{{ route('products.index') }}" class="inline-block text-blue-600 hover:text-blue-900 dark:hover:text-blue-400">
-            <i class="fas fa-arrow-left mr-1"></i> Back to Products
+            <i class="fas fa-arrow-left mr-1"></i> Back to Inventory Items
         </a>
         <x-slot:actions>
             @can('products.create')
                 <x-ui.action-link href="{{ route('product-categories.create') }}" variant="primary">
-                    <i class="fas fa-plus mr-2"></i> Add Category
+                    <i class="fas fa-plus mr-2"></i> Add Item Category
                 </x-ui.action-link>
             @endcan
         </x-slot:actions>
@@ -38,7 +38,7 @@
                     <tr>
                         <th class="w-1/4 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Name</th>
                         <th class="w-1/4 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Description</th>
-                        <th class="w-1/4 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Total Products</th>
+                        <th class="w-1/4 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Inventory Items</th>
                         <th class="w-1/12 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Status</th>
                         <th class="w-1/6 px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Actions</th>
                     </tr>
@@ -54,7 +54,7 @@
                             </td>
                             <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                                 <span class="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10 dark:bg-blue-900/30 dark:text-blue-300 dark:ring-blue-500/30">
-                                    {{ $category->products_count }} Products
+                                    {{ $category->products_count }} Items
                                 </span>
                             </td>
                             <td class="whitespace-nowrap px-6 py-4">
@@ -82,7 +82,7 @@
                     @empty
                         <tr>
                             <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
-                                No product categories found.
+                                No item categories found.
                             </td>
                         </tr>
                     @endforelse

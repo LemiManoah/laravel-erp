@@ -40,7 +40,7 @@ final class CreatePage extends Component
             'is_active' => $this->is_active,
         ]);
 
-        session()->flash('success', 'Product Category created successfully.');
+        session()->flash('success', 'Item category created successfully.');
 
         return $this->redirectRoute('product-categories.index');
     }

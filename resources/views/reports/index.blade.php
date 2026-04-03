@@ -70,7 +70,7 @@
                 <i class="fas fa-boxes-stacked fa-lg"></i>
             </div>
             <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-1">Inventory Status</h2>
-            <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">Review low stock products, near-expiry rows, expired stock, and stock by location.</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">Review low stock inventory items, near-expiry rows, expired stock, and stock by location.</p>
             <span class="inline-flex mt-4 px-3 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded text-sm group-hover:bg-gray-200 dark:group-hover:bg-gray-600 transition">Open report</span>
         </a>
 
@@ -79,7 +79,7 @@
                 <i class="fas fa-timeline fa-lg"></i>
             </div>
             <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-1">Stock Card</h2>
-            <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">View movement history and running balances for one stock-tracked product.</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">View movement history and running balances for one stock-tracked inventory item.</p>
             <span class="inline-flex mt-4 px-3 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded text-sm group-hover:bg-gray-200 dark:group-hover:bg-gray-600 transition">Open report</span>
         </a>
 

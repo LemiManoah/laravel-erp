@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 
 /**
@@ -26,10 +27,8 @@ use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
  * @property bool $is_purchasable
  * @property int|null $base_unit_id
  * @property float|null $reorder_level
- * @property float|null $reorder_quantity
  * @property bool $has_variants
  * @property int|null $parent_item_id
- * @property bool $allow_negative_stock
  * @property bool $has_expiry
  * @property bool $is_serialized
  * @property string $name
@@ -45,18 +44,14 @@ final class Product extends Model
 
     protected $fillable = [
         'product_category_id',
-        'sku',
-        'barcode',
         'item_type',
         'tracks_inventory',
         'is_sellable',
         'is_purchasable',
         'base_unit_id',
         'reorder_level',
-        'reorder_quantity',
         'has_variants',
         'parent_item_id',
-        'allow_negative_stock',
         'has_expiry',
         'is_serialized',
         'name',
@@ -65,10 +60,35 @@ final class Product extends Model
     ];
 
     protected $appends = [
+        'sale_price',
+        'purchase_price',
         'base_price',
         'buying_price',
         'quantity_on_hand',
     ];
+
+    protected static function booted(): void
+    {
+        static::saved(function (Product $product): void {
+            $updates = [];
+
+            if (blank($product->sku)) {
+                $updates['sku'] = $product->generateSku();
+            }
+
+            if ($product->is_sellable) {
+                if (blank($product->barcode)) {
+                    $updates['barcode'] = $product->generateBarcode();
+                }
+            } elseif ($product->barcode !== null) {
+                $updates['barcode'] = null;
+            }
+
+            if ($updates !== []) {
+                $product->forceFill($updates)->saveQuietly();
+            }
+        });
+    }
 
     protected function casts(): array
     {
@@ -79,11 +99,9 @@ final class Product extends Model
             'is_sellable' => 'boolean',
             'is_purchasable' => 'boolean',
             'has_variants' => 'boolean',
-            'allow_negative_stock' => 'boolean',
             'has_expiry' => 'boolean',
             'is_serialized' => 'boolean',
             'reorder_level' => 'decimal:2',
-            'reorder_quantity' => 'decimal:2',
         ];
     }
 
@@ -164,26 +182,36 @@ final class Product extends Model
         });
     }
 
-    protected function basePrice(): Attribute
+    protected function salePrice(): Attribute
     {
         return Attribute::get(function (): ?string {
             $price = $this->relationLoaded('defaultPrice')
-                ? $this->defaultPrice?->selling_price
-                : $this->defaultPrice()->value('selling_price');
+                ? $this->defaultPrice?->sale_price
+                : $this->defaultPrice()->value('sale_price');
 
             return $price === null ? null : number_format((float) $price, 2, '.', '');
         });
     }
 
-    protected function buyingPrice(): Attribute
+    protected function purchasePrice(): Attribute
     {
         return Attribute::get(function (): ?string {
             $price = $this->relationLoaded('defaultPrice')
-                ? $this->defaultPrice?->buying_price
-                : $this->defaultPrice()->value('buying_price');
+                ? $this->defaultPrice?->purchase_price
+                : $this->defaultPrice()->value('purchase_price');
 
             return $price === null ? null : number_format((float) $price, 2, '.', '');
         });
+    }
+
+    protected function basePrice(): Attribute
+    {
+        return Attribute::get(fn (): ?string => $this->sale_price);
+    }
+
+    protected function buyingPrice(): Attribute
+    {
+        return Attribute::get(fn (): ?string => $this->purchase_price);
     }
 
     public function scopeStockTracked($query)
@@ -224,5 +252,74 @@ final class Product extends Model
     public function scopeByBarcode($query, string $barcode)
     {
         return $query->where('barcode', $barcode);
+    }
+
+    public function generateSku(): string
+    {
+        return sprintf(
+            'ITI-%s-%s-%04d',
+            $this->skuTypeCode(),
+            $this->categoryCode(),
+            $this->id,
+        );
+    }
+
+    public function generateBarcode(): string
+    {
+        $base = sprintf(
+            '29%d%03d%06d',
+            $this->barcodeTypeDigit(),
+            (int) ($this->product_category_id ?? 0) % 1000,
+            $this->id % 1000000,
+        );
+
+        return $base.$this->ean13Checksum($base);
+    }
+
+    private function skuTypeCode(): string
+    {
+        return Str::of($this->item_type->value)
+            ->explode('_')
+            ->map(fn (string $segment): string => strtoupper(Str::substr($segment, 0, 1)))
+            ->join('');
+    }
+
+    private function categoryCode(): string
+    {
+        $categoryName = $this->relationLoaded('category')
+            ? $this->category?->name
+            : $this->category()->value('name');
+
+        return Str::of($categoryName ?? 'General')
+            ->upper()
+            ->replaceMatches('/[^A-Z0-9]/', '')
+            ->substr(0, 3)
+            ->padRight(3, 'X')
+            ->value();
+    }
+
+    private function barcodeTypeDigit(): int
+    {
+        $types = ProductItemType::cases();
+
+        foreach ($types as $index => $type) {
+            if ($type === $this->item_type) {
+                return ($index + 1) % 10;
+            }
+        }
+
+        return 0;
+    }
+
+    private function ean13Checksum(string $base): int
+    {
+        $digits = str_split($base);
+        $sum = 0;
+
+        foreach ($digits as $index => $digit) {
+            $sum += (int) $digit * (($index % 2 === 0) ? 1 : 3);
+        }
+
+        return (10 - ($sum % 10)) % 10;
     }
 }

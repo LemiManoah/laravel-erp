@@ -17,7 +17,7 @@ final class PurchaseReceiptSeeder extends Seeder
     public function run(): void
     {
         $suppliers = Supplier::query()->get()->keyBy('code');
-        $products = Product::query()->get()->keyBy('sku');
+        $products = Product::query()->get()->keyBy('name');
         $locations = StockLocation::query()->get()->keyBy('code');
         $orders = PurchaseOrder::query()->get()->keyBy('order_number');
         $action = app(CreatePurchaseReceiptAction::class);
@@ -37,7 +37,7 @@ final class PurchaseReceiptSeeder extends Seeder
 
             $items = collect($receipt['items'])
                 ->map(function (array $item) use ($products): ?array {
-                    $product = $products->get($item['sku']);
+                    $product = $products->get($item['item_name']);
 
                     if ($product === null) {
                         return null;
@@ -89,8 +89,8 @@ final class PurchaseReceiptSeeder extends Seeder
                 'receipt_date' => '2026-03-31',
                 'notes' => 'Weekly grocery restock.',
                 'items' => [
-                    ['sku' => 'GRO-RICE-001', 'quantity' => 25, 'unit_cost' => 2450.00],
-                    ['sku' => 'BEV-JCE-001', 'quantity' => 12, 'unit_cost' => 4150.00, 'batch_number' => 'OJ-2026-03-R1', 'expiry_date' => '2026-07-15'],
+                    ['item_name' => 'Rice 1kg Pack', 'quantity' => 25, 'unit_cost' => 2450.00],
+                    ['item_name' => 'Orange Juice 1L', 'quantity' => 12, 'unit_cost' => 4150.00, 'batch_number' => 'OJ-2026-03-R1', 'expiry_date' => '2026-07-15'],
                 ],
             ],
             [
@@ -101,8 +101,8 @@ final class PurchaseReceiptSeeder extends Seeder
                 'receipt_date' => '2026-03-31',
                 'notes' => 'Farm supply replenishment.',
                 'items' => [
-                    ['sku' => 'FAR-FER-001', 'quantity' => 8, 'unit_cost' => 97500.00],
-                    ['sku' => 'ANM-FED-001', 'quantity' => 6, 'unit_cost' => 71000.00],
+                    ['item_name' => 'NPK Fertilizer 50kg', 'quantity' => 8, 'unit_cost' => 97500.00],
+                    ['item_name' => 'Layers Mash 50kg', 'quantity' => 6, 'unit_cost' => 71000.00],
                 ],
             ],
         ];

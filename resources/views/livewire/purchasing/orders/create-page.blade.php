@@ -83,7 +83,7 @@
                     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                         <thead>
                             <tr>
-                                <th class="w-56 px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Product</th>
+                                <th class="w-56 px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Inventory Item</th>
                                 <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Line Notes</th>
                                 <th class="w-28 px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Qty</th>
                                 <th class="w-36 px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Unit Cost</th>
@@ -96,7 +96,7 @@
                                 <tr>
                                     <td class="px-4 py-2">
                                         <select wire:model.live="items.{{ $index }}.product_id" class="w-full rounded-md border border-gray-300 px-3 py-1 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
-                                            <option value="">Select product</option>
+                                            <option value="">Select inventory item</option>
                                             @foreach($products as $productOption)
                                                 <option value="{{ $productOption->id }}">
                                                     {{ $productOption->sku ? $productOption->name.' ('.$productOption->sku.')' : $productOption->name }}

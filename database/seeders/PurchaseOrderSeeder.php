@@ -17,7 +17,7 @@ final class PurchaseOrderSeeder extends Seeder
     public function run(): void
     {
         $suppliers = Supplier::query()->get()->keyBy('code');
-        $products = Product::query()->get()->keyBy('sku');
+        $products = Product::query()->get()->keyBy('name');
         $locations = StockLocation::query()->get()->keyBy('code');
         $action = app(CreatePurchaseOrderAction::class);
 
@@ -35,7 +35,7 @@ final class PurchaseOrderSeeder extends Seeder
 
             $items = collect($order['items'])
                 ->map(function (array $item) use ($products): ?array {
-                    $product = $products->get($item['sku']);
+                    $product = $products->get($item['item_name']);
 
                     if ($product === null) {
                         return null;
@@ -87,8 +87,8 @@ final class PurchaseOrderSeeder extends Seeder
                 'status' => 'ordered',
                 'notes' => 'Weekend grocery top-up.',
                 'items' => [
-                    ['sku' => 'GRO-RICE-001', 'quantity' => 40, 'unit_cost' => 2450.00],
-                    ['sku' => 'HOU-SOA-001', 'quantity' => 50, 'unit_cost' => 1180.00],
+                    ['item_name' => 'Rice 1kg Pack', 'quantity' => 40, 'unit_cost' => 2450.00],
+                    ['item_name' => 'Laundry Soap Bar', 'quantity' => 50, 'unit_cost' => 1180.00],
                 ],
             ],
             [
@@ -100,8 +100,8 @@ final class PurchaseOrderSeeder extends Seeder
                 'status' => 'draft',
                 'notes' => 'Planned farm input restock.',
                 'items' => [
-                    ['sku' => 'FAR-FER-001', 'quantity' => 12, 'unit_cost' => 97000.00],
-                    ['sku' => 'ANM-FED-001', 'quantity' => 10, 'unit_cost' => 70500.00],
+                    ['item_name' => 'NPK Fertilizer 50kg', 'quantity' => 12, 'unit_cost' => 97000.00],
+                    ['item_name' => 'Layers Mash 50kg', 'quantity' => 10, 'unit_cost' => 70500.00],
                 ],
             ],
         ];
