@@ -4,6 +4,7 @@ use App\Models\User;
 
 test('appearance settings screen can be rendered', function () {
     $user = User::factory()->create();
+    grantTestPermissions($user, ['settings.appearance.update']);
 
     $response = $this->actingAs($user)->get('/settings/appearance');
 
@@ -14,6 +15,7 @@ test('users can update theme to light', function () {
     $user = User::factory()->create([
         'theme_preference' => 'system',
     ]);
+    grantTestPermissions($user, ['settings.appearance.update']);
 
     $response = $this->actingAs($user)
         ->from('/settings/appearance')
@@ -31,6 +33,7 @@ test('users can update theme to dark', function () {
     $user = User::factory()->create([
         'theme_preference' => 'light',
     ]);
+    grantTestPermissions($user, ['settings.appearance.update']);
 
     $response = $this->actingAs($user)->put('/settings/appearance', [
         'theme_preference' => 'dark',
@@ -44,6 +47,7 @@ test('users can update theme to system', function () {
     $user = User::factory()->create([
         'theme_preference' => 'dark',
     ]);
+    grantTestPermissions($user, ['settings.appearance.update']);
 
     $response = $this->actingAs($user)->put('/settings/appearance', [
         'theme_preference' => 'system',
@@ -57,6 +61,7 @@ test('theme update requires valid value', function () {
     $user = User::factory()->create([
         'theme_preference' => 'system',
     ]);
+    grantTestPermissions($user, ['settings.appearance.update']);
 
     $response = $this->actingAs($user)->put('/settings/appearance', [
         'theme_preference' => 'invalid-theme',

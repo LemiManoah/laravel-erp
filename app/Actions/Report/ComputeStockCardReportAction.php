@@ -55,7 +55,8 @@ final readonly class ComputeStockCardReportAction
                 ->with(['inventoryStock', 'location', 'inventoryItem'])
                 ->where('inventory_item_id', $selectedInventoryItem->id)
                 ->when($locationId !== null, fn ($query) => $query->where('location_id', $locationId))
-                ->whereBetween('movement_date', [$start, $end])
+                ->whereDate('movement_date', '>=', $start->toDateString())
+                ->whereDate('movement_date', '<=', $end->toDateString())
                 ->orderBy('movement_date')
                 ->orderBy('id')
                 ->get();

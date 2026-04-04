@@ -21,7 +21,8 @@ final readonly class ComputeSalesReportAction
         $invoices = Invoice::query()
             ->with(['customer', 'currency'])
             ->whereNotIn('status', ['draft', 'cancelled'])
-            ->whereBetween('invoice_date', [$start->toDateString(), $end->toDateString()])
+            ->whereDate('invoice_date', '>=', $start->toDateString())
+            ->whereDate('invoice_date', '<=', $end->toDateString())
             ->get();
 
         $currencyManager = app(CurrencyManager::class);

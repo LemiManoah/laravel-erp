@@ -3,13 +3,17 @@
 use App\Models\User;
 
 test('profile page is displayed', function () {
-    $this->actingAs(User::factory()->create());
+    $user = User::factory()->create();
+    grantTestPermissions($user, ['settings.profile.update']);
+
+    $this->actingAs($user);
 
     $this->get('/settings/profile')->assertOk();
 });
 
 test('profile information can be updated', function () {
     $user = User::factory()->create();
+    grantTestPermissions($user, ['settings.profile.update']);
 
     $response = $this
         ->actingAs($user)
@@ -31,6 +35,7 @@ test('profile information can be updated', function () {
 
 test('email verification status is unchanged when email address is unchanged', function () {
     $user = User::factory()->create();
+    grantTestPermissions($user, ['settings.profile.update']);
 
     $response = $this
         ->actingAs($user)

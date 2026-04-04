@@ -27,19 +27,8 @@
                 </div>
 
                 <div>
-                    <label for="inventory_item_id" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Inventory Item <span class="text-red-500">*</span></label>
-                    <select id="inventory_item_id" wire:model.live="inventory_item_id" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
-                        <option value="">Select inventory item</option>
-                        @foreach($products as $product)
-                            <option value="{{ $product->id }}">{{ $product->name }}</option>
-                        @endforeach
-                    </select>
-                    @error('inventory_item_id') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                </div>
-
-                <div>
                     <label for="location_id" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Location <span class="text-red-500">*</span></label>
-                    <select id="location_id" wire:model="location_id" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                    <select id="location_id" wire:model.live="location_id" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
                         <option value="">Select location</option>
                         @foreach($locations as $location)
                             <option value="{{ $location->id }}">{{ $location->name }}</option>
@@ -48,32 +37,6 @@
                     @error('location_id') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                 </div>
 
-                <div>
-                    <label for="quantity" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Quantity <span class="text-red-500">*</span></label>
-                    <input id="quantity" type="number" step="0.01" min="0.01" wire:model="quantity" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
-                    @error('quantity') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                </div>
-
-                <div>
-                    <label for="unit_cost" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Unit Cost</label>
-                    <input id="unit_cost" type="number" step="0.01" min="0" wire:model="unit_cost" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
-                    @error('unit_cost') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                </div>
-
-                @if($selectedProduct?->has_expiry)
-                    <div>
-                        <label for="batch_number" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Batch Number <span class="text-red-500">*</span></label>
-                        <input id="batch_number" type="text" wire:model="batch_number" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
-                        @error('batch_number') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                    </div>
-
-                    <div>
-                        <label for="expiry_date" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Expiry Date <span class="text-red-500">*</span></label>
-                        <input id="expiry_date" type="date" wire:model="expiry_date" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
-                        @error('expiry_date') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                    </div>
-                @endif
-
                 <div class="md:col-span-2">
                     <label for="notes" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Notes</label>
                     <textarea id="notes" wire:model="notes" rows="3" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"></textarea>
@@ -81,9 +44,87 @@
                 </div>
             </div>
 
-            <div class="mt-6 flex justify-end border-t border-gray-200 pt-4 dark:border-gray-700">
-                <a href="{{ route('inventory.stocks.index') }}" class="mr-3 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Cancel</a>
-                <button type="submit" class="rounded-md bg-blue-600 px-6 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700">Save Receipt</button>
+            <div class="mt-8">
+                <div class="mb-3 flex items-center justify-between">
+                    <div>
+                        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Receipt Items</h2>
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Add all inventory items being received in this stock receipt.</p>
+                    </div>
+                    <button type="button" wire:click="addItem" class="rounded-md border border-blue-300 bg-blue-50 px-3 py-2 text-sm font-medium text-blue-700 hover:bg-blue-100 dark:border-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                        Add Item
+                    </button>
+                </div>
+
+                <div class="space-y-4">
+                    @foreach($items as $index => $item)
+                        @php $inventoryItem = $inventoryItems->firstWhere('id', (int) ($item['inventory_item_id'] ?? 0)); @endphp
+                        <div class="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
+                            <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
+                                <div class="md:col-span-2">
+                                    <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Inventory Item <span class="text-red-500">*</span></label>
+                                    <select wire:model.live="items.{{ $index }}.inventory_item_id" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                                        <option value="">Select inventory item</option>
+                                        @foreach($inventoryItems as $inventoryItemOption)
+                                            <option value="{{ $inventoryItemOption->id }}">{{ $inventoryItemOption->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error("items.$index.inventory_item_id") <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                                </div>
+
+                                <div>
+                                    <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Quantity <span class="text-red-500">*</span></label>
+                                    <input type="number" step="0.01" min="0.01" wire:model.live="items.{{ $index }}.quantity" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                                    @error("items.$index.quantity") <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                                </div>
+
+                                <div>
+                                    <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Unit Cost</label>
+                                    <input type="number" step="0.01" min="0" wire:model.live="items.{{ $index }}.unit_cost" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                                    @error("items.$index.unit_cost") <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                                </div>
+
+                                @if($inventoryItem?->has_expiry)
+                                    <div>
+                                        <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Batch Number <span class="text-red-500">*</span></label>
+                                        <input type="text" wire:model.blur="items.{{ $index }}.batch_number" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                                        @error("items.$index.batch_number") <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                                    </div>
+
+                                    <div>
+                                        <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Expiry Date <span class="text-red-500">*</span></label>
+                                        <input type="date" wire:model.blur="items.{{ $index }}.expiry_date" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                                        @error("items.$index.expiry_date") <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                                    </div>
+                                @endif
+
+                                <div class="md:col-span-3">
+                                    <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Line Notes</label>
+                                    <input type="text" wire:model.live.debounce.300ms="items.{{ $index }}.notes" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                                    @error("items.$index.notes") <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                                </div>
+
+                                <div class="flex items-end justify-between md:justify-end">
+                                    <div class="text-sm font-semibold text-gray-900 dark:text-white">
+                                        {{ $currencyFormatter->formatValue(((float) ($item['quantity'] ?: 0)) * ((float) ($item['unit_cost'] ?: 0)), 2) }}
+                                    </div>
+                                    <button type="button" wire:click="removeItem({{ $index }})" class="ml-4 text-sm font-medium text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300">
+                                        Remove
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
+            <div class="mt-6 flex items-center justify-between border-t border-gray-200 pt-4 dark:border-gray-700">
+                <div class="text-sm text-gray-500 dark:text-gray-400">
+                    Total: <span class="font-semibold text-gray-900 dark:text-white">{{ $currencyFormatter->formatValue($total, 2) }}</span>
+                </div>
+                <div class="flex gap-3">
+                    <a href="{{ route('inventory.stocks.index') }}" class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Cancel</a>
+                    <button type="submit" class="rounded-md bg-blue-600 px-6 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700">Save Receipt</button>
+                </div>
             </div>
         </form>
     </div>

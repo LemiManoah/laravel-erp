@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\Permission;
+use App\Models\User;
+use Spatie\Permission\PermissionRegistrar;
 use Tests\TenantTestCase;
 use Tests\TestCase;
 
@@ -60,4 +63,18 @@ expect()->extend('toBeOne', function () {
 function something()
 {
     // ..
+}
+
+function grantTestPermissions(User $user, array $permissions): void
+{
+    app(PermissionRegistrar::class)->forgetCachedPermissions();
+
+    foreach ($permissions as $permission) {
+        Permission::query()->firstOrCreate([
+            'name' => $permission,
+            'guard_name' => 'web',
+        ]);
+    }
+
+    $user->givePermissionTo($permissions);
 }

@@ -21,7 +21,8 @@ final readonly class ComputePaymentsReportAction
         $payments = Payment::query()
             ->with(['invoice.customer', 'receipt', 'currency'])
             ->where('status', 'valid')
-            ->whereBetween('payment_date', [$start->toDateString(), $end->toDateString()])
+            ->whereDate('payment_date', '>=', $start->toDateString())
+            ->whereDate('payment_date', '<=', $end->toDateString())
             ->latest('payment_date')
             ->get();
 

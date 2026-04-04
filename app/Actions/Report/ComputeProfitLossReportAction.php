@@ -19,10 +19,20 @@ final readonly class ComputeProfitLossReportAction
         $start = $startDate ? Carbon::parse($startDate) : Carbon::now()->startOfMonth();
         $end = $endDate ? Carbon::parse($endDate) : Carbon::now()->endOfMonth();
 
-        $revenue = Payment::query()->with('currency')->where('status', 'valid')->whereBetween('payment_date', [$start->toDateString(), $end->toDateString()])->get()
+        $revenue = Payment::query()
+            ->with('currency')
+            ->where('status', 'valid')
+            ->whereDate('payment_date', '>=', $start->toDateString())
+            ->whereDate('payment_date', '<=', $end->toDateString())
+            ->get()
             ->sum(fn (Payment $p) => app(CurrencyManager::class)->convertValue($p->amount, $p->currency));
 
-        $expenses = Expense::query()->with('currency')->where('status', 'valid')->whereBetween('expense_date', [$start->toDateString(), $end->toDateString()])->get()
+        $expenses = Expense::query()
+            ->with('currency')
+            ->where('status', 'valid')
+            ->whereDate('expense_date', '>=', $start->toDateString())
+            ->whereDate('expense_date', '<=', $end->toDateString())
+            ->get()
             ->sum(fn (Expense $e) => app(CurrencyManager::class)->convertValue($e->amount, $e->currency));
 
         return [

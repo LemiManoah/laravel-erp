@@ -21,7 +21,8 @@ final readonly class ComputeExpensesReportAction
         $expenses = Expense::query()
             ->with(['category', 'currency'])
             ->where('status', 'valid')
-            ->whereBetween('expense_date', [$start->toDateString(), $end->toDateString()])
+            ->whereDate('expense_date', '>=', $start->toDateString())
+            ->whereDate('expense_date', '<=', $end->toDateString())
             ->get();
 
         $currencyManager = app(CurrencyManager::class);

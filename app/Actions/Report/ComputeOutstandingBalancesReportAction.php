@@ -21,7 +21,8 @@ final readonly class ComputeOutstandingBalancesReportAction
         $invoices = Invoice::query()
             ->with(['customer', 'currency'])
             ->whereNotIn('status', ['draft', 'cancelled', 'paid'])
-            ->whereBetween('invoice_date', [$start->toDateString(), $end->toDateString()])
+            ->whereDate('invoice_date', '>=', $start->toDateString())
+            ->whereDate('invoice_date', '<=', $end->toDateString())
             ->orderByDesc('balance_due')
             ->get();
 

@@ -28,14 +28,16 @@ final readonly class ComputeCustomerStatementAction
         if ($customer !== null) {
             $invoices = $customer->invoices()
                 ->with('currency')
-                ->whereBetween('invoice_date', [$start->toDateString(), $end->toDateString()])
+                ->whereDate('invoice_date', '>=', $start->toDateString())
+                ->whereDate('invoice_date', '<=', $end->toDateString())
                 ->orderBy('invoice_date')
                 ->get();
 
             $payments = $customer->payments()
                 ->with(['invoice', 'receipt', 'currency'])
                 ->where('status', 'valid')
-                ->whereBetween('payment_date', [$start->toDateString(), $end->toDateString()])
+                ->whereDate('payment_date', '>=', $start->toDateString())
+                ->whereDate('payment_date', '<=', $end->toDateString())
                 ->orderBy('payment_date')
                 ->get();
         }

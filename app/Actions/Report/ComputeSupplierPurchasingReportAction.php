@@ -24,13 +24,16 @@ final readonly class ComputeSupplierPurchasingReportAction
             ->when($supplierId !== null, fn ($query) => $query->whereKey($supplierId))
             ->with([
                 'purchaseOrders' => fn ($query) => $query
-                    ->whereBetween('order_date', [$start->toDateString(), $end->toDateString()])
+                    ->whereDate('order_date', '>=', $start->toDateString())
+                    ->whereDate('order_date', '<=', $end->toDateString())
                     ->latest('order_date'),
                 'purchaseReceipts' => fn ($query) => $query
-                    ->whereBetween('receipt_date', [$start->toDateString(), $end->toDateString()])
+                    ->whereDate('receipt_date', '>=', $start->toDateString())
+                    ->whereDate('receipt_date', '<=', $end->toDateString())
                     ->latest('receipt_date'),
                 'purchaseReturns' => fn ($query) => $query
-                    ->whereBetween('return_date', [$start->toDateString(), $end->toDateString()])
+                    ->whereDate('return_date', '>=', $start->toDateString())
+                    ->whereDate('return_date', '<=', $end->toDateString())
                     ->latest('return_date'),
             ])
             ->orderBy('name')
