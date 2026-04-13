@@ -73,6 +73,8 @@ use App\Livewire\Suppliers\EditPage as SuppliersEditPage;
 use App\Livewire\Suppliers\IndexPage as SuppliersIndexPage;
 use App\Livewire\Users\CreatePage as UsersCreatePage;
 use App\Livewire\Users\EditPage as UsersEditPage;
+use App\Http\Controllers\CentralAdmin\DashboardController as SupportDashboardController;
+use App\Http\Controllers\CentralAdmin\TenantController as SupportTenantController;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ReceiptController;
@@ -93,6 +95,7 @@ Route::middleware([
     'web',
     InitializeTenancyByDomain::class,
     PreventAccessFromCentralDomains::class,
+    'tenant.active',
 ])->group(function () {
     Route::get('/', function () {
         return auth()->check()
@@ -426,6 +429,19 @@ Route::middleware([
         Route::put('settings/appearance', [AppearanceController::class, 'update'])
             ->name('settings.appearance.update')
             ->middleware('permission:settings.appearance.update');
+
+        Route::middleware('central_admin')->prefix('admin')->name('support.')->group(function () {
+            Route::get('/', [SupportDashboardController::class, 'index'])->name('dashboard');
+            Route::get('/tenants', [SupportTenantController::class, 'index'])->name('tenants.index');
+            Route::get('/tenants/create', [SupportTenantController::class, 'create'])->name('tenants.create');
+            Route::post('/tenants', [SupportTenantController::class, 'store'])->name('tenants.store');
+            Route::get('/tenants/{tenant}/edit', [SupportTenantController::class, 'edit'])->name('tenants.edit');
+            Route::put('/tenants/{tenant}', [SupportTenantController::class, 'update'])->name('tenants.update');
+            Route::post('/tenants/{tenant}/suspend', [SupportTenantController::class, 'suspend'])->name('tenants.suspend');
+            Route::post('/tenants/{tenant}/reactivate', [SupportTenantController::class, 'reactivate'])->name('tenants.reactivate');
+            Route::post('/tenants/{tenant}/maintenance/bootstrap', [SupportTenantController::class, 'rerunBootstrap'])->name('tenants.maintenance.bootstrap');
+            Route::post('/tenants/{tenant}/maintenance/demo-refresh', [SupportTenantController::class, 'refreshDemoData'])->name('tenants.maintenance.demo-refresh');
+        });
     });
 
     require __DIR__.'/auth.php';

@@ -30,6 +30,7 @@ class User extends Authenticatable
         'phone',
         'password',
         'is_active',
+        'is_support',
         'last_login_at',
         'theme_preference',
     ];
@@ -55,6 +56,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'last_login_at' => 'datetime',
             'is_active' => 'boolean',
+            'is_support' => 'boolean',
             'password' => 'hashed',
         ];
     }
@@ -68,5 +70,15 @@ class User extends Authenticatable
             ->explode(' ')
             ->map(fn (string $name) => Str::of($name)->substr(0, 1))
             ->implode('');
+    }
+
+    public function isSupportUser(): bool
+    {
+        return $this->is_support === true;
+    }
+
+    public function canAccessPlatformTenants(): bool
+    {
+        return $this->isSupportUser() && $this->can('platform.tenants.manage');
     }
 }

@@ -29,6 +29,7 @@ pest()->extend(TenantTestCase::class)
         'Feature/ExpenseCategoryTest.php',
         'Feature/Livewire',
         'Feature/Settings',
+        'Feature/Support',
     );
 
 pest()->extend(TestCase::class)

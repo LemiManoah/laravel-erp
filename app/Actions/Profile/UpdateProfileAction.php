@@ -14,6 +14,13 @@ final readonly class UpdateProfileAction
     public function handle(User $user, array $data): User
     {
         $user->fill($data);
+
+        if ($user->isDirty('email')) {
+            $user->forceFill([
+                'email_verified_at' => null,
+            ]);
+        }
+
         $user->save();
 
         return $user;

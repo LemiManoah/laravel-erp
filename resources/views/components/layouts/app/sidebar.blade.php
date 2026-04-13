@@ -11,7 +11,7 @@
                 @if(auth()->user()?->canAny(['customers.view', 'orders.view', 'inventory-items.view']))
                     <li class="mt-4">
                         <div class="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                            Catalog & CRM
+                            CRM
                         </div>
                     </li>
                     @can('viewAny', \App\Models\Customer::class)
@@ -131,8 +131,17 @@
                             :active="request()->routeIs('activity-logs*')">Activity Logs</x-layouts.sidebar-link>
                     @endif
                 @endif
+
+                @if(auth()->user()?->canAccessPlatformTenants())
+                    <li class="mt-4">
+                        <div class="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                            Support
+                        </div>
+                    </li>
+                    <x-layouts.sidebar-link href="{{ route('support.dashboard') }}" icon='fas-building-shield'
+                        :active="request()->routeIs('support.*')">Support Console</x-layouts.sidebar-link>
+                @endif
             </ul>
         </nav>
     </div>
 </aside>
-

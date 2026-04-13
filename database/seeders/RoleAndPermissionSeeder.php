@@ -60,6 +60,7 @@ final class RoleAndPermissionSeeder extends Seeder
             'users.view',
             'users.create',
             'users.update',
+            'platform.tenants.manage',
             'settings.profile.update',
             'settings.password.update',
             'settings.appearance.update',
